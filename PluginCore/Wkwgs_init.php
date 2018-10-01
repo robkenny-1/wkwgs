@@ -19,12 +19,10 @@
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-function Wkwgs_init($file)
+function Wkwgs_init($file, $pluginClassPath, $pluginName)
 {
-    $userPluginCode = dirname($file)  . '/Wkwgs_Plugin.php';
-
-    require_once($userPluginCode);
-    $aPlugin = new Wkwgs_Plugin();
+    require_once($pluginClassPath);
+    $aPlugin = new $pluginName();
 
     // Install the plugin
     // NOTE: this file gets run each time you *activate* the plugin.
@@ -51,7 +49,6 @@ function Wkwgs_init($file)
     }
     // Register the Plugin Activation Hook
     register_activation_hook($file, array(&$aPlugin, 'activate'));
-
 
     // Register the Plugin Deactivation Hook
     register_deactivation_hook($file, array(&$aPlugin, 'deactivate'));
