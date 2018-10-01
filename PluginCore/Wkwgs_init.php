@@ -21,8 +21,9 @@
 
 function Wkwgs_init($file)
 {
+    $userPluginCode = dirname($file)  . '/Wkwgs_Plugin.php';
 
-    require_once('Wkwgs_Plugin.php');
+    require_once($userPluginCode);
     $aPlugin = new Wkwgs_Plugin();
 
     // Install the plugin

@@ -1,7 +1,7 @@
 <?php
 
 
-include_once('Wkwgs_LifeCycle.php');
+include_once('PluginCore/Wkwgs_LifeCycle.php');
 
 class Wkwgs_Plugin extends Wkwgs_LifeCycle
 {
@@ -13,11 +13,13 @@ class Wkwgs_Plugin extends Wkwgs_LifeCycle
     public function getOptionMetaData()
     {
         //  http://plugin.michael-simpson.com/?page_id=31
+        //
+        //  These are global options
         return array(
             //'_version' => array('Installed Version'), // Leave this one commented-out. Uncomment to test upgrades.
-            'ATextInput' => array(__('Enter in some text', 'my-awesome-plugin')),
-            'AmAwesome' => array(__('I like this awesome plugin', 'my-awesome-plugin'), 'false', 'true'),
-            'CanDoSomething' => array(__('Which user role can do something', 'my-awesome-plugin'),
+            'ATextInput'     => array(__('Enter in some text', 'wkwgs')),
+            'AmAwesome'      => array(__('I like this awesome plugin', 'wkwgs'), 'false', 'true'),
+            'CanDoSomething' => array(__('Which user role can do something', 'wkwgs'),
                                         'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone')
         );
     }
@@ -30,13 +32,17 @@ class Wkwgs_Plugin extends Wkwgs_LifeCycle
 
     protected function initOptions()
     {
+        // Should we check for WooCommerce?
+        // how to throw exception?
+        //
+
         $options = $this->getOptionMetaData();
         if (!empty($options))
-	{
+        {
             foreach ($options as $key => $arr)
-	    {
+            {
                 if (is_array($arr) && count($arr > 1))
-		{
+                {
                     $this->addOption($key, $arr[1]);
                 }
             }
@@ -45,7 +51,7 @@ class Wkwgs_Plugin extends Wkwgs_LifeCycle
 
     public function getPluginDisplayName()
     {
-        return 'wkwgs';
+        return 'Washington Koi & Water Garden Society';
     }
 
     protected function getMainPluginFileName()
@@ -101,7 +107,7 @@ class Wkwgs_Plugin extends Wkwgs_LifeCycle
         // Example adding a script & style just for the options administration page
         // http://plugin.michael-simpson.com/?page_id=47
         //        if (strpos($_SERVER['REQUEST_URI'], $this->getSettingsSlug()) !== false)
-	//        {
+        //        {
         //            wp_enqueue_script('my-script', plugins_url('/js/my-script.js', __FILE__));
         //            wp_enqueue_style('my-style', plugins_url('/css/my-style.css', __FILE__));
         //        }
@@ -126,6 +132,4 @@ class Wkwgs_Plugin extends Wkwgs_LifeCycle
         // http://plugin.michael-simpson.com/?page_id=41
 
     }
-
-
 }

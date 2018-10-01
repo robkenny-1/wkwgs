@@ -85,6 +85,6 @@ add_action('plugins_loadedi','Wkwgs_i18n_init');
 if (Wkwgs_PhpVersionCheck())
 {
     // Only load and run the init function if we know PHP version can parse it
-    include_once('wkwgs_init.php');
+    include_once('PluginCore/wkwgs_init.php');
     Wkwgs_init(__FILE__);
 }
