@@ -126,7 +126,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 						'first_name' =>
 							array(
 								'type'			=> 'text',
-								'label'			=> __( 'First Name', 'wkwgs' ),
+								'label'			=> __( 'Second member\'s first Name', 'wkwgs' ),
 							),
 						'last_name' =>
 							array(
