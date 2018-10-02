@@ -301,11 +301,11 @@ class Wkwgs_OptionsManager
 
         // Save Posted Options
         if ($optionMetaData != null)
-	{
-            foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
-	    {
-                if (isset($_POST[$aOptionKey]))
 		{
+            foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
+		    {
+                if (isset($_POST[$aOptionKey]))
+				{
                     $this->updateOption($aOptionKey, $_POST[$aOptionKey]);
                 }
             }

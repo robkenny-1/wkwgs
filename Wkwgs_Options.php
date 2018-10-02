@@ -3,7 +3,7 @@
 
 include_once('PluginCore/Wkwgs_LifeCycle.php');
 
-class Wkwgs_Plugin extends Wkwgs_LifeCycle
+class Wkwgs_Options extends Wkwgs_LifeCycle
 {
 
     /**
@@ -51,12 +51,14 @@ class Wkwgs_Plugin extends Wkwgs_LifeCycle
 
     public function getPluginDisplayName()
     {
+        //return 'wkwgs';
         return 'Washington Koi & Water Garden Society';
     }
 
     protected function getMainPluginFileName()
     {
-        return 'wkwgs.php';
+		// Main page lives in same directory as plugin code
+        return 'Wkwgs.php';
     }
 
     /**
@@ -99,7 +101,6 @@ class Wkwgs_Plugin extends Wkwgs_LifeCycle
 
     public function addActionsAndFilters()
     {
-
         // Add options administration page
         // http://plugin.michael-simpson.com/?page_id=47
         add_action('admin_menu', array(&$this, 'addSettingsSubMenuPage'));

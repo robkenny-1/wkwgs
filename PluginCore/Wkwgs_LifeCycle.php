@@ -26,7 +26,6 @@ class Wkwgs_LifeCycle extends Wkwgs_InstallIndicator
 
     public function install()
     {
-
         // Initialize Plugin Options
         $this->initOptions();
 

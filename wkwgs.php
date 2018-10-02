@@ -72,7 +72,6 @@ function Wkwgs_i18n_init()
     load_plugin_textdomain('wkwgs', false, $pluginDir . '/languages/');
 }
 
-
 //////////////////////////////////
 // Run initialization
 /////////////////////////////////
@@ -86,5 +85,8 @@ if (Wkwgs_PhpVersionCheck())
 {
     // Only load and run the init function if we know PHP version can parse it
     include_once('PluginCore/wkwgs_init.php');
-    Wkwgs_init(__FILE__);
+
+	// Load all of the plugins
+    Wkwgs_init(__FILE__, dirname(__FILE__)  . '/Wkwgs_Options.php',			'Wkwgs_Options');
+    Wkwgs_init(__FILE__, dirname(__FILE__)  . '/Wkwgs_DualMembership.php',	'Wkwgs_DualMembership');
 }
