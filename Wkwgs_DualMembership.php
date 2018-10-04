@@ -149,11 +149,20 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_save_customized($cart_item_data, $product_id, $variation_id, $quantity)
     {
+        $product = wc_get_product( $post_id );
+
         $custom = $this->get_enabled_customized($product);
 
         if (empty($custom))
         {
             return;
+        }
+        
+		$data = Wkwgs_DualMembership::get_form_data( $custom, $_POST );
+
+        foreach ($data as $key => $value )
+        {
+            $cart_item_data[ $key ] = $value;
         }
     }
 
@@ -211,56 +220,51 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     /**
      * extract POST data, perform data cleansing
      */
-    private function extract_data_from_post($type, $key)
+    private static function extract_data_from_post($type, $key, $post)
     {
         $value = '';
 
 		switch ( $type )
         {
 			case 'checkbox':
-				$value = isset( $_POST[ $key ] ) ? 1 : 0; // WPCS: input var ok, CSRF ok.
+				$value = isset( $post[ $key ] ) ? 1 : 0; // WPCS: input var ok, CSRF ok.
 				break;
 			
             case 'multiselect':
-				$value = isset( $_POST[ $key ] ) ? implode( ', ', wc_clean( wp_unslash( $_POST[ $key ] ) ) ) : ''; // WPCS: input var ok, CSRF ok.
+				$value = isset( $post[ $key ] ) ? implode( ', ', wc_clean( wp_unslash( $post[ $key ] ) ) ) : ''; // WPCS: input var ok, CSRF ok.
 				break;
 			
             case 'textarea':
-				$value = isset( $_POST[ $key ] ) ? wc_sanitize_textarea( wp_unslash( $_POST[ $key ] ) ) : ''; // WPCS: input var ok, CSRF ok.
+				$value = isset( $post[ $key ] ) ? wc_sanitize_textarea( wp_unslash( $post[ $key ] ) ) : ''; // WPCS: input var ok, CSRF ok.
 				break;
 			
             case 'password':
-				$value = isset( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : ''; // WPCS: input var ok, CSRF ok, sanitization ok.
+				$value = isset( $post[ $key ] ) ? wp_unslash( $post[ $key ] ) : ''; // WPCS: input var ok, CSRF ok, sanitization ok.
 				break;
 
             case 'raw':
-				$value = $_POST[ $key ];
+				$value = $post[ $key ];
 				break;
 
             case 'text':
 			default:
-				$value = isset( $_POST[ $key ] ) ? wc_clean( $_POST[ $key ] ) : ''; // WPCS: input var ok, CSRF ok.
+				$value = isset( $post[ $key ] ) ? wc_clean( $post[ $key ] ) : ''; // WPCS: input var ok, CSRF ok.
 				break;
 		}
     
         return $value;
     }
  
-    /**
-        * Save the enable button for custom fields
-        * @param $post_id
-        * @since 1.0.0
-        */
-    public function product_admin_save_customized_checkboxes( $post_id )
-    { 
-        $product = wc_get_product( $post_id );
-        
-		foreach ( $this->get_product_customized() as $key => $field )
+    private static function get_form_data( $form, $post )
+    {
+        $data = null;
+
+		foreach ( $form as $key => $field )
         {
 			$type = sanitize_title( isset( $field['type'] ) ? $field['type'] : 'text' );
 
-            // Get sannitized data from post
-            $value = $this->extract_data_from_post($type, $key);
+            // Get sanitized data from post
+            $value = Wkwgs_DualMembership::extract_data_from_post($type, $key, $post);
 
 			// Required fields
 			if ( ! empty( $field['required'] ) && empty( $value ) )
@@ -276,23 +280,23 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 					foreach ( $field['validate'] as $rule ) {
 						switch ( $rule ) {
 							case 'postcode' :
-								$_POST[ $key ] = strtoupper( str_replace( ' ', '', $_POST[ $key ] ) );
+								$post[ $key ] = strtoupper( str_replace( ' ', '', $post[ $key ] ) );
 
-								if ( ! WC_Validation::is_postcode( $_POST[ $key ], $_POST[ $load_address . '_country' ] ) ) {
+								if ( ! WC_Validation::is_postcode( $post[ $key ], $post[ $load_address . '_country' ] ) ) {
 									wc_add_notice( __( 'Please enter a valid postcode / ZIP.', 'woocommerce' ), 'error' );
 								} else {
-									$_POST[ $key ] = wc_format_postcode( $_POST[ $key ], $_POST[ $load_address . '_country' ] );
+									$post[ $key ] = wc_format_postcode( $post[ $key ], $post[ $load_address . '_country' ] );
 								}
 								break;
 							case 'phone' :
-								if ( ! WC_Validation::is_phone( $_POST[ $key ] ) ) {
+								if ( ! WC_Validation::is_phone( $post[ $key ] ) ) {
 									wc_add_notice( sprintf( __( '%s is not a valid phone number.', 'woocommerce' ), '<strong>' . $field['label'] . '</strong>' ), 'error' );
 								}
 								break;
 							case 'email' :
-								$_POST[ $key ] = strtolower( $_POST[ $key ] );
+								$post[ $key ] = strtolower( $post[ $key ] );
 
-								if ( ! is_email( $_POST[ $key ] ) ) {
+								if ( ! is_email( $post[ $key ] ) ) {
 									wc_add_notice( sprintf( __( '%s is not a valid email address.', 'woocommerce' ), '<strong>' . $field['label'] . '</strong>' ), 'error' );
 								}
 								break;
@@ -301,9 +305,28 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 				}
 			}
 
-	        $product->update_meta_data( $key, $value );
+            $data[ $key ] = $value;
+        }
+        return $data;
+    }
+
+    /**
+        * Save the enable button for custom fields
+        * @param $post_id
+        * @since 1.0.0
+        */
+    public function product_admin_save_customized_checkboxes( $post_id )
+    {
+		$data = Wkwgs_DualMembership::get_form_data( $this->get_product_customized(), $_POST );
+
+        $product = wc_get_product( $post_id );
+
+        foreach ($data as $key => $value )
+        {
+            $product->update_meta_data( $key, $value );
         }
 
         $product->save(); 
+
     }
 }
