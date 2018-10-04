@@ -28,132 +28,21 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 {
     public function addActionsAndFilters()
     {
-        add_action('admin_menu', array(&$this, 'addSettingsSubMenuPage'));
+        // Customer
+        add_action( 'woocommerce_after_add_to_cart_form',				array( $this, 'product_show_customized' ) );
+        add_filter( 'woocommerce_add_cart_item_data',					array( $this, 'product_save_customized', 10, 3 ) );
 
-        // Create the custom tab
-        add_filter( 'woocommerce_product_data_tabs',					array( $this, 'product_data_tabs' ) );
-        
-        // Add the custom fields
-        add_action( 'woocommerce_product_data_panels',					array( $this, 'product_data_panels' ) );
-        
-        // Save the custom fields
-        add_action( 'woocommerce_process_product_meta',					array( $this, 'store_product_meta' ) );
-
-        // Where we want to display the additional information for the product
-        add_action( 'woocommerce_after_add_to_cart_form',				array( $this, 'display_additional_product_info' ) );
-
-        // Save the info before adding to the cart
-        //add_filter( 'woocommerce_add_cart_item_data',					array( $this, 'save_customized_product_data', 10, 3 ) );
-    }
-  
-    /*
-     *********************************************************************************
-     *  Code for Customer
-     *********************************************************************************
-     */
-
-    /**
-     * Helper routine to get list of attributes to display for the $product
-     * @return array of product_meta definitions
-     */
-    private function get_enabled_meta($product)
-    {
-        $enabled = array();
-
-        $fields = $this->get_product_meta();
-
-        foreach ( $fields as $key => $value )
-        {
-            $is_meta_enabled = $product->get_meta($key);
-
-            if ($is_meta_enabled == 1)
-            {
-                $enabled[$key] = $value;
-            }
-        }
-        return $enabled;
-    }
-
-    /**
-     * Display data on the product's store page
-     * @return null
-     */
-    public function display_additional_product_info()
-    {
-        global $product;
-
-        $enabled = $this->get_enabled_meta($product);
-
-        if (empty($enabled))
-        {
-            return;
-        }
-
-        ?> 
-        <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
-            <div class="options_group">
-                <?php
-                foreach ( $enabled as $product_meta => $product_meta_args )
-                {
-                    $display_fields = $product_meta_args['display_fields'];
-
-                    foreach ( $display_fields as $field => $field_args )
-                    {
-                        woocommerce_form_field(
-                            $field,
-                            $field_args);
-                    }
-                }
-                ?>
-            </div>
-        </div>
-        <?php
-
-    }
- 
-    /**
-     * Save any customized data on the product's store page
-     * @return null
-     */
-    public function save_customized_product_data($cart_item_data, $product_id, $variation_id)
-    {
-        $enabled = $this->get_enabled_meta($product);
-
-        if (empty($enabled))
-        {
-            return;
-        }
-    
-    }
-
-    /*
-     *********************************************************************************
-     *  Code for Manager/Admin
-     *********************************************************************************
-     */
-
-    /**
-        * Add the new tab to the $tabs array
-        * @see     https://github.com/woocommerce/woocommerce/blob/e1a82a412773c932e76b855a97bd5ce9dedf9c44/includes/admin/meta-boxes/class-wc-meta-box-product-data.php
-        * @param   $tabs
-        * @since   1.0.0
-        */
-    public function product_data_tabs( $tabs )
-    {
-        $tabs['wkwgs'] = array(
-            'label'         => __( 'WK & WGS', 'wkwgs' ),	// The name of your panel
-            'target'        => 'wkwgs_product_panel',		// Will be used to create an anchor link so needs to be unique
-            'class'         => array( 'wkwgs_tab', 'show_if_simple', 'show_if_variable' ), // Class for your panel tab - helps hide/show depending on product type
-            'priority'      => 80, // Where your panel will appear. By default, 70 is last item
-        );
-        return $tabs;
+        // Editor/Administrator
+        add_filter( 'woocommerce_product_data_tabs',					array( $this, 'product_admin_add_tab' ) );
+        add_action( 'woocommerce_product_data_panels',					array( $this, 'product_admin_show_customized_checkboxes' ) );
+        add_action( 'woocommerce_process_product_meta',					array( $this, 'product_admin_save_customized_checkboxes' ) );
     }
 
     /**
      * Values to display on the product's edit page, under WK&WGS
      * @return array
      */
-    protected function get_product_meta()
+    protected function get_product_customized()
     {
         return array(
                 'wkwgs_is_dual_membership' => array(
@@ -188,14 +77,117 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                 ),
         );
     }
+  
+    /*
+     *********************************************************************************
+     *  Code for Customer
+     *********************************************************************************
+     */
 
     /**
-    * Display fields for the new panel
+     * Helper routine to get list of attributes to display for the $product
+     * @return array of product_meta definitions
+     */
+    private function get_enabled_customized($product)
+    {
+        $enabled = array();
+
+        $fields = $this->get_product_customized();
+
+        foreach ( $fields as $key => $value )
+        {
+            $is_meta_enabled = $product->get_meta($key);
+
+            if ($is_meta_enabled == 1)
+            {
+                $enabled[$key] = $value;
+            }
+        }
+        return $enabled;
+    }
+
+    /**
+     * Display the product's custom fields on product page
+     * @return null
+     */
+    public function product_show_customized()
+    {
+        global $product;
+
+        $enabled = $this->get_enabled_customized($product);
+
+        if (empty($enabled))
+        {
+            return;
+        }
+
+        ?> 
+        <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
+            <div class="options_group">
+                <?php
+                foreach ( $enabled as $product_meta => $product_meta_args )
+                {
+                    $display_fields = $product_meta_args['display_fields'];
+
+                    foreach ( $display_fields as $field => $field_args )
+                    {
+                        woocommerce_form_field(
+                            $field,
+                            $field_args);
+                    }
+                }
+                ?>
+            </div>
+        </div>
+        <?php
+
+    }
+ 
+    /**
+     * Save the product's custom field values when added to the cart
+     * @return null
+     */
+    public function product_save_customized($cart_item_data, $product_id, $variation_id, $quantity)
+    {
+        $custom = $this->get_enabled_customized($product);
+
+        if (empty($custom))
+        {
+            return;
+        }
+    }
+
+    /*
+     *********************************************************************************
+     *  Code for Manager/Admin
+     *********************************************************************************
+     */
+
+    /**
+        * Create the custom tab
+        * @see     https://github.com/woocommerce/woocommerce/blob/e1a82a412773c932e76b855a97bd5ce9dedf9c44/includes/admin/meta-boxes/class-wc-meta-box-product-data.php
+        * @param   $tabs
+        * @since   1.0.0
+        */
+    public function product_admin_add_tab( $tabs )
+    {
+        $tabs['wkwgs'] = array(
+            'label'         => __( 'WK & WGS', 'wkwgs' ),	// The name of your panel
+            'target'        => 'wkwgs_product_panel',		// Will be used to create an anchor link so needs to be unique
+            'class'         => array( 'wkwgs_tab', 'show_if_simple', 'show_if_variable' ), // Class for your panel tab - helps hide/show depending on product type
+            'priority'      => 80, // Where your panel will appear. By default, 70 is last item
+        );
+        return $tabs;
+    }
+
+    /**
+    * Add the enable button for custom fields
+    * @return null
     */
-    public function product_data_panels()
+    public function product_admin_show_customized_checkboxes()
     {
         global $post;
-        $fields = $this->get_product_meta();
+        $fields = $this->get_product_customized();
         ?> 
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <div class="options_group">
@@ -255,15 +247,15 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     }
  
     /**
-        * Save the custom fields using CRUD method
+        * Save the enable button for custom fields
         * @param $post_id
         * @since 1.0.0
         */
-    public function store_product_meta( $post_id )
+    public function product_admin_save_customized_checkboxes( $post_id )
     { 
         $product = wc_get_product( $post_id );
         
-		foreach ( $this->get_product_meta() as $key => $field )
+		foreach ( $this->get_product_customized() as $key => $field )
         {
 			$type = sanitize_title( isset( $field['type'] ) ? $field['type'] : 'text' );
 
