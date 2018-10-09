@@ -49,8 +49,12 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         return array(
                 'wkwgs_is_dual_membership' => array(
 
-                    'type'				=> 'checkbox',
-                    'label'				=> __( 'Include Dual email', 'wkwgs' ),
+                    'admin'             => array(
+                        'type'          => 'checkbox',
+                        'name'          => 'is_dual_membership',
+                        'label'         => __( 'Include Dual email',  Input\DOMAIN ),
+                        'required'      => 'yes',
+                    ),
                     
                     // Fields to display on product page
                     'display_fields'	=> array(
@@ -339,20 +343,19 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             // Our implementation
             foreach ( $fields as $key => $field_args )
             {
+                $admin      = $field_args[ 'admin' ];
+
+                // Assume fields are all checkboxes...
+
                 $product = wc_get_product($post);
                 $db_value = $product->get_meta($key, true);
                 $checked = $db_value === 'yes' ? 'yes' : 'no';
 
+                $admin[ 'checked' ] = $checked;
+
                 $checkbox = new Input\Checkbox();
-                $checkbox->set_settings(
-                    array(
-                        'name'              => $key,
-                        'label'             => __( 'Include Dual email',  Input\DOMAIN ),
-                        'required'          => 'yes',
-                        'checked'           => $checked,
-                    )
-                );
-                $checkbox->spew_html( '0' );
+                $checkbox->set_attributes( $admin );
+                $checkbox->print_html( '0' );
             }
             ?>
 

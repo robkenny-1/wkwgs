@@ -35,7 +35,7 @@ class Checkbox extends Field
 
     function __construct()
     {
-        parent::__construct( __( 'Checkbox', DOMAIN ), 'checkbox_field' );
+        parent::__construct( __( 'Checkbox', DOMAIN ), 'checkbox' );
     }
 
     /**
@@ -55,21 +55,21 @@ class Checkbox extends Field
      *
      * @return void
      */
-    public function render( $form_id )
+    public function render( )
     {
-        $name           = $this->attributes['name'];
-        $label          = $this->attributes['label'];
-        $checked        = $this->attributes['checked'] === 'yes' || $this->attributes['checked'] === '1' ? True : False;
+        $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
+        $label_text     = $this->get_attribute( 'label' );
+        $checked        = $this->get_attribute( 'checked' ) === 'yes' || $this->get_attribute( 'checked' ) === '1' ? True : False;
         $checked        = $checked ? 'checked="checked"' : '';
-        $css_checkbox   = $this->css[ 'checkbox' ];
-
+        $css_checkbox   = $this->get_css( 'checkbox' );
+        $name           = $this->get_attribute( 'name' );
         ?>
         <label class="checkbox">
             <input type="checkbox"
                    class="<?php echo $css_checkbox ?>"
                    name="<?php echo $name; ?>"
                    id="<?php echo $name; ?>"
-                   value="yes" <?php echo $checked; ?>/>&nbsp;<?php echo $label; ?></label>
+                   value="yes" <?php echo $checked; ?>/>&nbsp;<?php echo $label_text; ?></label>
         <?php    
     }
 }

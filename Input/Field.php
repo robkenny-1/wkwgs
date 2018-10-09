@@ -23,6 +23,7 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
+include_once(WP_PLUGIN_DIR . '/wkwgs/Wkwgs_Logger.php' );
 
 /**
  * The Field Class
@@ -51,13 +52,13 @@ abstract class Field
      *
      * @return void
      */
-    abstract function render( $form_id );
+    abstract function render( );
 
     /*-------------------------------------------------------------------------*/
     /*
      * CSS styles
      */
-    protected $css = array(
+    private static $css = array(
         
         // Used by all classes
         'input-container'           => 'options_group',             // applies to all input classes
@@ -70,9 +71,9 @@ abstract class Field
     );
     public static function get_css( $name )
     {
-        if ( isset( $css[ $name ] ) )
+        if ( isset( Field::$css[ $name ] ) )
         {
-            return $css[ $name ];
+            return Field::$css[ $name ];
         }
         return '';
     }
@@ -83,61 +84,22 @@ abstract class Field
      *
      * @var string
      */
-    protected $input_type = '';
+    protected $form_id = '0';
 
     /**
      * Settings of the field
      *
      * @var string
      */
-    protected $attributes = '';
+    protected $attributes;
 
     public function __construct( $name, $type )
     {
-        $this->attributes = $this->get_attributes_default();
-
-        $this->set_name( $name );
-        $this->set_type( $type );
-    }
-
-    /**
-     * Get the name of the field
-     *
-     * @return string
-     */
-    public function get_name()
-    {
-        return $this->attributes[ 'name' ];
-    }
-
-    /**
-     * Get the name of the field
-     *
-     * @return string
-     */
-    public function set_name( $name )
-    {
-        $this->attributes[ 'name' ] = $name;
-    }
-
-    /**
-     * Get field type
-     *
-     * @return string
-     */
-    public function get_type()
-    {
-        return $this->input_type;
-    }
-
-    /**
-     * Get the name of the field
-     *
-     * @return string
-     */
-    private function set_type( $type )
-    {
-        $this->input_type = $type;
+        $this->set_attributes( array(
+                'name'  => $name,
+                'type'  => $type,
+            )
+        );
     }
 
     /**
@@ -169,9 +131,9 @@ abstract class Field
     }
 
     /**
-     * Get the attributes of the field
+     * Get all the attributes of the field
      *
-     * @return string
+     * @return string, empty string if unset
      */
     public function get_attributes()
     {
@@ -179,13 +141,79 @@ abstract class Field
     }
 
     /**
-     * Set the attributes of the field
+     * Get the value of a single attribute of the field
      *
      * @return string
      */
-    public function set_settings( $attributes )
+    public function get_attribute( $name )
     {
-        $this->attributes = array_merge( $this->get_attributes_default(), $attributes );
+        $attr = '';
+        if ( isset( $this->attributes[ $name ] ) )
+        {
+            $attr = $this->attributes[ $name ];
+        }
+
+
+        return $attr;
+    }
+
+    /**
+     * Merge $attributes
+     *
+     * @return string
+     */
+    public function set_attributes( $attributes )
+    {
+        if (is_null( $this->attributes ) )
+        {
+            $this->attributes = array_merge( $this->get_attributes_default(), $attributes );
+        }
+        else
+        {
+            $this->attributes = array_merge( $this->get_attributes_default(), $this->attributes, $attributes );
+	    }
+    }
+
+    /**
+     * Get the assigned form identity
+     *
+     * @return string
+     */
+    public function get_form_id( )
+    {
+        return $this->form_id;
+    }
+
+    /**
+     * Set the identity of the owning form
+     *
+     * @return string
+     */
+    public function set_form_id( $form_id )
+    {
+        $this->form_id = $form_id;
+    }
+
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get the name of the field
+     *
+     * @return string
+     */
+    public function get_name()
+    {
+        return $this->attributes[ 'name' ];
+    }
+
+    /**
+     * Get field type
+     *
+     * @return string
+     */
+    public function get_type()
+    {
+        return $this->attributes[ 'type' ];
     }
 
     /**
@@ -209,31 +237,38 @@ abstract class Field
      * HTML helper routines
      */
 
-    public static function html_prefix( $name )
+    /**
+     * Apply prefix to HTML name to ensure uniqueness
+     * 
+     * @return string, formatted as Prefix_form_name
+     */
+    public function html_prefix( $name )
     {
-        return PREFIX_HTML . $name;
+        $form = $this->get_form_id();
+        $form = empty( $form ) ? '' : '_' . $form;
+
+        return PREFIX_HTML . $form . $name;
     }
 
-    public function spew_html( $form_id )
+    public function print_html( )
     {
-        $name           = Field::html_prefix( $this->attributes['name']  );
-        $label          = Field::html_prefix( $this->attributes['label'] );
-        $css_container  = $this->css[ 'input-container' ];
-        $css_row        = $this->css[ 'input-row' ];
-        $css_input      = $this->css[ 'input' ];
+        $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
+        $css_container  = $this->get_css( 'input-container' );
+        $css_row        = $this->get_css( 'input-row' );
+        $css_input      = $this->get_css( 'input' );
 
         ?>
         <div class="<?php echo $css_container ?>">
             <p class="<?php echo $css_row ?> " id="<?php echo $name . '_field' ?>" data-priority="">
                 <span class="<?php echo $css_input ?>">
-                <?php $this->render($form_id) ?>
+                <?php $this->render() ?>
                 </span>
             </p>
             <?php
             if ( !empty( $attributes['help'] ) )
             {
                 ?>
-                <span class="<?php echo Field::html_prefix('help'); ?>"><?php echo stripslashes( $attributes['help'] ); ?></span>
+                <span class="<?php echo $this->html_prefix('help'); ?>"><?php echo stripslashes( $attributes['help'] ); ?></span>
                 <?php
             }
             ?>
