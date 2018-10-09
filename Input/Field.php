@@ -54,6 +54,29 @@ abstract class Field
     abstract function render( $form_id );
 
     /*-------------------------------------------------------------------------*/
+    /*
+     * CSS styles
+     */
+    protected $css = array(
+        
+        // Used by all classes
+        'input-container'           => 'options_group',             // applies to all input classes
+        'input-row'                 => 'form-row',                  // applies to all input classes
+        'input'                     => 'woocommerce-input-wrapper', 
+        
+        // Input specific
+        'checkbox'                  => 'input-checkbox',
+        'checkbox-label'            => 'checkbox',
+    );
+    public static function get_css( $name )
+    {
+        if ( isset( $css[ $name ] ) )
+        {
+            return $css[ $name ];
+        }
+        return '';
+    }
+    /*-------------------------------------------------------------------------*/
 
     /**
      * Type of the field
@@ -184,65 +207,37 @@ abstract class Field
     /*-------------------------------------------------------------------------*/
     /*
      * HTML helper routines
-     * print_ routines return a string values
-     * render_ routines return HTML snippets
      */
 
     public static function html_prefix( $name )
     {
         return PREFIX_HTML . $name;
     }
-    public static function print_class_name( $attributes, $form_id = 0 )
-    {
-        echo Field::html_prefix( isset( $attributes['name'] ) ?
-            $attributes['name'] . '_' . $form_id
-            :
-            'cls'
-            );
-    }
-    public static function print_list_attributes( $attributes )
-    {
-        $label      = !isset( $attributes['label'] ) ? '' : $attributes['label'];
-        $el_name    =  empty( $attributes['name'] )  ? '' : $attributes['name'];
-        $class_name =  empty( $attributes['css'] )   ? '' : ' ' . $attributes['css'];
-        $field_size =  empty( $attributes['width'] ) ? '' : ' field-size-' . $attributes['width'];
 
-        printf( 'class="%s %s%s%s" data-label="%s"',
-            Field::html_prefix('el'),
-            $el_name,
-            $class_name,
-            $field_size,
-            $label );
-    }
-
-    /**
-     * Prints form input label
-     *
-     * @param array $attr
-     * @param integer $form_id
-     */
-    public static function render_label( $attributes, $form_id = 0 )
+    public function spew_html( $form_id )
     {
+        $name           = Field::html_prefix( $this->attributes['name']  );
+        $label          = Field::html_prefix( $this->attributes['label'] );
+        $css_container  = $this->css[ 'input-container' ];
+        $css_row        = $this->css[ 'input-row' ];
+        $css_input      = $this->css[ 'input' ];
+
         ?>
-        <div class="<?php Field::html_prefix('label'); ?>">
-            <label "<?php Field::print_class_name( $attributes, $form_id ); ?>"><?php echo $attributes['label'] . Field::is_required( $attributes ); ?></label>
+        <div class="<?php echo $css_container ?>">
+            <p class="<?php echo $css_row ?> " id="<?php echo $name . '_field' ?>" data-priority="">
+                <span class="<?php echo $css_input ?>">
+                <?php $this->render($form_id) ?>
+                </span>
+            </p>
+            <?php
+            if ( !empty( $attributes['help'] ) )
+            {
+                ?>
+                <span class="<?php echo Field::html_prefix('help'); ?>"><?php echo stripslashes( $attributes['help'] ); ?></span>
+                <?php
+            }
+            ?>
         </div>
-        <?php
-    }
-
-    /**
-     * Prints help text for a field
-     *
-     * @param array $attributes
-     */
-    public static function render_help_text( $attributes )
-    {
-        if ( empty( $attributes['help'] ) )
-        {
-            return;
-        }
-        ?>
-        <span class="<?php echo Field::html_prefix('help'); ?>"><?php echo stripslashes( $attributes['help'] ); ?></span>
-        <?php
+    <?php
     }
 }

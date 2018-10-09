@@ -51,8 +51,7 @@ class Checkbox extends Field
     }
 
     /**
-     * Render of the field in the frontend
-     * This spits out the necessary HTML
+     * Render the field in the frontend, this spits out the necessary HTML
      *
      * @return void
      */
@@ -60,16 +59,17 @@ class Checkbox extends Field
     {
         $name           = $this->attributes['name'];
         $label          = $this->attributes['label'];
-        $checked        = $this->attributes['checked'] === 'yes' ? 'checked' : '';
+        $checked        = $this->attributes['checked'] === 'yes' || $this->attributes['checked'] === '1' ? True : False;
+        $checked        = $checked ? 'checked="checked"' : '';
+        $css_checkbox   = $this->css[ 'checkbox' ];
 
         ?>
-        <label>
+        <label class="checkbox">
             <input type="checkbox"
-                name="<?php echo $name; ?>"
-                value="yes"
-                <?php echo $checked; ?>>
-            <?php echo $label; ?>
-        </label>
+                   class="<?php echo $css_checkbox ?>"
+                   name="<?php echo $name; ?>"
+                   id="<?php echo $name; ?>"
+                   value="yes" <?php echo $checked; ?>/>&nbsp;<?php echo $label; ?></label>
         <?php    
     }
 }

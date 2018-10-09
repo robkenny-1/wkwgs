@@ -113,4 +113,10 @@ class Form
 
         return array_merge( $default, $this->form_settings);
     }
+
+    /*-----------------------------------------------------------------------*/
+    /*
+     * HTML additions
+     */
+
 }
