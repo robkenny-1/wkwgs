@@ -59,7 +59,7 @@ class Checkbox extends Field
     {
         $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
         $label_text     = $this->get_attribute( 'label' );
-        $checked        = $this->get_attribute( 'checked' ) === 'yes' || $this->get_attribute( 'checked' ) === '1' ? True : False;
+        $checked        = $this->get_attribute( 'value' ) === 'yes' || $this->get_attribute( 'value' ) === '1' ? True : False;
         $checked        = $checked ? 'checked="checked"' : '';
         $css_checkbox   = $this->get_css( 'checkbox' );
         $name           = $this->get_attribute( 'name' );

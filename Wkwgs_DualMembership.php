@@ -351,7 +351,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                 $db_value = $product->get_meta($key, true);
                 $checked = $db_value === 'yes' ? 'yes' : 'no';
 
-                $admin[ 'checked' ] = $checked;
+                $admin[ 'value' ] = $checked;
 
                 $checkbox = new Input\Checkbox();
                 $checkbox->set_attributes( $admin );

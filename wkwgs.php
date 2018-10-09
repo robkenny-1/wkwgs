@@ -2,7 +2,7 @@
 /*
    Plugin Name: wkwgs
    Plugin URI: http://wordpress.org/extend/plugins/wkwgs/
-   Version: 0.1
+   Version: 0.1.0
    Author: Rob Kenny
    Description: Custom functionality for Washington Koi & Water Garden Socient
    Text Domain: wkwgs
@@ -28,6 +28,7 @@
     along with Contact Form to Database Extension.
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
+
 
 $Wkwgs_minimalRequiredPhpVersion = '5.0';
 
@@ -83,10 +84,14 @@ add_action('plugins_loadedi','Wkwgs_i18n_init');
 // If it is successful, continue with initialization for this plugin
 if (Wkwgs_PhpVersionCheck())
 {
+    // Do nothing if WooCommerce is not active
+    // TODO: Should display an error message or something
+    if ( ! is_plugin_active( 'woocommerce/woocommerce.php') ) return;
+
     // Only load and run the init function if we know PHP version can parse it
     include_once('PluginCore/wkwgs_init.php');
 
 	// Load all of the plugins
-    Wkwgs_init(__FILE__, dirname(__FILE__)  . '/Wkwgs_Options.php',			'Wkwgs_Options');
+    //Wkwgs_init(__FILE__, dirname(__FILE__)  . '/Wkwgs_Options.php',			'Wkwgs_Options');
     Wkwgs_init(__FILE__, dirname(__FILE__)  . '/Wkwgs_DualMembership.php',	'Wkwgs_DualMembership');
 }

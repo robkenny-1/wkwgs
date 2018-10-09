@@ -1,5 +1,26 @@
 <?php
+/*
+    "WordPress Plugin Template" Copyright (C) 2018 Michael Simpson  (email : michael.d.simpson@gmail.com)
 
+    This following part of this file is part of WordPress Plugin Template for WordPress.
+
+    WordPress Plugin Template is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    WordPress Plugin Template is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Contact Form to Database Extension.
+    If not, see http://www.gnu.org/licenses/gpl-3.0.html
+*/
+
+// Exit if accessed directly
+defined( 'ABSPATH' ) || exit;
 
 include_once('PluginCore/Wkwgs_LifeCycle.php');
 
@@ -21,21 +42,12 @@ class Wkwgs_Options extends Wkwgs_LifeCycle
             'AmAwesome'      => array(__('I like this awesome plugin', 'wkwgs'), 'false', 'true'),
             'CanDoSomething' => array(__('Which user role can do something', 'wkwgs'),
                                         'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone')
+            'Enable Debug'   => array(__('Enable Debug', 'wkwgs'), 'false', 'true'),
         );
     }
 
-//    protected function getOptionValueI18nString($optionValue)
-//    {
-//        $i18nValue = parent::getOptionValueI18nString($optionValue);
-//        return $i18nValue;
-//    }
-
     protected function initOptions()
     {
-        // Should we check for WooCommerce?
-        // how to throw exception?
-        //
-
         $options = $this->getOptionMetaData();
         if (!empty($options))
         {
@@ -71,10 +83,10 @@ class Wkwgs_Options extends Wkwgs_LifeCycle
      */
     protected function installDatabaseTables()
     {
-        //        global $wpdb;
-        //        $tableName = $this->prefixTableName('mytable');
-        //        $wpdb->query("CREATE TABLE IF NOT EXISTS `$tableName` (
-        //            `id` INTEGER NOT NULL");
+        //global $wpdb;
+        //$tableName = $this->prefixTableName('Options');
+        //$wpdb->query("CREATE TABLE IF NOT EXISTS `$tableName` (
+        //    `id` INTEGER NOT NULL");
     }
 
     /**
@@ -84,9 +96,9 @@ class Wkwgs_Options extends Wkwgs_LifeCycle
      */
     protected function unInstallDatabaseTables()
     {
-        //        global $wpdb;
-        //        $tableName = $this->prefixTableName('mytable');
-        //        $wpdb->query("DROP TABLE IF EXISTS `$tableName`");
+        //global $wpdb;
+        //$tableName = $this->prefixTableName('Options');
+        //$wpdb->query("DROP TABLE IF EXISTS `$tableName`");
     }
 
 

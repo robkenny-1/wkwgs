@@ -73,9 +73,9 @@ class Wkwgs_OptionsManager
     {
         $optionMetaData = $this->getOptionMetaData();
         if (is_array($optionMetaData))
-	{
+        {
             foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
-	    {
+            {
                 $prefixedOptionName = $this->prefix($aOptionKey); // how it is stored in DB
                 delete_option($prefixedOptionName);
             }
@@ -101,7 +101,7 @@ class Wkwgs_OptionsManager
     {
         $optionNamePrefix = $this->getOptionNamePrefix();
         if (strpos($name, $optionNamePrefix) === 0)
-	{ // 0 but not false
+        { // 0 but not false
             return $name; // already prefixed
         }
         return $optionNamePrefix . $name;
@@ -117,7 +117,7 @@ class Wkwgs_OptionsManager
     {
         $optionNamePrefix = $this->getOptionNamePrefix();
         if (strpos($name, $optionNamePrefix) === 0)
-	{
+        {
             return substr($name, strlen($optionNamePrefix));
         }
         return $name;
@@ -136,7 +136,7 @@ class Wkwgs_OptionsManager
         $prefixedOptionName = $this->prefix($optionName); // how it is stored in DB
         $retVal = get_option($prefixedOptionName);
         if (!$retVal && $default)
-	{
+        {
             $retVal = $default;
         }
         return $retVal;
@@ -194,7 +194,7 @@ class Wkwgs_OptionsManager
     {
         $roleAllowed = $this->getOption($optionName);
         if (!$roleAllowed || $roleAllowed == '')
-	{
+        {
             $roleAllowed = 'Administrator';
         }
         return $roleAllowed;
@@ -209,7 +209,7 @@ class Wkwgs_OptionsManager
     protected function roleToCapability($roleName)
     {
         switch ($roleName)
-	{
+        {
             case 'Super Admin':
                 return 'manage_options';
             case 'Administrator':
@@ -235,7 +235,7 @@ class Wkwgs_OptionsManager
     public function isUserRoleEqualOrBetterThan($roleName)
     {
         if ('Anyone' == $roleName)
-	{
+        {
             return true;
         }
         $capability = $this->roleToCapability($roleName);
@@ -250,7 +250,7 @@ class Wkwgs_OptionsManager
     {
         $roleAllowed = $this->getRoleOption($optionName);
         if ('Anyone' == $roleAllowed)
-	{
+        {
             return true;
         }
         return $this->isUserRoleEqualOrBetterThan($roleAllowed);
@@ -280,7 +280,7 @@ class Wkwgs_OptionsManager
         $settingsGroup = get_class($this) . '-settings-group';
         $optionMetaData = $this->getOptionMetaData();
         foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
-	{
+        {
             register_setting($settingsGroup, $aOptionMeta);
         }
     }
@@ -293,7 +293,7 @@ class Wkwgs_OptionsManager
     public function settingsPage()
     {
         if (!current_user_can('manage_options'))
-	{
+        {
             wp_die(__('You do not have sufficient permissions to access this page.', 'wkwgs'));
         }
 
@@ -301,11 +301,11 @@ class Wkwgs_OptionsManager
 
         // Save Posted Options
         if ($optionMetaData != null)
-		{
+        {
             foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
-		    {
+            {
                 if (isset($_POST[$aOptionKey]))
-				{
+                {
                     $this->updateOption($aOptionKey, $_POST[$aOptionKey]);
                 }
             }
@@ -322,7 +322,7 @@ class Wkwgs_OptionsManager
                 <td><?php echo phpversion(); ?>
                 <?php
                 if (version_compare('5.2', phpversion()) > 0)
-		{
+        {
                     echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
                     _e('(WARNING: This plugin may not work properly with versions earlier than PHP 5.2)', 'wkwgs');
                     echo '</span>';
@@ -335,7 +335,7 @@ class Wkwgs_OptionsManager
                     <?php
                     echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
                     if (version_compare('5.0', $this->getMySqlVersion()) > 0)
-		    {
+            {
                         _e('(WARNING: This plugin may not work properly with versions earlier than MySQL 5.0)', 'wkwgs');
                     }
                     echo '</span>';
@@ -360,9 +360,9 @@ class Wkwgs_OptionsManager
                 <table class="plugin-options-table"><tbody>
                 <?php
                 if ($optionMetaData != null)
-		{
+        {
                     foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
-		    {
+            {
                         $displayText = is_array($aOptionMeta) ? $aOptionMeta[0] : $aOptionMeta;
                         ?>
                             <tr valign="top">
@@ -396,13 +396,13 @@ class Wkwgs_OptionsManager
     protected function createFormControl($aOptionKey, $aOptionMeta, $savedOptionValue)
     {
         if (is_array($aOptionMeta) && count($aOptionMeta) >= 2)
-	{ // Drop-down list
+    { // Drop-down list
             $choices = array_slice($aOptionMeta, 1);
             ?>
             <p><select name="<?php echo $aOptionKey ?>" id="<?php echo $aOptionKey ?>">
             <?php
                             foreach ($choices as $aChoice)
-			    {
+                {
                 $selected = ($aChoice == $savedOptionValue) ? 'selected' : '';
                 ?>
                     <option value="<?php echo $aChoice ?>" <?php echo $selected ?>><?php echo $this->getOptionValueI18nString($aChoice) ?></option>
@@ -414,7 +414,7 @@ class Wkwgs_OptionsManager
 
         }
         else
-	{ // Simple input field
+        { // Simple input field
             ?>
             <p><input type="text" name="<?php echo $aOptionKey ?>" id="<?php echo $aOptionKey ?>"
                       value="<?php echo esc_attr($savedOptionValue) ?>" size="50"/></p>
@@ -440,7 +440,7 @@ class Wkwgs_OptionsManager
     protected function getOptionValueI18nString($optionValue)
     {
         switch ($optionValue)
-	{
+        {
             case 'true':
                 return __('true', 'wkwgs');
             case 'false':
@@ -471,7 +471,7 @@ class Wkwgs_OptionsManager
         global $wpdb;
         $rows = $wpdb->get_results('select version() as mysqlversion');
         if (!empty($rows))
-	{
+        {
              return $rows[0]->mysqlversion;
         }
         return false;
@@ -490,7 +490,7 @@ class Wkwgs_OptionsManager
         // Get the site domain and get rid of www.
         $sitename = strtolower($_SERVER['SERVER_NAME']);
         if (substr($sitename, 0, 4) == 'www.')
-	{
+        {
             $sitename = substr($sitename, 4);
         }
         return $sitename;

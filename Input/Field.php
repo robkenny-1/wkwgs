@@ -58,6 +58,8 @@ abstract class Field
     /*
      * CSS styles
      */
+    /*-------------------------------------------------------------------------*/
+
     private static $css = array(
         
         // Used by all classes
@@ -84,14 +86,14 @@ abstract class Field
      *
      * @var string
      */
-    protected $form_id = '0';
+    private $form_id = '0';
 
     /**
      * Settings of the field
      *
      * @var string
      */
-    protected $attributes;
+    private $attributes;
 
     public function __construct( $name, $type )
     {
@@ -113,20 +115,17 @@ abstract class Field
     {
         // Combine the implementation's attributes with the values common to all input types
         return array_merge(
-            $this->get_attributes_default_for_class(),
             array(
                 'template'    => '',
                 'name'        => '',
                 'label'       => '',
                 'required'    => 'no',
                 'id'          => 0,
-                'width'       => 'large',
-                'css'         => '',
                 'placeholder' => '',
-                'default'     => '',
-                'size'        => 40,
                 'help'        => '',
-            )
+                'value'       => '',
+            ),
+            $this->get_attributes_default_for_class()
         );
     }
 
@@ -138,23 +137,6 @@ abstract class Field
     public function get_attributes()
     {
         return $this->attributes;
-    }
-
-    /**
-     * Get the value of a single attribute of the field
-     *
-     * @return string
-     */
-    public function get_attribute( $name )
-    {
-        $attr = '';
-        if ( isset( $this->attributes[ $name ] ) )
-        {
-            $attr = $this->attributes[ $name ];
-        }
-
-
-        return $attr;
     }
 
     /**
@@ -172,6 +154,23 @@ abstract class Field
         {
             $this->attributes = array_merge( $this->get_attributes_default(), $this->attributes, $attributes );
 	    }
+    }
+
+    /**
+     * Get the value of a single attribute of the field
+     *
+     * @return string
+     */
+    public function get_attribute( $name )
+    {
+        $attr = '';
+        if ( isset( $this->attributes[ $name ] ) )
+        {
+            $attr = $this->attributes[ $name ];
+        }
+
+
+        return $attr;
     }
 
     /**
@@ -194,6 +193,10 @@ abstract class Field
         $this->form_id = $form_id;
     }
 
+    /*-------------------------------------------------------------------------*/
+    /*
+     * Accessors for commonly used values
+     */
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -236,6 +239,7 @@ abstract class Field
     /*
      * HTML helper routines
      */
+    /*-------------------------------------------------------------------------*/
 
     /**
      * Apply prefix to HTML name to ensure uniqueness
