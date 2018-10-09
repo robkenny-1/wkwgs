@@ -23,6 +23,8 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
+include_once('Checkbox.php');
+
 include_once(WP_PLUGIN_DIR . '/wkwgs/Wkwgs_Logger.php' );
 
 /**
@@ -60,9 +62,7 @@ abstract class Field
     abstract function get_type( );
 
     /*-------------------------------------------------------------------------*/
-    /*
-     * CSS styles
-     */
+    /* CSS styles */
     /*-------------------------------------------------------------------------*/
 
     private static $css = array(
@@ -197,9 +197,7 @@ abstract class Field
     }
 
     /*-------------------------------------------------------------------------*/
-    /*
-     * Accessors for commonly used values
-     */
+    /* Accessors for commonly used values */
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -227,11 +225,29 @@ abstract class Field
 
         return false;
     }
+    
+    /**
+     * Get the value of the field
+     *
+     * @return string
+     */
+    public function get_value( $value )
+    {
+        return $this->attributes[ 'value' ];
+    }
+    
+    /**
+     * Set the value of the field
+     *
+     * @return null
+     */
+    public function set_value( $value )
+    {
+        $this->attributes[ 'value' ] = $value;
+    }
 
     /*-------------------------------------------------------------------------*/
-    /*
-     * HTML helper routines
-     */
+    /* HTML helper routines */
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -271,5 +287,31 @@ abstract class Field
             ?>
         </div>
     <?php
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Class factory */
+    /*-------------------------------------------------------------------------*/
+    private const FactoryMachines = array(
+        Checkbox::Field_Type    => 'Input\Checkbox',
+    );
+
+    public static function Factory( $field_attrs )
+    {
+        if ( isset( $field_attrs[ 'name' ] ) && isset( $field_attrs[ 'type' ] ) )
+        {
+            $name = $field_attrs[ 'name' ];
+            $type = $field_attrs[ 'type' ];
+
+            $machine = Field::FactoryMachines[ $type ];
+            if ( isset( $machine ) )
+            {
+                $field = new $machine( $name );
+                $field->set_attributes( $field_attrs );
+                return $field;
+            }
+        }
+
+        return null;
     }
 }

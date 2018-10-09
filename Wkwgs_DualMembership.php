@@ -26,7 +26,7 @@ include_once('Wkwgs_Logger.php');
 
 
 include_once(WP_PLUGIN_DIR . '/weforms/weforms.php' );
-include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Checkbox.php' );
+include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Field.php' );
 
 
 
@@ -345,16 +345,14 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             {
                 $admin      = $field_args[ 'admin' ];
 
-                // Assume fields are all checkboxes...
-
                 $product = wc_get_product($post);
                 $db_value = $product->get_meta($key, true);
                 $checked = $db_value === 'yes' ? 'yes' : 'no';
 
+                $admin[ 'name' ] = $key;
                 $admin[ 'value' ] = $checked;
 
-                $checkbox = new Input\Checkbox( $key );
-                $checkbox->set_attributes( $admin );
+                $checkbox = Input\Field::Factory( $admin );
                 $checkbox->print_html( '0' );
             }
             ?>
