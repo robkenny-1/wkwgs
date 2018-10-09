@@ -39,6 +39,10 @@ class Wkwgs_Logger extends WC_Logger
         $msg = "===== Variable ===== $var_name = " . $var_text;
         $this->log( "debug", $msg );
     }
+    public function log_msg( $msg )
+    {
+        $this->log( "debug", $msg );
+    }
 
 	public function log( $level, $message, $context = array() )
     {
