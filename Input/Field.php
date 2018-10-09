@@ -34,7 +34,7 @@ abstract class Field
 {
     /*-------------------------------------------------------------------------*/
     /*
-     * Derived classes must implement these functions
+     * Derived classes must implement these functions, set these values
      */
 
     /**
@@ -53,6 +53,11 @@ abstract class Field
      * @return void
      */
     abstract function render( );
+
+    /**
+     * Get the type of Field
+     */
+    abstract function get_type( );
 
     /*-------------------------------------------------------------------------*/
     /*
@@ -95,11 +100,11 @@ abstract class Field
      */
     private $attributes;
 
-    public function __construct( $name, $type )
+    public function __construct( $name )
     {
         $this->set_attributes( array(
                 'name'  => $name,
-                'type'  => $type,
+                'type'  => $this->get_type(),
             )
         );
     }
@@ -146,14 +151,12 @@ abstract class Field
      */
     public function set_attributes( $attributes )
     {
-        if (is_null( $this->attributes ) )
-        {
-            $this->attributes = array_merge( $this->get_attributes_default(), $attributes );
-        }
-        else
-        {
-            $this->attributes = array_merge( $this->get_attributes_default(), $this->attributes, $attributes );
-	    }
+        $attrs = is_null( $this->attributes ) ? array() : $this->attributes;
+        
+        // Don't let $attributes override 'type'
+        $type  = array ( 'type' => $this->get_type() );
+
+        $this->attributes = array_merge( $this->get_attributes_default(), $attrs, $attributes, $type );
     }
 
     /**
@@ -207,16 +210,6 @@ abstract class Field
     public function get_name()
     {
         return $this->attributes[ 'name' ];
-    }
-
-    /**
-     * Get field type
-     *
-     * @return string
-     */
-    public function get_type()
-    {
-        return $this->attributes[ 'type' ];
     }
 
     /**

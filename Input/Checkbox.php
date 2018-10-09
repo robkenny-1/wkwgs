@@ -32,10 +32,19 @@ include_once('Field.php');
  */
 class Checkbox extends Field
 {
+    const Field_Type = 'checkbox';
 
-    function __construct()
+    function __construct( $name )
     {
-        parent::__construct( __( 'Checkbox', DOMAIN ), 'checkbox' );
+        parent::__construct( __( 'Checkbox', DOMAIN ));
+    }
+
+    /**
+     * Get the type of Field
+     */
+    public function get_type( )
+    {
+        return Checkbox::Field_Type;
     }
 
     /**
@@ -46,7 +55,6 @@ class Checkbox extends Field
     public function get_attributes_default_for_class( )
     {
         return array(
-            'checked'          => 'no',
         );    
     }
 
@@ -65,7 +73,7 @@ class Checkbox extends Field
         $name           = $this->get_attribute( 'name' );
         ?>
         <label class="checkbox">
-            <input type="checkbox"
+            <input type="<?php echo $this->get_type() ?>"
                    class="<?php echo $css_checkbox ?>"
                    name="<?php echo $name; ?>"
                    id="<?php echo $name; ?>"

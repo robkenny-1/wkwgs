@@ -353,7 +353,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
                 $admin[ 'value' ] = $checked;
 
-                $checkbox = new Input\Checkbox();
+                $checkbox = new Input\Checkbox( $key );
                 $checkbox->set_attributes( $admin );
                 $checkbox->print_html( '0' );
             }
