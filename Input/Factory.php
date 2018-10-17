@@ -41,7 +41,7 @@ class Factory
             $name = $field_attrs[ 'name' ];
             $type = $field_attrs[ 'type' ];
 
-            $machine = Field::FactoryMachines[ $type ];
+            $machine = Factory::FactoryMachines[ $type ];
             if ( isset( $machine ) )
             {
                 $field = new $machine( $name );

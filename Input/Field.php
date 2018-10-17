@@ -24,7 +24,6 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
 
-include_once(WP_PLUGIN_DIR . '/wkwgs/Wkwgs_Logger.php' );
 
 /**
  * The Field Class
@@ -33,6 +32,7 @@ include_once(WP_PLUGIN_DIR . '/wkwgs/Wkwgs_Logger.php' );
  */
 abstract class Field
 {
+
     /*-------------------------------------------------------------------------*/
     /*
      * Derived classes must implement these functions, set these values
@@ -58,30 +58,31 @@ abstract class Field
     /**
      * Get the type of Field
      */
-    abstract function get_type( );
+    abstract function get_input_type( );
 
     /*-------------------------------------------------------------------------*/
     /* CSS styles */
     /*-------------------------------------------------------------------------*/
 
-    private static $css = array(
+    private static $all_css = array(
         
         // Used by all classes
         'input-container'           => 'options_group',             // applies to all input classes
         'input-row'                 => 'form-row',                  // applies to all input classes
         'input'                     => 'woocommerce-input-wrapper', 
-        
-        // Input specific
-        'checkbox'                  => 'input-checkbox',
-        'checkbox-label'            => 'checkbox',
     );
     public static function get_css( $name )
     {
-        if ( isset( Field::$css[ $name ] ) )
+        if ( isset( Field::$all_css[ $name ] ) )
         {
-            return Field::$css[ $name ];
+            return Field::$all_css[ $name ];
         }
         return '';
+    }
+
+    protected static function add_css( $css )
+    {
+        Field::$all_css = array_merge( Field::$all_css, $css );
     }
     /*-------------------------------------------------------------------------*/
 
@@ -103,7 +104,7 @@ abstract class Field
     {
         $this->set_attributes( array(
                 'name'  => $name,
-                'type'  => $this->get_type(),
+                'type'  => $this->get_input_type(),
             )
         );
     }
@@ -153,7 +154,7 @@ abstract class Field
         $attrs = is_null( $this->attributes ) ? array() : $this->attributes;
         
         // Don't let $attributes override 'type'
-        $type  = array ( 'type' => $this->get_type() );
+        $type  = array ( 'type' => $this->get_input_type() );
 
         $this->attributes = array_merge( $this->get_attributes_default(), $attrs, $attributes, $type );
     }

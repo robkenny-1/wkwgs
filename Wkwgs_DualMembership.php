@@ -312,8 +312,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     */
     public function product_admin_show_customized_checkboxes()
     {
-        $input_container = Input\Field::get_css( 'input-panel' );   
-
         global $post;
         $fields = $this->get_product_customized();
         ?> 
