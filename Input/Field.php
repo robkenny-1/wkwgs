@@ -23,7 +23,6 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
-include_once('Checkbox.php');
 
 include_once(WP_PLUGIN_DIR . '/wkwgs/Wkwgs_Logger.php' );
 
@@ -287,31 +286,5 @@ abstract class Field
             ?>
         </div>
     <?php
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* Class factory */
-    /*-------------------------------------------------------------------------*/
-    private const FactoryMachines = array(
-        Checkbox::Field_Type    => 'Input\Checkbox',
-    );
-
-    public static function Factory( $field_attrs )
-    {
-        if ( isset( $field_attrs[ 'name' ] ) && isset( $field_attrs[ 'type' ] ) )
-        {
-            $name = $field_attrs[ 'name' ];
-            $type = $field_attrs[ 'type' ];
-
-            $machine = Field::FactoryMachines[ $type ];
-            if ( isset( $machine ) )
-            {
-                $field = new $machine( $name );
-                $field->set_attributes( $field_attrs );
-                return $field;
-            }
-        }
-
-        return null;
     }
 }

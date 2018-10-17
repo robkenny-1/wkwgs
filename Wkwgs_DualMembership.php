@@ -23,12 +23,9 @@ defined( 'ABSPATH' ) || exit;
 include_once('PluginCore/Wkwgs_LifeCycle.php');
 include_once('Wkwgs_Logger.php');
 
-
-
 include_once(WP_PLUGIN_DIR . '/weforms/weforms.php' );
 include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Field.php' );
-
-
+include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Factory.php' );
 
 
 class Wkwgs_DualMembership extends Wkwgs_LifeCycle
@@ -352,7 +349,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                 $admin[ 'name' ] = $key;
                 $admin[ 'value' ] = $checked;
 
-                $checkbox = Input\Field::Factory( $admin );
+                $checkbox = Input\Factory::Get( $admin );
                 $checkbox->print_html( '0' );
             }
             ?>
