@@ -23,7 +23,19 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
+include_once(WP_PLUGIN_DIR . '/wkwgs/Wkwgs_Logger.php' );
 
+static $Logger = null;
+function Logger()
+{
+    static $Logger = null;
+    if ( is_null( $Logger ) )
+    {
+        $Logger = new \Wkwgs_Logger();
+    }
+
+    return $Logger;
+}
 
 /**
  * The Field Class
@@ -71,19 +83,71 @@ abstract class Field
         'input-row'                 => 'form-row',                  // applies to all input classes
         'input'                     => 'woocommerce-input-wrapper', 
     );
-    public static function get_css( $name )
+
+    /*-------------------------------------------------------------------------*/
+    /* Class specific options */
+    /*-------------------------------------------------------------------------*/
+
+    /*
+     * Options are stored in a heirarchy, starting with the field's class name
+     */
+    private static $all_options = array(
+        
+        'field'                     => array(
+            'css'                   => array(
+                'container'         => 'options_group',             // applies to all input classes
+                'row'               => 'form-row',                  // applies to all input classes
+                'input'             => 'woocommerce-input-wrapper', 
+            ),        
+        ),
+    );
+
+    /**
+     * Get the requested options
+     * @return array of requested options
+     */
+    public function get_option( $class_name, $option_name )
     {
-        if ( isset( Field::$all_css[ $name ] ) )
+        if ( isset( Field::$all_options[ $class_name ] ) )
         {
-            return Field::$all_css[ $name ];
+            if ( isset( Field::$all_options[ $class_name ][ $option_name ] ) )
+            {
+                return Field::$all_options[ $class_name ][ $option_name ];
+            }
+            else { Logger()->log( 'debug', "get_option - No options for $class_name $option_name" ); }
+        }
+        else { Logger()->log( 'debug', "get_option - No options for $class_name" ); }
+
+        return array();
+    }
+
+    protected static function add_option( $class_name, $options )
+    {
+        if ( ! isset( Field::$all_options[ $class_name ] ) )
+        {
+            Field::$all_options = array_merge( Field::$all_options, array( $class_name => $options ) );
+        }
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Helper access methods for options */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_my_css( $name )
+    {
+        return $this->get_css( $this->get_input_type(), $name );
+    }
+    public function get_css( $class_name, $name )
+    {
+        $css = $this->get_option( $class_name, 'css' );
+        if ( isset( $css ) &&
+             isset( $css[ $name ] ) )
+        {
+            return $css[ $name ];
         }
         return '';
     }
 
-    protected static function add_css( $css )
-    {
-        Field::$all_css = array_merge( Field::$all_css, $css );
-    }
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -266,9 +330,9 @@ abstract class Field
     public function print_html( )
     {
         $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
-        $css_container  = $this->get_css( 'input-container' );
-        $css_row        = $this->get_css( 'input-row' );
-        $css_input      = $this->get_css( 'input' );
+        $css_container  = $this->get_css( 'field', 'container' );
+        $css_row        = $this->get_css( 'field', 'row' );
+        $css_input      = $this->get_css( 'field', 'input' );
 
         ?>
         <div class="<?php echo $css_container ?>">

@@ -151,7 +151,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         {
             return;
         }
-
+/*
         $form_id = '4220';
         $atts = array();
         $form = weforms()->container['form']->get( $form_id );
@@ -178,8 +178,8 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         ?>
         <ul class="wpuf-form form-label-<?php echo $form_settings['label_position']; ?>">
         <?php
+*/
 
-        /*
         ?> 
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <div class="options_group">
@@ -204,7 +204,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             </div>
         </div>
         <?php
-        */
+
     }
 
     public function product_add_to_cart_validation( $passed, $product_id, $quantity ) 

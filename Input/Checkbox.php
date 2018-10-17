@@ -32,15 +32,19 @@ include_once('Field.php');
  */
 class Checkbox extends Field
 {
-    const Field_Type    = 'checkbox';
-    const CSS           = array(
-        'checkbox'                  => 'input-checkbox',
-        'checkbox-label'            => 'checkbox',
+    const Field_Type        = 'checkbox';
+    const Field_Options     = array(
+        'css'               => array(
+            'input'         => 'input-checkbox',
+            'label'         => 'checkbox',
+        ),
+        'render'            => array(
+        ),
     );
 
     function __construct( $name )
     {
-        Field::add_css( self::CSS );
+        Field::add_option( self::Field_Type, self::Field_Options );
         parent::__construct( $name );
     }
 
@@ -74,8 +78,8 @@ class Checkbox extends Field
         $label_text     = $this->get_attribute( 'label' );
         $checked        = $this->get_attribute( 'value' ) === 'yes' || $this->get_attribute( 'value' ) === '1' ? True : False;
         $checked        = $checked ? 'checked="checked"' : '';
-        $css_checkbox   = $this->get_css( 'checkbox' );
-        $css_label      = $this->get_css( 'checkbox-label' );
+        $css_checkbox   = $this->get_my_css( 'input' );
+        $css_label      = $this->get_my_css( 'label' );
         $name           = $this->get_attribute( 'name' );
         ?>
         <label class="<?php echo $css_label ?>">
