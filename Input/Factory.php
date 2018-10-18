@@ -24,6 +24,7 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
 include_once('Checkbox.php');
+include_once('Text.php');
 
 class Factory
 {
@@ -32,6 +33,7 @@ class Factory
     /*-------------------------------------------------------------------------*/
     private const FactoryMachines = array(
         Checkbox::Class_Type    => 'Input\Checkbox',
+        Text::Class_Type        => 'Input\Text',
     );
 
     public static function Get( $field_attrs )

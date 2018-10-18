@@ -56,21 +56,25 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                     // Fields to display on product page
                     'display_fields'	=> array(
 
-                        'wkwgs_is_dual_membership_first_name' => array(
+                        array(
+                                'name'          => 'wkwgs_is_dual_membership_first_name',
                                 'type'			=> 'text',
-                                'label'			=> __( 'wkwgs first Name', 'wkwgs' ),
+                                'label'			=> __( 'First Name', 'wkwgs' ),
                             ),
-                        'wkwgs_is_dual_membership_last_name' => array(
+                        array(
+                                'name'          => 'wkwgs_is_dual_membership_last_name',
                                 'type'			=> 'text',
-                                'label'			=> __( 'wkwgs last Name', 'wkwgs' ),
+                                'label'			=> __( 'Last Name', 'wkwgs' ),
                             ),
-                        'wkwgs_is_dual_membership_dual_membership_email' => array(
+                        array(
+                                'name'          => 'wkwgs_is_dual_membership_dual_membership_email',
                                 'type'			=> 'email',
                                 'label'			=> __( 'wkwgs email address', 'wkwgs' ),
                                 'required'		=> true,
                                 'validate'		=> array( 'email' ), // rules for client side validation
                             ),
-                        'wkwgs_is_dual_membership_dual_membership_phone' => array(
+                        array(
+                                'name'          => 'wkwgs_is_dual_membership_dual_membership_phone',
                                 'type'			=> 'tel',
                                 'label'			=> __( 'wkwgs phone', 'wkwgs' ),
                                 'validate'		=> array( 'phone' ),
@@ -179,7 +183,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         <ul class="wpuf-form form-label-<?php echo $form_settings['label_position']; ?>">
         <?php
 */
-
+/*
         ?> 
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <div class="options_group">
@@ -204,7 +208,29 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             </div>
         </div>
         <?php
+*/
 
+        ?> 
+        <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
+            <div class="options_group">
+                <?php
+                foreach ( $enabled as $product_meta => $product_meta_args )
+                {
+                    $display_fields = $product_meta_args['display_fields'];
+        
+                    foreach ( $display_fields as $field )        
+                    {
+                        $input = \Input\Factory::Get( $field );
+                        if ( ! is_null( $input ) )
+                        {
+                            $input->print_html( '0' );
+                        }
+                    }
+                }
+                ?>
+            </div>
+        </div>
+        <?php
     }
 
     public function product_add_to_cart_validation( $passed, $product_id, $quantity ) 

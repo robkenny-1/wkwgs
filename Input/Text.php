@@ -30,15 +30,14 @@ include_once('Field.php');
  *
  * @since 1.0.0
  */
-class Checkbox extends Field
+class Text extends Field
 {
-    const Class_Type        = 'checkbox';
+    const Class_Type        = 'text';
     const Class_Attributes  = array(
         'type'              => self::Class_Type,
-        'css-input'         => 'input-checkbox',
-        'css-label'         => 'checkbox',
+        'css-input'         => 'input-text',
+        'css-label'         => '',
     );
-
 
     function __construct( $name )
     {
@@ -56,7 +55,6 @@ class Checkbox extends Field
 
         return array_merge($parent, self::Class_Attributes);
     }
-
     /**
      * Render the field in the frontend, this spits out the necessary HTML
      *
@@ -64,25 +62,28 @@ class Checkbox extends Field
      */
     public function render( )
     {
-        $type           = $this->get_attribute( 'type' );
         $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
         $label_text     = $this->get_attribute( 'label' );
-        $checked        = $this->get_attribute( 'value' ) === 'yes' || $this->get_attribute( 'value' ) === '1' ? True : False;
-        $checked        = $checked ? 'checked="checked"' : '';
+        $placeholder    = $this->get_attribute( 'placeholder' );
+        $value          = $this->get_attribute( 'value' );
         $css_input      = $this->get_attribute( 'css-input' );
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
 
         ?>
+        <label
+            for="<?php echo $name; ?>"
+            class="<?php echo $css_label ?>"><?php echo $label_text; ?>
+        </label>
         <span class="<?php echo $css_input_span ?>">
-            <label class="<?php echo $css_label ?>">
-                <input
-                    type="<?php echo $type ?>"
-                    class="<?php echo $css_input ?>"
-                    name="<?php echo $name; ?>"
-                    id="<?php echo $name; ?>"
-                    value="yes" <?php echo $checked; ?>/>&nbsp;<?php echo $label_text; ?>
-            </label>
+            <input
+                type="<?php echo $type ?>"
+                class="<?php echo $css_input ?>"
+                name="<?php echo $name; ?>"
+                id="<?php echo $name; ?>"
+                placeholder="<?php echo $placeholder; ?>"
+                value="<?php echo $value; ?>"
+                />
         </span>
         <?php    
     }

@@ -71,11 +71,11 @@ abstract class Field
         'default'                       => '',
         'size'                          => 40,
         'help'                          => '',
-        'css-field'                     => '',
+        'css-input'                     => '',
         'css-label'                     => '',
         'css-input-container'           => 'options_group',
         'css-input-row'                 => 'form-row',
-        'css-input'                     => 'woocommerce-input-wrapper', 
+        'css-input-span'                => 'woocommerce-input-wrapper', 
     );
 
     /**
@@ -244,17 +244,14 @@ abstract class Field
         $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
         $css_container  = $this->get_attribute( 'css-input-container' );
         $css_row        = $this->get_attribute( 'css-input-row' );
-        $css_input      = $this->get_attribute( 'css-input' );
 
         ?>
         <div class="<?php echo $css_container ?>">
             <p class="<?php echo $css_row ?> " id="<?php echo $name . '_field' ?>" data-priority="">
-                <span class="<?php echo $css_input ?>">
                 <?php $this->render() ?>
-                </span>
             </p>
             <?php
-            if ( !empty( $attributes['help'] ) )
+            if ( !empty( $attributes[ 'help' ] ) )
             {
                 ?>
                 <span class="<?php echo $this->html_prefix('help'); ?>"><?php echo stripslashes( $attributes['help'] ); ?></span>
