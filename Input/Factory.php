@@ -25,6 +25,7 @@ defined( 'ABSPATH' ) || exit;
 include_once('Constants.php');
 include_once('Checkbox.php');
 include_once('Text.php');
+include_once('Email.php');
 
 class Factory
 {
@@ -34,6 +35,7 @@ class Factory
     private const FactoryMachines = array(
         Checkbox::Class_Type    => 'Input\Checkbox',
         Text::Class_Type        => 'Input\Text',
+        Email::Class_Type       => 'Input\Email',
     );
 
     public static function Get( $field_attrs )
@@ -43,9 +45,9 @@ class Factory
             $name = $field_attrs[ 'name' ];
             $type = $field_attrs[ 'type' ];
 
-            $machine = Factory::FactoryMachines[ $type ];
-            if ( isset( $machine ) )
+            if ( isset( Factory::FactoryMachines[ $type ] ) )
             {
+                $machine = Factory::FactoryMachines[ $type ];
                 $field = new $machine( $name );
                 $field->set_attributes( $field_attrs );
                 return $field;

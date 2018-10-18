@@ -69,15 +69,13 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         array(
                                 'name'          => 'wkwgs_is_dual_membership_dual_membership_email',
                                 'type'			=> 'email',
-                                'label'			=> __( 'wkwgs email address', 'wkwgs' ),
+                                'label'			=> __( 'Email address', 'wkwgs' ),
                                 'required'		=> true,
-                                'validate'		=> array( 'email' ), // rules for client side validation
                             ),
                         array(
                                 'name'          => 'wkwgs_is_dual_membership_dual_membership_phone',
                                 'type'			=> 'tel',
                                 'label'			=> __( 'wkwgs phone', 'wkwgs' ),
-                                'validate'		=> array( 'phone' ),
                             ),
                     )
                 ),

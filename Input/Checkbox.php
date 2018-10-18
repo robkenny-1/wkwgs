@@ -26,7 +26,7 @@ include_once('Constants.php');
 include_once('Field.php');
 
 /**
- * The Field Class
+ * The checkbox input class
  *
  * @since 1.0.0
  */
