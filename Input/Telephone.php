@@ -22,23 +22,35 @@ namespace Input;
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-/*
- * Constant values available to all Input classes
- */
- 
-/*
- * Default value to use for domain in __() function
- */
- const DOMAIN = 'Input';
+include_once('Constants.php');
+include_once('Field.php');
 
- /*
-  * Apply this prefix to all external names
-  * HTML:       <li class="Input_el name field-size-large" data-label="Name">
-  * JScript:    var Input_frontend = {"word_limit":"Word limit reached"};
-  * PHP:        $Input_var = array( 'name' => 'value')
-  */
+/**
+ * The phone input class
+ *
+ * @since 1.0.0
+ */
+class Telephone extends Text
+{
+    const Class_Type        = 'tel';
+    const Class_Attributes  = array(
+        'type'              => self::Class_Type,
+    );
 
-// Use the same prefix for all languages, could be different for each language
- const PREFIX_HTML      = DOMAIN . '_';
- const PREFIX_JSCRIPT   = DOMAIN . '_';
- const PREFIX_PHP       = DOMAIN . '_';
+    function __construct( $name )
+    {
+        parent::__construct( $name );
+    }
+
+    /**
+     * Attributes of a checkbox
+     *
+     * @return array
+     */
+    public function get_attributes_default( )
+    {
+        $parent = parent::get_attributes_default();
+
+        return array_merge($parent, self::Class_Attributes);
+    }
+}

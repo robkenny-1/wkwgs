@@ -26,18 +26,20 @@ include_once('Constants.php');
 include_once('Field.php');
 
 /**
- * The text input Class
+ * The checkbox input class
  *
  * @since 1.0.0
  */
-class Text extends Field
+class RadioButton extends Field
 {
-    const Class_Type        = 'text';
+    const Class_Type        = 'radio';
     const Class_Attributes  = array(
         'type'              => self::Class_Type,
-        'css-input'         => 'input-text',
-        'css-label'         => '',
+        'css-input'         => 'input-radio',
+        'css-label'         => 'radio',
+        'choices'           => '',
     );
+
 
     function __construct( $name )
     {
@@ -55,6 +57,7 @@ class Text extends Field
 
         return array_merge($parent, self::Class_Attributes);
     }
+
     /**
      * Render the field in the frontend, this spits out the necessary HTML
      *
@@ -64,35 +67,44 @@ class Text extends Field
     {
         $type           = esc_attr( $this->get_attribute( 'type' )           );
         $name           = esc_attr( $this->get_attribute( 'name' )           );
-        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
+        $label_text     = esc_attr( $this->get_attribute( 'label' )          );
         $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
         $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
-        $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
-        $placeholder    = esc_attr( $this->get_attribute( 'placeholder' )    );
-        $value          = esc_attr( $this->get_attribute( 'value' )          );
 
-        $required       = $this->is_true();
         $name           = $this->html_prefix( $name );
+        $value          = $this->get_attribute( 'value' );
+        $options        = $this->get_attribute( 'choices' );
 
-        if ( $required )
+        if ( ! empty( $options ) )
         {
-            $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
+            ?>
+            <label
+                for="<?php echo $name; ?>"
+                class="<?php echo $css_label ?>"><?php echo $label_text ?>
+            </label>
+            <?php
+            foreach ( $options as $option => $option_text )
+            {
+                $option         = esc_attr( $option );
+                $option_text    = htmlspecialchars( $option_text );
+                $option_id      = $name . '_' . $option;
+                $is_selected    = $option === $value;
+
+                ?>
+                <input
+                    type="<?php echo $type ?>"
+                    class="<?php echo $css_input ?>"
+                    name="<?php echo $name ?>"
+                    id="<?php echo $option_id ?>"
+                    value="<?php echo $option ?>"
+                    <?php if ($is_selected) { echo 'checked' } ?>
+                />&nbsp;<?php echo $option_text ?>
+
+                <?php
+            }
         }
+
         ?>
-        <label
-            for="<?php echo $name; ?>"
-            class="<?php echo $css_label ?>"><?php echo $label_text ?>
-        </label>
-        <span class="<?php echo $css_input_span ?>">
-            <input
-                type="<?php echo $type ?>"
-                class="<?php echo $css_input ?>"
-                name="<?php echo $name ?>"
-                id="<?php echo $name ?>"
-                placeholder="<?php echo $placeholder ?>"
-                value="<?php echo $value ?>"
-                />
-        </span>
         <?php    
     }
 }

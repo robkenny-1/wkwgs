@@ -75,7 +75,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         array(
                                 'name'          => 'wkwgs_is_dual_membership_dual_membership_phone',
                                 'type'			=> 'tel',
-                                'label'			=> __( 'wkwgs phone', 'wkwgs' ),
+                                'label'			=> __( 'Phone', 'wkwgs' ),
                             ),
                     )
                 ),

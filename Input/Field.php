@@ -164,35 +164,25 @@ abstract class Field
      *
      * @return boolean
      */
-    public static function is_required( $attributes )
+    public function is_required(  )
     {
-        if ( isset( $attributes['required'] ) && $attributes['required'] == 'yes' ) {
-            return true;
-        }
-
-        return false;
-    }
-    
-    /**
-     * Get the value of the field
-     *
-     * @return string
-     */
-    public function get_value( $value )
-    {
-        return $this->attributes[ 'value' ];
-    }
-    
-    /**
-     * Set the value of the field
-     *
-     * @return null
-     */
-    public function set_value( $value )
-    {
-        $this->attributes[ 'value' ] = $value;
+        return Field::is_true( $this-get_attribute('required') );
     }
 
+    /**
+     * Does the content of the string equate to a True value
+     *
+     * @return True if $str is a true value
+     */
+    public static function is_true( $str )
+    {
+        $str = strtolower( $str );
+
+        return
+            $str === 'yes'  ||
+            $str === '1'    ||
+            $str === 'true' ;
+    }
     /*-------------------------------------------------------------------------*/
 
     /**

@@ -64,14 +64,16 @@ class Checkbox extends Field
      */
     public function render( )
     {
-        $type           = $this->get_attribute( 'type' );
-        $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
-        $label_text     = $this->get_attribute( 'label' );
-        $checked        = $this->get_attribute( 'value' ) === 'yes' || $this->get_attribute( 'value' ) === '1' ? True : False;
+        $type           = esc_attr( $this->get_attribute( 'type' )           );
+        $name           = esc_attr( $this->get_attribute( 'name' )           );
+        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
+        $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
+        $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
+        $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
+
+        $name           = $this->html_prefix( $name );
+        $checked        = Field::is_true( $this->get_attribute( 'value' ) );
         $checked        = $checked ? 'checked="checked"' : '';
-        $css_input      = $this->get_attribute( 'css-input' );
-        $css_label      = $this->get_attribute( 'css-label' );
-        $css_input_span = $this->get_attribute( 'css-input-span' );
 
         ?>
         <span class="<?php echo $css_input_span ?>">
@@ -79,9 +81,11 @@ class Checkbox extends Field
                 <input
                     type="<?php echo $type ?>"
                     class="<?php echo $css_input ?>"
-                    name="<?php echo $name; ?>"
-                    id="<?php echo $name; ?>"
-                    value="yes" <?php echo $checked; ?>/>&nbsp;<?php echo $label_text; ?>
+                    name="<?php echo $name ?>"
+                    id="<?php echo $name ?>"
+                    value="yes"
+                    <?php echo $checked ?>
+                />&nbsp;<?php echo $label_text ?>
             </label>
         </span>
         <?php    

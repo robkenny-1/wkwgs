@@ -26,6 +26,7 @@ include_once('Constants.php');
 include_once('Checkbox.php');
 include_once('Text.php');
 include_once('Email.php');
+include_once('Telephone.php');
 
 class Factory
 {
@@ -36,6 +37,7 @@ class Factory
         Checkbox::Class_Type    => 'Input\Checkbox',
         Text::Class_Type        => 'Input\Text',
         Email::Class_Type       => 'Input\Email',
+        Telephone::Class_Type   => 'Input\Telephone',
     );
 
     public static function Get( $field_attrs )
