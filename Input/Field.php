@@ -46,18 +46,6 @@ abstract class Field
 {
 
     /*-------------------------------------------------------------------------*/
-    /*
-     * Derived classes must implement these functions, set these values
-     */
-
-    /**
-     * Default attributes of a field
-     *
-     * Child classes should define any specific values for their implementation
-     *
-     * @return array
-     */
-    abstract public function get_attributes_default_for_class();
 
     /**
      * Render of the field in the frontend
@@ -67,95 +55,40 @@ abstract class Field
      */
     abstract function render( );
 
-    /**
-     * Get the type of Field
-     */
-    abstract function get_input_type( );
-
     /*-------------------------------------------------------------------------*/
-    /* CSS styles */
+    /* Attributes common to all input fields */
     /*-------------------------------------------------------------------------*/
 
-    private static $all_css = array(
-        
-        // Used by all classes
-        'input-container'           => 'options_group',             // applies to all input classes
-        'input-row'                 => 'form-row',                  // applies to all input classes
-        'input'                     => 'woocommerce-input-wrapper', 
-    );
-
-    /*-------------------------------------------------------------------------*/
-    /* Class specific options */
-    /*-------------------------------------------------------------------------*/
-
-    /*
-     * Options are stored in a heirarchy, starting with the field's class name
-     */
-    private static $all_options = array(
-        
-        'field'                     => array(
-            'css'                   => array(
-                'container'         => 'options_group',             // applies to all input classes
-                'row'               => 'form-row',                  // applies to all input classes
-                'input'             => 'woocommerce-input-wrapper', 
-            ),        
-        ),
+    const Class_Attributes              = array(
+        'type'                          => '',
+        'name'                          => '',
+        'label'                         => '',
+        'value'                         => '',
+        'required'                      => 'no',
+        'id'                            => 0,
+        'width'                         => 'large',
+        'placeholder'                   => '',
+        'default'                       => '',
+        'size'                          => 40,
+        'help'                          => '',
+        'css-field'                     => '',
+        'css-label'                     => '',
+        'css-input-container'           => 'options_group',
+        'css-input-row'                 => 'form-row',
+        'css-input'                     => 'woocommerce-input-wrapper', 
     );
 
     /**
-     * Get the requested options
-     * @return array of requested options
-     */
-    public function get_option( $class_name, $option_name )
-    {
-        if ( isset( Field::$all_options[ $class_name ] ) )
-        {
-            if ( isset( Field::$all_options[ $class_name ][ $option_name ] ) )
-            {
-                return Field::$all_options[ $class_name ][ $option_name ];
-            }
-            else { Logger()->log( 'debug', "get_option - No options for $class_name $option_name" ); }
-        }
-        else { Logger()->log( 'debug', "get_option - No options for $class_name" ); }
-
-        return array();
-    }
-
-    protected static function add_option( $class_name, $options )
-    {
-        if ( ! isset( Field::$all_options[ $class_name ] ) )
-        {
-            Field::$all_options = array_merge( Field::$all_options, array( $class_name => $options ) );
-        }
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* Helper access methods for options */
-    /*-------------------------------------------------------------------------*/
-
-    public function get_my_css( $name )
-    {
-        return $this->get_css( $this->get_input_type(), $name );
-    }
-    public function get_css( $class_name, $name )
-    {
-        $css = $this->get_option( $class_name, 'css' );
-        if ( isset( $css ) &&
-             isset( $css[ $name ] ) )
-        {
-            return $css[ $name ];
-        }
-        return '';
-    }
-
-    /*-------------------------------------------------------------------------*/
-
-    /**
-     * Type of the field
+     * Attributes for all input fields
      *
-     * @var string
+     * @return array
      */
-    private $form_id = '0';
+    public function get_attributes_default( )
+    {
+        return self::Class_Attributes;
+    }
+
+    /*-------------------------------------------------------------------------*/
 
     /**
      * Settings of the field
@@ -166,36 +99,10 @@ abstract class Field
 
     public function __construct( $name )
     {
-        $this->set_attributes( array(
-                'name'  => $name,
-                'type'  => $this->get_input_type(),
-            )
-        );
-    }
+        $defaults = $this->get_attributes_default();
+        $defaults[ 'name' ] = $name;
 
-    /**
-     * Default attributes of a field
-     *
-     * Child classes should use this default setting and add any extra values
-     *
-     * @return array
-     */
-    public function get_attributes_default()
-    {
-        // Combine the implementation's attributes with the values common to all input types
-        return array_merge(
-            array(
-                'template'    => '',
-                'name'        => '',
-                'label'       => '',
-                'required'    => 'no',
-                'id'          => 0,
-                'placeholder' => '',
-                'help'        => '',
-                'value'       => '',
-            ),
-            $this->get_attributes_default_for_class()
-        );
+        $this->set_attributes( $defaults );
     }
 
     /**
@@ -216,11 +123,8 @@ abstract class Field
     public function set_attributes( $attributes )
     {
         $attrs = is_null( $this->attributes ) ? array() : $this->attributes;
-        
-        // Don't let $attributes override 'type'
-        $type  = array ( 'type' => $this->get_input_type() );
 
-        $this->attributes = array_merge( $this->get_attributes_default(), $attrs, $attributes, $type );
+        $this->attributes = array_merge( $this->get_attributes_default(), $attrs, $attributes );
     }
 
     /**
@@ -236,28 +140,7 @@ abstract class Field
             $attr = $this->attributes[ $name ];
         }
 
-
         return $attr;
-    }
-
-    /**
-     * Get the assigned form identity
-     *
-     * @return string
-     */
-    public function get_form_id( )
-    {
-        return $this->form_id;
-    }
-
-    /**
-     * Set the identity of the owning form
-     *
-     * @return string
-     */
-    public function set_form_id( $form_id )
-    {
-        $this->form_id = $form_id;
     }
 
     /*-------------------------------------------------------------------------*/
@@ -311,6 +194,35 @@ abstract class Field
     }
 
     /*-------------------------------------------------------------------------*/
+
+    /**
+     * Identity of form containing the field
+     *
+     * @var string
+     */
+    private $form_id = '0';
+
+    /**
+     * Get the assigned form identity
+     *
+     * @return string
+     */
+    public function get_form_id( )
+    {
+        return $this->form_id;
+    }
+
+    /**
+     * Set the identity of the owning form
+     *
+     * @return string
+     */
+    public function set_form_id( $form_id )
+    {
+        $this->form_id = $form_id;
+    }
+
+    /*-------------------------------------------------------------------------*/
     /* HTML helper routines */
     /*-------------------------------------------------------------------------*/
 
@@ -330,9 +242,9 @@ abstract class Field
     public function print_html( )
     {
         $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
-        $css_container  = $this->get_css( 'field', 'container' );
-        $css_row        = $this->get_css( 'field', 'row' );
-        $css_input      = $this->get_css( 'field', 'input' );
+        $css_container  = $this->get_attribute( 'css-input-container' );
+        $css_row        = $this->get_attribute( 'css-input-row' );
+        $css_input      = $this->get_attribute( 'css-input' );
 
         ?>
         <div class="<?php echo $css_container ?>">

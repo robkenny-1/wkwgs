@@ -31,7 +31,7 @@ class Factory
     /* Class factory */
     /*-------------------------------------------------------------------------*/
     private const FactoryMachines = array(
-        Checkbox::Field_Type    => 'Input\Checkbox',
+        Checkbox::Class_Type    => 'Input\Checkbox',
     );
 
     public static function Get( $field_attrs )

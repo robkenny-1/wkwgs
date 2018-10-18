@@ -32,28 +32,17 @@ include_once('Field.php');
  */
 class Checkbox extends Field
 {
-    const Field_Type        = 'checkbox';
-    const Field_Options     = array(
-        'css'               => array(
-            'input'         => 'input-checkbox',
-            'label'         => 'checkbox',
-        ),
-        'render'            => array(
-        ),
+    const Class_Type        = 'checkbox';
+    const Class_Attributes  = array(
+        'type'              => Checkbox::Class_Type,
+        'css-field'         => 'input-checkbox',
+        'css-label'         => 'checkbox',
     );
+
 
     function __construct( $name )
     {
-        Field::add_option( self::Field_Type, self::Field_Options );
         parent::__construct( $name );
-    }
-
-    /**
-     * Get the type of Field
-     */
-    public function get_input_type( )
-    {
-        return Checkbox::Field_Type;
     }
 
     /**
@@ -61,10 +50,11 @@ class Checkbox extends Field
      *
      * @return array
      */
-    public function get_attributes_default_for_class( )
+    public function get_attributes_default( )
     {
-        return array(
-        );    
+        $parent = parent::get_attributes_default();
+
+        return array_merge($parent, self::Class_Attributes);
     }
 
     /**
@@ -78,16 +68,17 @@ class Checkbox extends Field
         $label_text     = $this->get_attribute( 'label' );
         $checked        = $this->get_attribute( 'value' ) === 'yes' || $this->get_attribute( 'value' ) === '1' ? True : False;
         $checked        = $checked ? 'checked="checked"' : '';
-        $css_checkbox   = $this->get_my_css( 'input' );
-        $css_label      = $this->get_my_css( 'label' );
-        $name           = $this->get_attribute( 'name' );
+        $css_input      = $this->get_attribute( 'css-field' );
+        $css_label      = $this->get_attribute( 'css-label' );
+
         ?>
         <label class="<?php echo $css_label ?>">
-            <input type="<?php echo $this->get_input_type() ?>"
-                   class="<?php echo $css_checkbox ?>"
+            <input type="<?php echo $this->get_attribute( 'type' ) ?>"
+                   class="<?php echo $css_input ?>"
                    name="<?php echo $name; ?>"
                    id="<?php echo $name; ?>"
-                   value="yes" <?php echo $checked; ?>/>&nbsp;<?php echo $label_text; ?></label>
+                   value="yes" <?php echo $checked; ?>/>&nbsp;<?php echo $label_text; ?>
+        </label>
         <?php    
     }
 }
