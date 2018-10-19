@@ -23,38 +23,131 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
+include_once('Field.php');
 
 /**
  * The Form Class
  *
  * @since 1.0.0
  */
-class Form
+class Form extends Field
 {
-
-    /**
-     * Form fields
-     *
-     * @var array
-     */
-    protected $form_fields = array();
-
-    /**
-     * Form settings
-     *
-     * @var array
-     */
-    protected $form_settings            = null;
-    protected $form_default_settings    = null;
+    const Input_Type = 'form';
 
     /**
      * The Constructor
      *
      * @param int|WP_Post $form
      */
-    public function __construct(  )
+    public function __construct( $name )
     {
+        parent::__construct( $name );
     }
+
+    /**
+     * Get all the *default* attributes of the form
+     *
+     * @return string, empty string if unset
+     */
+    public function get_attributes_default()
+    {
+        $default = array(
+            'type'              => self::Input_Type,
+            'name'              => '0',
+            'action'            => htmlspecialchars( $_SERVER['PHP_SELF'] ),
+            'method'            => 'post',
+            'enctype'           => 'multipart/form-data',
+            'class'             => '',
+            'class_panel'       => '',
+        );
+
+        return $default;
+    }
+
+    /**
+     * Extract object's value from post data
+     *
+     * @return input value
+     */
+    public function get_value( $post )
+    {
+        if ( is_empty( $post ) )
+        {
+            return '';
+        }
+
+        foreach ( $this->get_fields() as $field )
+        {
+            $name = $field->get_name();
+            $value = $field->get_value( $post );
+
+            $values[ $name ] = $value;
+        }
+
+        return $values;
+    }
+
+    /**
+     * Verify status of input data
+     *
+     * @return True if value meets criteria
+     */
+    public function validate( $post )
+    {
+        if ( is_empty( $post ) )
+        {
+            return false;
+        }
+
+        foreach ( $this->get_fields() as $field )
+        {
+            if ( ! $field->validate( $post ) )
+            {
+                return False;
+            }
+        }
+        return True;
+    }
+
+    public function render( )
+    {
+        $id             = esc_attr( $this->get_attribute( 'id' )            );
+        $action         = esc_attr( $this->get_attribute( 'action' )        );
+        $method         = esc_attr( $this->get_attribute( 'method' )        );
+        $enctype        = esc_attr( $this->get_attribute( 'enctype' )       );
+        $css            = esc_attr( $this->get_attribute( 'class' )         );
+        $css_panel      = esc_attr( $this->get_attribute( 'class_panel' )   );
+
+        ?>	
+        <form 
+            id="<?php echo $id ?>"
+            class="<?php echo $css ?>"
+            action="<?php echo $action ?>"
+            method="<?php echo $method ?>"
+            enctype="<?php echo $enctype ?>"
+        >
+            <div
+                id="<?php echo $id . '_panel' ?>"
+                class="<?php echo $css_panel ?>"
+            >
+                <?php
+                foreach ( $this->get_fields() as $field)
+                {
+                    $field->html_print();
+                }
+                ?>
+            </div>
+        </form>
+        <?php
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /**
+     * Form fields
+     *
+     * @var array
+     */
+    protected $form_fields = array();
 
     /**
      * Get all form fields of this form
@@ -73,50 +166,41 @@ class Form
      */
     public function add_field( $field )
     {
-        $this->form_fields[ $field->get_name()] = $field;
-    }
-
-    /**
-     * Get default form settings
-     *
-     * @return array
-     */
-    public static function get_default_settings()
-    {
-        return array(
-        );
-    }
-
-    /**
-     * Set form settings
-     *
-     * @return array
-     */
-    public function set_settings( $form_settings )
-    {
-        $this->form_settings = $form_settings;
-    }
-
-    /**
-     * Get form settings, applies default values
-     *
-     * @return array
-     */
-    public function get_settings()
-    {
-        $default  = $this->get_default_settings();
-
-        if ( isnull( $this->form_settings ) )
+        if ( ! is_null( $field ) )
         {
-            return $default;
+            $name = $field->get_attribute( 'name' );
+            $this->form_fields[ $name ] = $field;
         }
+    }
+    /*-----------------------------------------------------------------------*/
 
-        return array_merge( $default, $this->form_settings);
+    public function html_print( )
+    {
+        return $this->render();
     }
 
     /*-----------------------------------------------------------------------*/
-    /*
-     * HTML additions
-     */
 
+    public function get_values( $post = null )
+    {
+        $values = array();
+
+        if ( is_null( $post ) )
+        {
+            if ( $this->get_attribute( 'method' ) === 'post' )
+            {
+                // $_SERVER["REQUEST_METHOD"] will not exist if the form hasn't been submitted
+                if ( $_SERVER["REQUEST_METHOD"] === "POST" )
+                {
+                    $post = $_POST;
+                }
+            }
+            else if ( $this->get_attribute( 'method' ) === 'get' )
+            {
+                $post = $_GET;
+            }
+        }
+        return $this->get_value( $post );  
+    }
 }
+?>

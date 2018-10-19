@@ -23,7 +23,9 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
+include_once('Form.php');
 include_once('Checkbox.php');
+include_once('RadioButton.php');
 include_once('Text.php');
 include_once('Email.php');
 include_once('Telephone.php');
@@ -34,10 +36,13 @@ class Factory
     /* Class factory */
     /*-------------------------------------------------------------------------*/
     private const FactoryMachines = array(
-        Checkbox::Class_Type    => 'Input\Checkbox',
-        Text::Class_Type        => 'Input\Text',
-        Email::Class_Type       => 'Input\Email',
-        Telephone::Class_Type   => 'Input\Telephone',
+        // Name of input object     // Input object class name
+        Form        ::Input_Type        => 'Input\Form',
+        Checkbox    ::Input_Type        => 'Input\Checkbox',
+        RadioButton ::Input_Type        => 'Input\RadioButton',
+        Text        ::Input_Type        => 'Input\Text',
+        Email       ::Input_Type        => 'Input\Email',
+        Telephone   ::Input_Type        => 'Input\Telephone',
     );
 
     public static function Get( $field_attrs )

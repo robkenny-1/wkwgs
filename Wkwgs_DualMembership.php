@@ -143,7 +143,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_show_customized()
     {
-        $this->Logger()->log_function( 'product_show_customized');
+        \Wkwgs_Logger::log_function( 'product_show_customized');
 
         global $product;
 
@@ -190,12 +190,12 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                 {
                     $display_fields = $product_meta_args['display_fields'];
         
-                    $this->Logger()->log( 'debug', 'adding custom fields' );
+                    \Wkwgs_Logger::log( 'adding custom fields' );
                     foreach ( $display_fields as $field => $field_args )
         
                     {
-                        $this->Logger()->log_var( '$field', $field );
-                        $this->Logger()->log_var( '$field_args', $field_args );
+                        \Wkwgs_Logger::log_var( '$field', $field );
+                        \Wkwgs_Logger::log_var( '$field_args', $field_args );
         
                         woocommerce_form_field(
                             $field,
@@ -221,7 +221,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         $input = \Input\Factory::Get( $field );
                         if ( ! is_null( $input ) )
                         {
-                            $input->print_html( '0' );
+                            $input->html_print( '0' );
                         }
                     }
                 }
@@ -233,11 +233,11 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     public function product_add_to_cart_validation( $passed, $product_id, $quantity ) 
     {
-        $this->Logger()->log_function( 'product_add_to_cart_validation');
-        $this->Logger()->log_var( '$passed', $passed );
-        $this->Logger()->log_var( '$product_id', $product_id );
-        $this->Logger()->log_var( '$quantity', $quantity );
-        $this->Logger()->log_var( '$_POST', $_POST );
+        \Wkwgs_Logger::log_function( 'product_add_to_cart_validation');
+        \Wkwgs_Logger::log_var( '$passed', $passed );
+        \Wkwgs_Logger::log_var( '$product_id', $product_id );
+        \Wkwgs_Logger::log_var( '$quantity', $quantity );
+        \Wkwgs_Logger::log_var( '$_POST', $_POST );
 
         // Verify fields are correct, return false to prevent adding to the cart
         //if (! $valid )
@@ -246,7 +246,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         //    return false;
         //}
 
-        $this->Logger()->log_var( 'return $passed', $passed );
+        \Wkwgs_Logger::log_var( 'return $passed', $passed );
         return $passed;
     }
 
@@ -256,23 +256,23 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_save_customized( $cart_item_data, $product_id, $variation_id, $quantity )
     {
-        $this->Logger()->log_function( 'product_save_customized');
-        $this->Logger()->log_var( '$cart_item_data', $cart_item_data );
-        $this->Logger()->log_var( '$product_id', $product_id );
-        $this->Logger()->log_var( '$variation_id', $variation_id );
-        $this->Logger()->log_var( '$quantity', $quantity );
-        $this->Logger()->log_var( '$_POST', $_POST );
+        \Wkwgs_Logger::log_function( 'product_save_customized');
+        \Wkwgs_Logger::log_var( '$cart_item_data', $cart_item_data );
+        \Wkwgs_Logger::log_var( '$product_id', $product_id );
+        \Wkwgs_Logger::log_var( '$variation_id', $variation_id );
+        \Wkwgs_Logger::log_var( '$quantity', $quantity );
+        \Wkwgs_Logger::log_var( '$_POST', $_POST );
  
  	    $product = wc_get_product( $variation_id ? $variation_id : $product_id );
-        //$this->Logger()->log_var( '$product', $product );
+        //\Wkwgs_Logger::log_var( '$product', $product );
 
         $custom = $this->get_enabled_customized( $product );
-        //$this->Logger()->log_var( '$custom', $custom );
+        //\Wkwgs_Logger::log_var( '$custom', $custom );
 
         if ( ! empty($custom) )
         {
 		    $data = $this->get_form_data( $custom, $_POST );
-            $this->Logger()->log_var( '$data', $data );
+            \Wkwgs_Logger::log_var( '$data', $data );
 
             foreach ($data as $key => $value )
             {
@@ -280,7 +280,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             }
         }
         
-        $this->Logger()->log_var( 'return $cart_item_data', $cart_item_data );
+        \Wkwgs_Logger::log_var( 'return $cart_item_data', $cart_item_data );
         return $cart_item_data;
     }
 
@@ -289,9 +289,9 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_display_customized( $item_data, $cart_item )
     {
-        $this->Logger()->log_function( 'product_cart_display_customized');
-        $this->Logger()->log_var( '$item_data', $item_data );
-        $this->Logger()->log_var( '$cart_item', $cart_item );
+        \Wkwgs_Logger::log_function( 'product_cart_display_customized');
+        \Wkwgs_Logger::log_var( '$item_data', $item_data );
+        \Wkwgs_Logger::log_var( '$cart_item', $cart_item );
 
         if ( empty( $cart_item['wkwgs_is_dual_membership_dual_membership_email'] ) ) {
             return $item_data;
@@ -303,7 +303,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             'display' => '',
         );
  
-        $this->Logger()->log_var( '$item_data', $item_data );
+        \Wkwgs_Logger::log_var( '$item_data', $item_data );
         return $item_data;    
     }
 
@@ -372,7 +372,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                 $admin[ 'value' ] = $checked;
 
                 $checkbox = Input\Factory::Get( $admin );
-                $checkbox->print_html( '0' );
+                $checkbox->html_print( '0' );
             }
             ?>
 
@@ -386,10 +386,10 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     private function extract_data_from_post($type, $key, $post)
     {
-        //$this->Logger()->log_function( 'extract_data_from_post' );
-        //$this->Logger()->log_var( '$type', $type );
-        //$this->Logger()->log_var( '$key', $key );
-        //$this->Logger()->log_var( '$post', $post );
+        //\Wkwgs_Logger::log_function( 'extract_data_from_post' );
+        //\Wkwgs_Logger::log_var( '$type', $type );
+        //\Wkwgs_Logger::log_var( '$key', $key );
+        //\Wkwgs_Logger::log_var( '$post', $post );
 
         $value = '';
 
@@ -421,27 +421,27 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 				break;
 		}
     
-        //$this->Logger()->log_var( '$value', $value );
+        //\Wkwgs_Logger::log_var( '$value', $value );
         return $value;
     }
  
     private function get_form_data( $form, $post )
     {
-        $this->Logger()->log_function( 'get_form_data' );
-        $this->Logger()->log_var( '$form', $form );
-        $this->Logger()->log_var( '$post', $post );
+        \Wkwgs_Logger::log_function( 'get_form_data' );
+        \Wkwgs_Logger::log_var( '$form', $form );
+        \Wkwgs_Logger::log_var( '$post', $post );
 
         $data = null;
             
 		foreach ( $form as $key => $field )
         {
-            $this->Logger()->log_var( '$key', $key );
+            \Wkwgs_Logger::log_var( '$key', $key );
 
 			$type = sanitize_title( isset( $field['type'] ) ? $field['type'] : 'text' );
 
             // Get sanitized data from post
             $value = $this->extract_data_from_post($type, $key, $post);
-            $this->Logger()->log_var( '$value', $value );
+            \Wkwgs_Logger::log_var( '$value', $value );
 
 			// Required fields
 			if ( ! empty( $field['required'] ) && empty( $value ) )
@@ -485,7 +485,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             $data[ $key ] = $value;
         }
 
-        $this->Logger()->log_var( 'return data', $data );
+        \Wkwgs_Logger::log_var( 'return data', $data );
         return $data;
     }
 
@@ -496,8 +496,8 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         */
     public function product_admin_save_customized_checkboxes( $post_id )
     {
-        $this->Logger()->log_function( 'product_admin_save_customized_checkboxes' );
-        $this->Logger()->log_var( '$post_id', $post_id );
+        \Wkwgs_Logger::log_function( 'product_admin_save_customized_checkboxes' );
+        \Wkwgs_Logger::log_var( '$post_id', $post_id );
 
 		$data = $this->get_form_data( $this->get_product_customized(), $_POST );
 
@@ -505,7 +505,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
         foreach ($data as $key => $value )
         {
-            $this->Logger()->log_var( '$key', $value );
+            \Wkwgs_Logger::log_var( '$key', $value );
 
             $product->update_meta_data( $key, $value );
         }
@@ -575,16 +575,5 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         //global $wpdb;
         //$tableName = $this->prefixTableName('Options');
         //$wpdb->query("DROP TABLE IF EXISTS `$tableName`");
-    }
-
-    protected function Logger()
-    {
-        static $Logger = null;
-        if ( $Logger == null )
-        {
-            $Logger = new Wkwgs_Logger();
-        }
-
-        return $Logger;
     }
 }

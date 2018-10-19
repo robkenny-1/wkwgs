@@ -32,12 +32,7 @@ include_once('Field.php');
  */
 class Text extends Field
 {
-    const Class_Type        = 'text';
-    const Class_Attributes  = array(
-        'type'              => self::Class_Type,
-        'css-input'         => 'input-text',
-        'css-label'         => '',
-    );
+    const Input_Type = 'text';
 
     function __construct( $name )
     {
@@ -51,10 +46,48 @@ class Text extends Field
      */
     public function get_attributes_default( )
     {
+        $default = array(
+            'type'              => self::Input_Type,
+            'css-input'         => 'input-text',
+            'css-label'         => '',
+        );
+
         $parent = parent::get_attributes_default();
 
-        return array_merge($parent, self::Class_Attributes);
+        return array_merge($parent, $default);
     }
+
+    /**
+     * Verify status of input data
+     *
+     * @return True if value meets criteria
+     */
+    public function validate( $post )
+    {
+        if ( ! isset( $post[ 'value' ] ) )
+        {
+            return False;
+        }
+        return True;
+    }
+
+    /**
+     * Extract object's value from post data
+     *
+     * @return input value
+     */
+    public function get_value( $post )
+    {
+        if ( ! $this->validate( $post ) )
+        {
+            return '';
+        }
+        $raw = $post[ 'value' ];
+
+        // Should we always perform some cleansing or leave it up to the caller?
+        return $raw;
+    }
+
     /**
      * Render the field in the frontend, this spits out the necessary HTML
      *

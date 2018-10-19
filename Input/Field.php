@@ -23,19 +23,7 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
-include_once(WP_PLUGIN_DIR . '/wkwgs/Wkwgs_Logger.php' );
-
-static $Logger = null;
-function Logger()
-{
-    static $Logger = null;
-    if ( is_null( $Logger ) )
-    {
-        $Logger = new \Wkwgs_Logger();
-    }
-
-    return $Logger;
-}
+include_once(__DIR__ . '/../Wkwgs_Logger.php' );
 
 /**
  * The Field Class
@@ -46,6 +34,63 @@ abstract class Field
 {
 
     /*-------------------------------------------------------------------------*/
+    /*                                                                         */
+    /* All input classes must implement/override these                         */
+    /*                                                                         */
+    /*-------------------------------------------------------------------------*/
+
+    const Input_Type = '';
+
+    public function __construct( $name )
+    {
+        $defaults = $this->get_attributes_default();
+        $defaults[ 'name' ] = $name;
+
+        $this->set_attributes( $defaults );
+    }
+
+    /**
+     * Attributes for all input fields
+     *
+     * @return array
+     */
+    public function get_attributes_default( )
+    {
+        $default = array(
+            'type'                  => self::Input_Type,
+            'name'                  => '',
+            'label'                 => '',
+            'value'                 => '',
+            'required'              => 'no',
+            'id'                    => 0,
+            'width'                 => 'large',
+            'placeholder'           => '',
+            'default'               => '',
+            'size'                  => 40,
+            'help'                  => '',
+            'css-input'             => '',
+            'css-label'             => '',
+            'css-input-container'   => 'options_group',
+            'css-input-row'         => 'form-row',
+            'css-input-span'        => 'woocommerce-input-wrapper', 
+        );
+
+        return $default;
+    }
+
+    /**
+     * Verify status of input data
+     *
+     * @return True if value meets criteria
+     */
+    abstract function validate( $post );
+
+    /**
+     * Extract object's value from post data
+     *
+     * @return input value
+     */
+    abstract function get_value( $post );
 
     /**
      * Render of the field in the frontend
@@ -56,39 +101,6 @@ abstract class Field
     abstract function render( );
 
     /*-------------------------------------------------------------------------*/
-    /* Attributes common to all input fields */
-    /*-------------------------------------------------------------------------*/
-
-    const Class_Attributes              = array(
-        'type'                          => '',
-        'name'                          => '',
-        'label'                         => '',
-        'value'                         => '',
-        'required'                      => 'no',
-        'id'                            => 0,
-        'width'                         => 'large',
-        'placeholder'                   => '',
-        'default'                       => '',
-        'size'                          => 40,
-        'help'                          => '',
-        'css-input'                     => '',
-        'css-label'                     => '',
-        'css-input-container'           => 'options_group',
-        'css-input-row'                 => 'form-row',
-        'css-input-span'                => 'woocommerce-input-wrapper', 
-    );
-
-    /**
-     * Attributes for all input fields
-     *
-     * @return array
-     */
-    public function get_attributes_default( )
-    {
-        return self::Class_Attributes;
-    }
-
-    /*-------------------------------------------------------------------------*/
 
     /**
      * Settings of the field
@@ -96,14 +108,6 @@ abstract class Field
      * @var string
      */
     private $attributes;
-
-    public function __construct( $name )
-    {
-        $defaults = $this->get_attributes_default();
-        $defaults[ 'name' ] = $name;
-
-        $this->set_attributes( $defaults );
-    }
 
     /**
      * Get all the attributes of the field
@@ -122,9 +126,13 @@ abstract class Field
      */
     public function set_attributes( $attributes )
     {
+        \Wkwgs_Logger::log_function( 'set_attributes');
+        \Wkwgs_Logger::log_var( '$attributes', $attributes );
+
         $attrs = is_null( $this->attributes ) ? array() : $this->attributes;
 
         $this->attributes = array_merge( $this->get_attributes_default(), $attrs, $attributes );
+        \Wkwgs_Logger::log_var( '$this->attributes', $this->attributes );
     }
 
     /**
@@ -183,6 +191,7 @@ abstract class Field
             $str === '1'    ||
             $str === 'true' ;
     }
+
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -229,7 +238,7 @@ abstract class Field
         return PREFIX_HTML . $form . $name;
     }
 
-    public function print_html( )
+    public function html_print( )
     {
         $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
         $css_container  = $this->get_attribute( 'css-input-container' );
@@ -249,6 +258,6 @@ abstract class Field
             }
             ?>
         </div>
-    <?php
+        <?php
     }
 }

@@ -32,10 +32,7 @@ include_once('Field.php');
  */
 class Email extends Text
 {
-    const Class_Type        = 'email';
-    const Class_Attributes  = array(
-        'type'              => self::Class_Type,
-    );
+    const Input_Type = 'email';
 
     function __construct( $name )
     {
@@ -49,8 +46,12 @@ class Email extends Text
      */
     public function get_attributes_default( )
     {
+        $default = array(
+            'type'              => self::Input_Type,
+        );
+
         $parent = parent::get_attributes_default();
 
-        return array_merge($parent, self::Class_Attributes);
+        return array_merge($parent, $default);
     }
 }

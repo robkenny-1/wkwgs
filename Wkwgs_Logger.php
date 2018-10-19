@@ -22,35 +22,32 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once(WP_PLUGIN_DIR . '/woocommerce/includes/interfaces/class-wc-logger-interface.php' );
-include_once(WP_PLUGIN_DIR . '/woocommerce/includes/class-wc-logger.php');
-include_once('PluginCore/Wkwgs_LifeCycle.php');
-
-class Wkwgs_Logger extends WC_Logger
+class Wkwgs_Logger 
 {
-    public function log_function( $func )
+    const log_file_name = __DIR__ . '/../../../wp-content/uploads/wc-logs/wkwgs.log';
+    
+    public static function clear()
+    {
+        unlink( Wkwgs_Logger::log_file_name );
+    }
+    public static function log_function( $func )
     {
         $msg = "===== Function ===== $func";
-        $this->log( "debug", $msg );
+        Wkwgs_Logger::log( $msg );
     }
-    public function log_var( $var_name, $var )
+    public static function log_var( $var_name, $var )
     {
-        $var_text = isset( $var ) ? wc_print_r( $var, true ) : '(unset)';
+        $var_text = isset( $var ) ? print_r( $var, true ) : '(unset)';
         $msg = "===== Variable ===== $var_name = " . $var_text;
-        $this->log( "debug", $msg );
+        Wkwgs_Logger::log( $msg );
     }
-    public function log_msg( $msg )
+    public static function log_msg( $msg )
     {
-        $this->log( "debug", $msg );
+        Wkwgs_Logger::log( $msg );
     }
 
-	public function log( $level, $message, $context = array() )
+	public static function log( $message )
     {
-        if ( ! isset( $context[ 'source' ]))
-        {
-            $context[ 'source' ] = 'wkwgs';
-        }
-        parent::log( $level, $message, $context );
+        file_put_contents( Wkwgs_Logger::log_file_name, $message . PHP_EOL, FILE_APPEND );
     }
-
 }

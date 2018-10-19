@@ -32,14 +32,7 @@ include_once('Field.php');
  */
 class RadioButton extends Field
 {
-    const Class_Type        = 'radio';
-    const Class_Attributes  = array(
-        'type'              => self::Class_Type,
-        'css-input'         => 'input-radio',
-        'css-label'         => 'radio',
-        'choices'           => '',
-    );
-
+    const Input_Type = 'radio';
 
     function __construct( $name )
     {
@@ -53,9 +46,48 @@ class RadioButton extends Field
      */
     public function get_attributes_default( )
     {
+        $default = array(
+            'type'              => self::Input_Type,
+            'css-input'         => 'input-radio',
+            'css-label'         => 'radio',
+            'choices'           => '',
+        );
+
         $parent = parent::get_attributes_default();
 
-        return array_merge($parent, self::Class_Attributes);
+        return array_merge($parent, $default);
+    }
+
+    /**
+     * Verify status of input data
+     *
+     * @return True if value meets criteria
+     */
+    public function validate( $post )
+    {
+        if ( ! isset( $post[ 'value' ] ) )
+        {
+            return False;
+        }
+        $raw = $post[ 'value' ];
+
+        return in_array( $raw, $this->get_attribute( 'choices' ) );
+    }
+
+    /**
+     * Extract object's value from post data
+     *
+     * @return input value
+     */
+    public function get_value( $post )
+    {
+        if ( ! $this->validate( $post ) )
+        {
+            return '';
+        }
+        $raw = $post[ 'value' ];
+
+        return $raw;
     }
 
     /**
@@ -67,9 +99,10 @@ class RadioButton extends Field
     {
         $type           = esc_attr( $this->get_attribute( 'type' )           );
         $name           = esc_attr( $this->get_attribute( 'name' )           );
-        $label_text     = esc_attr( $this->get_attribute( 'label' )          );
+        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
         $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
         $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
+        $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
 
         $name           = $this->html_prefix( $name );
         $value          = $this->get_attribute( 'value' );
@@ -78,33 +111,32 @@ class RadioButton extends Field
         if ( ! empty( $options ) )
         {
             ?>
-            <label
-                for="<?php echo $name; ?>"
-                class="<?php echo $css_label ?>"><?php echo $label_text ?>
-            </label>
-            <?php
-            foreach ( $options as $option => $option_text )
-            {
-                $option         = esc_attr( $option );
-                $option_text    = htmlspecialchars( $option_text );
-                $option_id      = $name . '_' . $option;
-                $is_selected    = $option === $value;
-
-                ?>
-                <input
-                    type="<?php echo $type ?>"
-                    class="<?php echo $css_input ?>"
-                    name="<?php echo $name ?>"
-                    id="<?php echo $option_id ?>"
-                    value="<?php echo $option ?>"
-                    <?php if ($is_selected) { echo 'checked' } ?>
-                />&nbsp;<?php echo $option_text ?>
-
+            <span class="<?php echo $css_input_span ?>">
+                <label
+                    for="<?php echo $name; ?>"
+                    class="<?php echo $css_label ?>"><?php echo $label_text ?>
+                </label>
                 <?php
-            }
-        }
+                foreach ( $options as $option => $option_text )
+                {
+                    $option         = esc_attr( $option );
+                    $option_text    = htmlspecialchars( $option_text );
+                    $option_id      = $name . '_' . $option;
+                    $is_selected    = $option === $value;
 
-        ?>
-        <?php    
+                    ?>
+                    <input
+                        type="<?php echo $type ?>"
+                        class="<?php echo $css_input ?>"
+                        name="<?php echo $name ?>"
+                        id="<?php echo $option_id ?>"
+                        value="<?php echo $option ?>"
+                        <?php if ($is_selected) { echo 'checked'; } ?>
+                    />&nbsp;<?php echo $option_text ?>
+
+                    <?php
+                }
+            ?></span><?php
+        }
     }
 }

@@ -32,13 +32,7 @@ include_once('Field.php');
  */
 class Checkbox extends Field
 {
-    const Class_Type        = 'checkbox';
-    const Class_Attributes  = array(
-        'type'              => self::Class_Type,
-        'css-input'         => 'input-checkbox',
-        'css-label'         => 'checkbox',
-    );
-
+    const Input_Type = 'checkbox';
 
     function __construct( $name )
     {
@@ -52,9 +46,45 @@ class Checkbox extends Field
      */
     public function get_attributes_default( )
     {
+        $default = array(
+            'type'              => self::Input_Type,
+            'css-input'         => 'input-checkbox',
+            'css-label'         => 'checkbox',
+        );
+
         $parent = parent::get_attributes_default();
 
-        return array_merge($parent, self::Class_Attributes);
+        return array_merge($parent, $default);
+    }
+
+    /**
+     * Verify status of input data
+     *
+     * @return True if value meets criteria
+     */
+    public function validate( $post )
+    {
+        if ( ! isset( $post[ 'value' ] ) )
+        {
+            return False;
+        }
+        return True;
+    }
+
+    /**
+     * Extract object's value from post data
+     *
+     * @return input value
+     */
+    public function get_value( $post )
+    {
+        if ( ! $this->validate( $post ) )
+        {
+            return '';
+        }
+        $raw = $post[ 'value' ];
+
+        return Field::is_true( $raw );
     }
 
     /**
@@ -73,6 +103,16 @@ class Checkbox extends Field
 
         $name           = $this->html_prefix( $name );
         $checked        = Field::is_true( $this->get_attribute( 'value' ) );
+
+        /*
+        \Wkwgs_Logger::log_function( 'Checkbox::render');
+        \Wkwgs_Logger::log_var( '$type', $type );
+        \Wkwgs_Logger::log_var( '$name', $name );
+        \Wkwgs_Logger::log_var( '$label_text', $label_text );
+        \Wkwgs_Logger::log_var( '$this->get_attribute( "value" )', $this->get_attribute( 'value' ) );
+        \Wkwgs_Logger::log_var( '$checked', $checked );
+        \Wkwgs_Logger::log_var( 'get_attributes', $this->get_attributes() );
+        */
         $checked        = $checked ? 'checked="checked"' : '';
 
         ?>
@@ -83,7 +123,6 @@ class Checkbox extends Field
                     class="<?php echo $css_input ?>"
                     name="<?php echo $name ?>"
                     id="<?php echo $name ?>"
-                    value="yes"
                     <?php echo $checked ?>
                 />&nbsp;<?php echo $label_text ?>
             </label>
