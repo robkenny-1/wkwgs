@@ -40,7 +40,7 @@ class Checkbox extends Field
     }
 
     /**
-     * Attributes of a checkbox
+     * Attributes of the input element
      *
      * @return array
      */

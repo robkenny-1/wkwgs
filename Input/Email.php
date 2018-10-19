@@ -40,7 +40,7 @@ class Email extends Text
     }
 
     /**
-     * Attributes of a checkbox
+     * Attributes of the input element
      *
      * @return array
      */
