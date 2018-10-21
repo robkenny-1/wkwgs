@@ -184,7 +184,7 @@ abstract class Field
      */
     public function is_required(  )
     {
-        return Field::is_true( $this-get_attribute('required') );
+        return Field::is_true( $this->get_attribute('required') );
     }
 
     /**
