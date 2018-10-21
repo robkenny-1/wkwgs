@@ -193,7 +193,7 @@ class Form extends Field
         }
         return null;
     }
-    public function get_post_data( )
+    public function get_submit_data( )
     {
         $button = $this->get_submit_button();
         if ( ! isset( $button ) )
@@ -230,7 +230,7 @@ class Form extends Field
     {
         if ( is_null( $post ) )
         {
-            $post = $this->get_post_data( );
+            $post = $this->get_submit_data( );
         }
         $values = $this->get_value( $post );  
 

@@ -18,6 +18,7 @@ define( 'ABSPATH', '1');
 function esc_attr( $attr ) { return $attr; }
 function apply_filters( $name, $values) { return $values; }
 
+session_start();
 include_once( '..\Factory.php' );
 
 //Wkwgs_Logger::clear();
@@ -83,19 +84,31 @@ $form->add_field(
 );
 $form->html_print();
 
-$post = $form->get_post_data();
+// Store results in the session
+$post = $form->get_submit_data();
 if ( isset( $post ) )
 {
-    \Wkwgs_Logger::log_var( '$post', $post );
+    $form_values = $form->get_values();
 
+    $_SESSION['form_values'] = $form_values;
+
+    // Post/Redirect/Get
+    // Redirect to this page
+    header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
+}
+
+// Print out any results stored in the session
+if ( isset( $_SESSION['form_values'] ) )
+{
     echo "<div>";
-    foreach ( $form->get_values() as $name => $value)
+    echo "<h1>Values from last SUBMIT</h1>";
+    foreach ( $_SESSION['form_values'] as $name => $value)
     {
         echo "$name = $value</br>";
     }
     echo "</div>";
 }
-
 ?>
 
 </body>
