@@ -114,7 +114,7 @@ class RadioButton extends Field
             ?>
             <span class="<?php echo $css_input_span ?>">
                 <label
-                    <?php Field::html_print_attribute('for',        $name) ?>
+                    <?php Field::html_print_attribute('for',        $id) ?>
                     <?php Field::html_print_attribute('class',      $css_label) ?>
                 ><?php echo $label_text ?></label>
                 <?php
