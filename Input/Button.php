@@ -99,7 +99,7 @@ class Button extends Field
      */
     public function render( )
     {
-        $type           = $this->get_attribute( 'type' );
+        $type           = $this->get_attribute( 'button-type' );
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
         $value          = $this->get_attribute( 'value' );
