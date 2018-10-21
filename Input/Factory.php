@@ -29,6 +29,7 @@ include_once('RadioButton.php');
 include_once('Text.php');
 include_once('Email.php');
 include_once('Telephone.php');
+include_once('Button.php');
 
 class Factory
 {
@@ -43,6 +44,7 @@ class Factory
         Text        ::Input_Type        => 'Input\Text',
         Email       ::Input_Type        => 'Input\Email',
         Telephone   ::Input_Type        => 'Input\Telephone',
+        Button      ::Input_Type        => 'Input\Button',
     );
 
     public static function Get( $field_attrs )

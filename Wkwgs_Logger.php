@@ -24,11 +24,15 @@ defined( 'ABSPATH' ) || exit;
 
 class Wkwgs_Logger 
 {
-    const log_file_name = __DIR__ . '/../../../wp-content/uploads/wc-logs/wkwgs.log';
+    const log_file_name = __DIR__ . '/../../../wkwgs.log';
     
     public static function clear()
     {
+        $previous_error_handler = set_error_handler( "\Wkwgs_Logger::ignore_file_not_exist_error" );
+
         unlink( Wkwgs_Logger::log_file_name );
+
+        set_error_handler( $previous_error_handler );
     }
     public static function log_function( $func )
     {
@@ -49,5 +53,21 @@ class Wkwgs_Logger
 	public static function log( $message )
     {
         file_put_contents( Wkwgs_Logger::log_file_name, $message . PHP_EOL, FILE_APPEND );
+    }
+
+    private static function ignore_file_not_exist_error( int $errno , string $errstr, string $errfile, int $errline, array $errcontext )
+    {
+        if (strpos($errstr, 'No such file or directory') !== false)
+        {
+            return True;
+        }
+        self::log_function( 'ignore_file_not_exist_error');
+        self::log_var( '$errno'             , $errno            );
+        self::log_var( '$errstr'            , $errstr           );
+        self::log_var( '$errfile'           , $errfile          );
+        self::log_var( '$errline'           , $errline          );
+        self::log_var( '$errcontext'        , $errcontext       );
+        self::log_var( 'error_get_last()'   , error_get_last()  );
+        return False;
     }
 }

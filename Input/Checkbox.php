@@ -48,6 +48,8 @@ class Checkbox extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
+            'value'             => 'yes',
+            'selected'          => '',
             'css-input'         => 'input-checkbox',
             'css-label'         => 'checkbox',
         );
@@ -64,11 +66,22 @@ class Checkbox extends Field
      */
     public function validate( $post )
     {
-        if ( ! isset( $post[ 'value' ] ) )
+        \Wkwgs_Logger::log_function( 'Checkbox::validate');
+        \Wkwgs_Logger::log_var( '$this->get_name()', $this->get_name() );
+
+        $is_valid = False;
+
+        if ( isset( $post[ $this->get_name() ] ) )
         {
-            return False;
+            $raw = $post[ $this->get_name() ];
+
+            \Wkwgs_Logger::log_var( '$raw', $raw );
+            \Wkwgs_Logger::log_var( '$this->get_attribute( "value" )', $this->get_attribute( 'value' ) );
+
+            $is_valid = $raw === $this->get_attribute( 'value' );
         }
-        return True;
+
+        return $is_valid;
     }
 
     /**
@@ -78,13 +91,17 @@ class Checkbox extends Field
      */
     public function get_value( $post )
     {
-        if ( ! $this->validate( $post ) )
-        {
-            return '';
-        }
-        $raw = $post[ 'value' ];
+        $cleansed = '';
 
-        return Field::is_true( $raw );
+        if ( $this->validate( $post ) )
+        {
+            $raw = $post[ $this->get_name() ];
+
+            // No cleansing necessary
+            $cleansed = $raw;
+        }
+
+        return $cleansed;
     }
 
     /**
@@ -96,13 +113,13 @@ class Checkbox extends Field
     {
         $type           = esc_attr( $this->get_attribute( 'type' )           );
         $name           = esc_attr( $this->get_attribute( 'name' )           );
+        $value          = esc_attr( $this->get_attribute( 'value' )          );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
         $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
         $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
         $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
 
-        $name           = $this->html_prefix( $name );
-        $checked        = Field::is_true( $this->get_attribute( 'value' ) );
+        $checked        = $this->get_attribute( 'selected' ) === $this->get_attribute( 'value' );
 
         /*
         \Wkwgs_Logger::log_function( 'Checkbox::render');
@@ -120,12 +137,11 @@ class Checkbox extends Field
             <label class="<?php echo $css_label ?>">
                 <input
                     type="<?php echo $type ?>"
-                    class="<?php echo $css_input ?>"
+                    <?php if ( ! empty( $id ) ) { echo 'id="' . $id . '"'; } ?>
                     name="<?php echo $name ?>"
-                    id="<?php echo $name ?>"
-                    <?php echo $checked ?>
-                />&nbsp;<?php echo $label_text ?>
-            </label>
+                    value="<?php echo $value ?>"
+                    class="<?php echo $css_input ?>"
+                    <?php echo $checked ?>/>&nbsp;<?php echo $label_text ?></label>
         </span>
         <?php    
     }

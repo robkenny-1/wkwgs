@@ -37,7 +37,7 @@ class Form extends Field
     /**
      * The Constructor
      *
-     * @param int|WP_Post $form
+     * @param string $name
      */
     public function __construct( $name )
     {
@@ -53,8 +53,8 @@ class Form extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
-            'name'              => '0',
-            'action'            => htmlspecialchars( $_SERVER['PHP_SELF'] ),
+            'name'              => 'form0',
+            'action'            => '#', // submit data to same page
             'method'            => 'post',
             'enctype'           => 'multipart/form-data',
             'class'             => '',
@@ -71,7 +71,9 @@ class Form extends Field
      */
     public function get_value( $post )
     {
-        if ( is_empty( $post ) )
+        $values = array();
+
+        if ( empty( $post ) )
         {
             return '';
         }
@@ -94,7 +96,7 @@ class Form extends Field
      */
     public function validate( $post )
     {
-        if ( is_empty( $post ) )
+        if ( empty( $post ) )
         {
             return false;
         }
@@ -112,6 +114,7 @@ class Form extends Field
     public function render( )
     {
         $id             = esc_attr( $this->get_attribute( 'id' )            );
+        $name           = esc_attr( $this->get_attribute( 'name' )          );
         $action         = esc_attr( $this->get_attribute( 'action' )        );
         $method         = esc_attr( $this->get_attribute( 'method' )        );
         $enctype        = esc_attr( $this->get_attribute( 'enctype' )       );
@@ -120,7 +123,8 @@ class Form extends Field
 
         ?>	
         <form 
-            id="<?php echo $id ?>"
+            <?php if ( ! empty( $id ) ) { echo 'id="' . $id . '"'; } ?>
+            name="<?php echo $name ?>"
             class="<?php echo $css ?>"
             action="<?php echo $action ?>"
             method="<?php echo $method ?>"
@@ -168,9 +172,51 @@ class Form extends Field
     {
         if ( ! is_null( $field ) )
         {
-            $name = $field->get_attribute( 'name' );
-            $this->form_fields[ $name ] = $field;
+            $field->set_form_id( $this->get_name( ) );
+
+            $field_name = $field->get_name( );
+            $this->form_fields[ $field_name ] = $field;
         }
+    }
+
+    public function get_submit_button( )
+    {
+        foreach ( $this->get_fields() as $field )
+        {
+            // May need to expand if we support > 1 button type
+            if ( $field->get_type() === 'button'
+                 &&
+                 $field->get_attribute( 'button-type' ) === 'submit'
+               )
+            {
+                return $field;
+            }
+        }
+        return null;
+    }
+    public function get_post_data( )
+    {
+        $button = $this->get_submit_button();
+        if ( ! isset( $button ) )
+        {
+            return;
+        }
+
+        if ( $this->get_attribute( 'method' ) === 'post'
+             &&
+             isset( $_POST[ $button->get_name() ] )
+            )
+        {
+            return $_POST;
+        }
+        else if ( $this->get_attribute( 'method' ) === 'get'
+             &&
+             isset( $_GET[ $button->get_name() ] )
+            )
+        {
+            return $_GET;
+        }
+        return;
     }
     /*-----------------------------------------------------------------------*/
 
@@ -183,24 +229,18 @@ class Form extends Field
 
     public function get_values( $post = null )
     {
-        $values = array();
-
         if ( is_null( $post ) )
         {
-            if ( $this->get_attribute( 'method' ) === 'post' )
-            {
-                // $_SERVER["REQUEST_METHOD"] will not exist if the form hasn't been submitted
-                if ( $_SERVER["REQUEST_METHOD"] === "POST" )
-                {
-                    $post = $_POST;
-                }
-            }
-            else if ( $this->get_attribute( 'method' ) === 'get' )
-            {
-                $post = $_GET;
-            }
+            $post = $this->get_post_data( );
         }
-        return $this->get_value( $post );  
+        $values = $this->get_value( $post );  
+
+        \Wkwgs_Logger::log_function( 'Form::get_values');
+        \Wkwgs_Logger::log_var( '$this->get_attribute( "method" )', $this->get_attribute( 'method' ) );
+        \Wkwgs_Logger::log_var( '$post', $post );
+        \Wkwgs_Logger::log_var( '$values', $values );
+
+        return $values;
     }
 }
 ?>

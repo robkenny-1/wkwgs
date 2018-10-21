@@ -64,7 +64,7 @@ class Text extends Field
      */
     public function validate( $post )
     {
-        if ( ! isset( $post[ 'value' ] ) )
+        if ( ! isset( $post[ $this->get_name() ] ) )
         {
             return False;
         }
@@ -82,7 +82,7 @@ class Text extends Field
         {
             return '';
         }
-        $raw = $post[ 'value' ];
+        $raw = $post[ $this->get_name() ];
 
         // Should we always perform some cleansing or leave it up to the caller?
         return $raw;
@@ -104,8 +104,7 @@ class Text extends Field
         $placeholder    = esc_attr( $this->get_attribute( 'placeholder' )    );
         $value          = esc_attr( $this->get_attribute( 'value' )          );
 
-        $required       = $this->is_true();
-        $name           = $this->html_prefix( $name );
+        $required       = $this->is_required();
 
         if ( $required )
         {

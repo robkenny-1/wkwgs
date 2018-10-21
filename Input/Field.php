@@ -126,13 +126,13 @@ abstract class Field
      */
     public function set_attributes( $attributes )
     {
-        \Wkwgs_Logger::log_function( 'set_attributes');
-        \Wkwgs_Logger::log_var( '$attributes', $attributes );
+        //\Wkwgs_Logger::log_function( 'Field::set_attributes');
+        //\Wkwgs_Logger::log_var( '$attributes', $attributes );
 
-        $attrs = is_null( $this->attributes ) ? array() : $this->attributes;
+        $this_attrs = is_null( $this->attributes ) ? array() : $this->attributes;
 
-        $this->attributes = array_merge( $this->get_attributes_default(), $attrs, $attributes );
-        \Wkwgs_Logger::log_var( '$this->attributes', $this->attributes );
+        $this->attributes = array_merge( $this->get_attributes_default(), $this_attrs, $attributes );
+        //\Wkwgs_Logger::log_var( '$this->attributes', $this->attributes );
     }
 
     /**
@@ -154,6 +154,16 @@ abstract class Field
     /*-------------------------------------------------------------------------*/
     /* Accessors for commonly used values */
     /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get the name of the field
+     *
+     * @return string
+     */
+    public function get_type()
+    {
+        return $this->attributes[ 'type' ];
+    }
 
     /**
      * Get the name of the field
@@ -199,7 +209,7 @@ abstract class Field
      *
      * @var string
      */
-    private $form_id = '0';
+    private $form_id = '';
 
     /**
      * Get the assigned form identity
@@ -225,24 +235,12 @@ abstract class Field
     /* HTML helper routines */
     /*-------------------------------------------------------------------------*/
 
-    /**
-     * Apply prefix to HTML name to ensure uniqueness
-     * 
-     * @return string, formatted as Prefix_form_name
-     */
-    public function html_prefix( $name )
-    {
-        $form = $this->get_form_id();
-        $form = empty( $form ) ? '' : '_' . $form;
-
-        return PREFIX_HTML . $form . $name;
-    }
-
     public function html_print( )
     {
-        $name           = $this->html_prefix( $this->get_attribute( 'name' ) );
-        $css_container  = $this->get_attribute( 'css-input-container' );
-        $css_row        = $this->get_attribute( 'css-input-row' );
+        $name           = esc_attr( $this->get_attribute( 'name' )                  );
+        $help           = htmlspecialchars( $this->get_attribute( 'help' )          );
+        $css_container  = esc_attr( $this->get_attribute( 'css-input-container' )   );
+        $css_row        = esc_attr( $this->get_attribute( 'css-input-row' )         );
 
         ?>
         <div class="<?php echo $css_container ?>">
@@ -250,10 +248,10 @@ abstract class Field
                 <?php $this->render() ?>
             </p>
             <?php
-            if ( !empty( $attributes[ 'help' ] ) )
+            if ( !empty( $help) )
             {
                 ?>
-                <span class="<?php echo $this->html_prefix('help'); ?>"><?php echo stripslashes( $attributes['help'] ); ?></span>
+                <span class="help"><?php $help ?></span>
                 <?php
             }
             ?>

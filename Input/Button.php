@@ -26,13 +26,13 @@ include_once('Constants.php');
 include_once('Field.php');
 
 /**
- * The checkbox input class
+ * The text input Class
  *
  * @since 1.0.0
  */
-class RadioButton extends Field
+class Button extends Field
 {
-    const Input_Type = 'radio';
+    const Input_Type = 'button';
 
     function __construct( $name )
     {
@@ -40,7 +40,7 @@ class RadioButton extends Field
     }
 
     /**
-     * Attributes of the input element
+     * Attributes of this input element
      *
      * @return array
      */
@@ -48,9 +48,8 @@ class RadioButton extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
-            'css-input'         => 'input-radio',
-            'css-label'         => 'radio',
-            'choices'           => '',
+            'button-type'       => 'submit',
+            'css-input'         => 'button',
         );
 
         $parent = parent::get_attributes_default();
@@ -69,9 +68,7 @@ class RadioButton extends Field
         {
             return False;
         }
-        $raw = $post[ $this->get_name() ];
-
-        return in_array( $raw, $this->get_attribute( 'choices' ) );
+        return True;
     }
 
     /**
@@ -87,7 +84,12 @@ class RadioButton extends Field
         }
         $raw = $post[ $this->get_name() ];
 
-        return $raw;
+        // The button should only return 'value'
+        if ( $raw === $this->get_attribute( 'value' ) )
+        {
+            return $raw;
+        }
+        return '';
     }
 
     /**
@@ -97,45 +99,23 @@ class RadioButton extends Field
      */
     public function render( )
     {
-        $type           = esc_attr( $this->get_attribute( 'type' )           );
+        $type           = esc_attr( $this->get_attribute( 'button-type' )    );
         $name           = esc_attr( $this->get_attribute( 'name' )           );
-        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
         $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
-        $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
-        $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
+        $value          = esc_attr( $this->get_attribute( 'value' )          );
 
-        $value          = $this->get_attribute( 'value' );
-        $options        = $this->get_attribute( 'choices' );
+        \Wkwgs_Logger::log_function( 'Button->render');
+        \Wkwgs_Logger::log_var( '$type', $type );
+        \Wkwgs_Logger::log_var( '$name', $name );
+        \Wkwgs_Logger::log_var( '$value', $value );
 
-        if ( ! empty( $options ) )
-        {
-            ?>
-            <span class="<?php echo $css_input_span ?>">
-                <label
-                    for="<?php echo $name; ?>"
-                    class="<?php echo $css_label ?>"><?php echo $label_text ?>
-                </label>
-                <?php
-                foreach ( $options as $option => $option_text )
-                {
-                    $option         = esc_attr( $option );
-                    $option_text    = htmlspecialchars( $option_text );
-                    $option_id      = $name . '_' . $option;
-                    $is_selected    = $option === $value;
-
-                    ?>
-                    <input
-                        type="<?php echo $type ?>"
-                        class="<?php echo $css_input ?>"
-                        name="<?php echo $name ?>"
-                        id="<?php echo $option_id ?>"
-                        value="<?php echo $option ?>"
-                        <?php if ($is_selected) { echo 'checked'; } ?>
-                    />&nbsp;<?php echo $option_text ?>
-
-                    <?php
-                }
-            ?></span><?php
-        }
+        ?>
+        <button
+            type='<?php echo $type ?>'
+            name='<?php echo $name ?>'
+            class='<?php echo $css_input ?>' >
+            <?php echo $value ?>
+        </button>
+        <?php    
     }
 }

@@ -20,7 +20,7 @@ function apply_filters( $name, $values) { return $values; }
 
 include_once( '..\Factory.php' );
 
-Wkwgs_Logger::clear();
+//Wkwgs_Logger::clear();
 
 $form = \Input\Factory::Get(
         array(
@@ -33,16 +33,7 @@ $form->add_field(
     \Input\Factory::Get(
         array(
         'type'          => 'checkbox',
-        'name'          => 'name only'
-        )
-    )
-);
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'checkbox',
-        'name'          => 'checkbox with label',
-        'label'         => 'want a good time?',
+        'name'          => 'name_only'
         )
     )
 );
@@ -51,9 +42,8 @@ $form->add_field(
     \Input\Factory::Get(
         array(
         'type'          => 'checkbox',
-        'name'          => 'checkbox enabled',
-        'label'         => 'this is the label',
-        'value'         => 'yes',
+        'name'          => 'checkbox_with_label',
+        'label'         => 'checkbox_with_label',
         )
     )
 );
@@ -62,13 +52,48 @@ $form->add_field(
     \Input\Factory::Get(
         array(
         'type'          => 'checkbox',
-        'name'          => 'escape html',
+        'name'          => 'checkbox_enabled',
+        'label'         => 'checkbox_enabled',
+        'selected'      => 'boo',
+        'value'         => 'boo',
+        )
+    )
+);
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'          => 'checkbox',
+        'name'          => 'html_and_special_chars',
         'label'         => '< html & special chars >',
         )
     )
 );
 
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'          => 'button',
+        'name'          => 'submit',
+        'value'         => 'All Done',
+        )
+    )
+);
 $form->html_print();
+
+$post = $form->get_post_data();
+if ( isset( $post ) )
+{
+    \Wkwgs_Logger::log_var( '$post', $post );
+
+    echo "<div>";
+    foreach ( $form->get_values() as $name => $value)
+    {
+        echo "$name = $value</br>";
+    }
+    echo "</div>";
+}
 
 ?>
 
