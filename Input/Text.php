@@ -95,6 +95,9 @@ class Text extends Field
      */
     public function render( )
     {
+        \Wkwgs_Logger::log_function( 'Text::render');
+        \Wkwgs_Logger::log_var( '$this', $this );
+
         $type           = $this->get_attribute( 'type' );
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
@@ -106,9 +109,7 @@ class Text extends Field
         $value          = $this->get_attribute( 'value' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
 
-        $required       = $this->is_required();
-
-        if ( $required )
+        if ( $this->is_required() )
         {
             $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }

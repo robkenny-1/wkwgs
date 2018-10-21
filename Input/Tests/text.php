@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 ?>
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 </head>
 <body>
 <h1 id="logo">
-Checkbox Unit Tests
+Text Unit Tests
 </h1>
 
 <?php
@@ -26,15 +26,15 @@ include_once( '..\Factory.php' );
 $form = \Input\Factory::Get(
         array(
         'type'          => 'form',
-        'name'          => 'checkbox_test_form',
+        'name'          => 'text_test_form',
     )
 );
 
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'checkbox',
-        'name'          => 'name_only'
+        'type'          => 'text',
+        'name'          => 'text_field',
         )
     )
 );
@@ -42,10 +42,10 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'checkbox',
-        'name'          => 'checkbox_with_label',
-        'label'         => 'checkbox_with_label',
-        'text-position'     => 'before',
+        'type'          => 'text',
+        'name'          => 'required_text_field',
+        'label'         => 'Required data',
+        'required'      => 'yes',
         )
     )
 );
@@ -53,24 +53,14 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'checkbox',
-        'name'          => 'checkbox_enabled',
-        'label'         => 'checkbox_enabled',
-        'selected'      => 'boo',
-        'value'         => 'boo',
+        'type'          => 'text',
+        'name'          => 'text_field_label',
+        'label'         => 'Enter text here!',
         )
     )
 );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'checkbox',
-        'name'          => 'html_and_special_chars',
-        'label'         => '< html & special chars >',
-        )
-    )
-);
+// -------------------------------------------------------------------------------
 
 $form->add_field(
     \Input\Factory::Get(
@@ -93,6 +83,8 @@ $form->add_field(
 );
 
 $form->html_print();
+
+// -------------------------------------------------------------------------------
 
 // Store results in the session
 $post = $form->get_submit_data();

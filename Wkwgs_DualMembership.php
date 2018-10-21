@@ -30,7 +30,6 @@ include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Factory.php' );
 
 class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 {
-
     /*
      *********************************************************************************
      *  Plugin Values
@@ -80,6 +79,41 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                     )
                 ),
         );
+    }
+
+    protected function get_form( $form_type, $form_name, $form_desc )
+    {
+        \Wkwgs_Logger::log_function( 'get_form' );
+        \Wkwgs_Logger::log_var( '$form_type', $form_type );
+        \Wkwgs_Logger::log_var( '$form_name', $form_name );
+        \Wkwgs_Logger::log_var( '$form_desc', $form_desc );
+
+        if ( 
+            empty( $form_type )
+            ||
+            empty( $form_name )
+            ||
+            ! isset( $form_desc[ $form_type ] )
+            )
+        {
+            return;
+        }
+
+        $form = \Input\Factory::Get(
+            array(
+            'type'          => 'form',
+            'name'          => $form_name . $form_type . '_panel',
+            )
+        );
+
+        $fields = $form_desc[ $form_type ];
+        foreach ( $fields as $field )
+        {
+            $form->add_field( \Input\Factory::Get( $field ) );
+        }
+
+        \Wkwgs_Logger::log_var( '$form', $form );
+        return $form;
     }
 
     protected function getMainPluginFileName()
@@ -153,77 +187,15 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         {
             return;
         }
-/*
-        $form_id = '4220';
-        $atts = array();
-        $form = weforms()->container['form']->get( $form_id );
-        $form_fields   = $form->get_fields();
-        $form_settings = $form->get_settings();
-
-        ?>
-        <script type="text/javascript">
-            if ( typeof wpuf_conditional_items === 'undefined' ) {
-                window.wpuf_conditional_items = [];
-            }
-
-            if ( typeof wpuf_plupload_items === 'undefined' ) {
-                window.wpuf_plupload_items = [];
-            }
-
-            if ( typeof wpuf_map_items === 'undefined' ) {
-                window.wpuf_map_items = [];
-            }
-        </script>
-        <ul class="wpuf-form form-label-<?php echo $form_settings['label_position']; ?>">
-        <?php
-        weforms()->fields->render_fields( $form_fields, $form->id, $atts );
-        ?>
-        <ul class="wpuf-form form-label-<?php echo $form_settings['label_position']; ?>">
-        <?php
-*/
-/*
-        ?> 
-        <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
-            <div class="options_group">
-                <?php
-                foreach ( $enabled as $product_meta => $product_meta_args )
-                {
-                    $display_fields = $product_meta_args['display_fields'];
-        
-                    \Wkwgs_Logger::log( 'adding custom fields' );
-                    foreach ( $display_fields as $field => $field_args )
-        
-                    {
-                        \Wkwgs_Logger::log_var( '$field', $field );
-                        \Wkwgs_Logger::log_var( '$field_args', $field_args );
-        
-                        woocommerce_form_field(
-                            $field,
-                            $field_args);
-                    }
-                }
-                ?>
-            </div>
-        </div>
-        <?php
-*/
 
         ?> 
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <div class="options_group">
                 <?php
-                foreach ( $enabled as $product_meta => $product_meta_args )
+                foreach ( $enabled as $product_name => $product_items )
                 {
-                    $display_fields = $product_meta_args['display_fields'];
-        
-                    foreach ( $display_fields as $field )        
-                    {
-                        $input = \Input\Factory::Get( $field );
-                        if ( ! is_null( $input ) )
-                        {
-                            $input->html_print( '0' );
-                        }
-                    }
+                    $form = $this->get_form( 'display_fields', $product_name, $product_items );
+                    $form->html_print();
                 }
                 ?>
             </div>
@@ -336,48 +308,16 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     */
     public function product_admin_show_customized_checkboxes()
     {
-        global $post;
-        $fields = $this->get_product_customized();
         ?> 
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <?php
-            /*
-            // WooCommerce implementation
-            foreach ( $fields as $key => $field_args )
+            foreach ( $this->get_product_customized() as $product_name => $product_items )
             {
-                $product = wc_get_product($post);
-                $db_value = $product->get_meta($key, true);
-
-                ?><div class="options_group"><?php
-                woocommerce_form_field(
-                    $key,
-                    $field_args,
-                    $db_value);
-                ?></div><?php
-            }
-            */
-            ?>
-
-            <?php
-            // Our implementation
-            foreach ( $fields as $key => $field_args )
-            {
-                $admin      = $field_args[ 'admin' ];
-
-                $product = wc_get_product($post);
-                $db_value = $product->get_meta($key, true);
-                $checked = $db_value === 'yes' ? 'yes' : 'no';
-
-                $admin[ 'name' ] = $key;
-                $admin[ 'value' ] = $checked;
-
-                $checkbox = Input\Factory::Get( $admin );
-                $checkbox->html_print( '0' );
+                $form = $this->get_form( 'admin', $product_name, $product_items );
+                $form->html_print();
             }
             ?>
-
         </div>
-
         <?php
     }
 
