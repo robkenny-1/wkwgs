@@ -95,14 +95,16 @@ class Text extends Field
      */
     public function render( )
     {
-        $type           = esc_attr( $this->get_attribute( 'type' )           );
-        $name           = esc_attr( $this->get_attribute( 'name' )           );
+        $type           = $this->get_attribute( 'type' );
+        $name           = $this->get_attribute( 'name' );
+        $id             = $this->get_attribute( 'id' );
+        $value          = $this->get_attribute( 'value' );
+        $css_input      = $this->get_attribute( 'css-input' );
+        $css_label      = $this->get_attribute( 'css-label' );
+        $css_input_span = $this->get_attribute( 'css-input-span' );
+        $placeholder    = $this->get_attribute( 'placeholder' );
+        $value          = $this->get_attribute( 'value' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
-        $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
-        $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
-        $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
-        $placeholder    = esc_attr( $this->get_attribute( 'placeholder' )    );
-        $value          = esc_attr( $this->get_attribute( 'value' )          );
 
         $required       = $this->is_required();
 
@@ -112,18 +114,20 @@ class Text extends Field
         }
         ?>
         <label
-            for="<?php echo $name; ?>"
-            class="<?php echo $css_label ?>"><?php echo $label_text ?>
-        </label>
-        <span class="<?php echo $css_input_span ?>">
+            <?php Field::html_print_attribute('for',        $name) ?>
+            <?php Field::html_print_attribute('class',      $css_label) ?>
+        ><?php echo $label_text ?></label>
+        <span
+            <?php Field::html_print_attribute('class',      $css_input_span) ?>
+        >
             <input
-                type="<?php echo $type ?>"
-                class="<?php echo $css_input ?>"
-                name="<?php echo $name ?>"
-                id="<?php echo $name ?>"
-                placeholder="<?php echo $placeholder ?>"
-                value="<?php echo $value ?>"
-                />
+                <?php Field::html_print_attribute('type',           $type) ?>
+                <?php Field::html_print_attribute('class',          $css_input) ?>
+                <?php Field::html_print_attribute('name',           $name) ?>
+                <?php Field::html_print_attribute('id',             $id) ?>
+                <?php Field::html_print_attribute('value',          $value) ?>
+                <?php Field::html_print_attribute('placeholder',    $placeholder) ?>
+            />
         </span>
         <?php    
     }

@@ -113,26 +113,25 @@ class Form extends Field
 
     public function render( )
     {
-        $id             = esc_attr( $this->get_attribute( 'id' )            );
-        $name           = esc_attr( $this->get_attribute( 'name' )          );
-        $action         = esc_attr( $this->get_attribute( 'action' )        );
-        $method         = esc_attr( $this->get_attribute( 'method' )        );
-        $enctype        = esc_attr( $this->get_attribute( 'enctype' )       );
-        $css            = esc_attr( $this->get_attribute( 'class' )         );
-        $css_panel      = esc_attr( $this->get_attribute( 'class_panel' )   );
+        $name           = $this->get_attribute( 'name' );
+        $id             = $this->get_attribute( 'id' );
+        $action         = $this->get_attribute( 'action' );
+        $method         = $this->get_attribute( 'method' );
+        $enctype        = $this->get_attribute( 'enctype' );
+        $css            = $this->get_attribute( 'class' );
+        $css_panel      = $this->get_attribute( 'class_panel' );
 
         ?>	
         <form 
-            <?php if ( ! empty( $id ) ) { echo 'id="' . $id . '"'; } ?>
-            name="<?php echo $name ?>"
-            class="<?php echo $css ?>"
-            action="<?php echo $action ?>"
-            method="<?php echo $method ?>"
-            enctype="<?php echo $enctype ?>"
+            <?php Field::html_print_attribute('name',       $name) ?>
+            <?php Field::html_print_attribute('id',         $id) ?>
+            <?php Field::html_print_attribute('action',     $action) ?>
+            <?php Field::html_print_attribute('method',     $method) ?>
+            <?php Field::html_print_attribute('enctype',    $enctype) ?>
         >
             <div
-                id="<?php echo $id . '_panel' ?>"
-                class="<?php echo $css_panel ?>"
+                <?php Field::html_print_attribute('id',     $id . '_panel') ?>
+                <?php Field::html_print_attribute('class',  $css_panel) ?>
             >
                 <?php
                 foreach ( $this->get_fields() as $field)

@@ -235,6 +235,23 @@ abstract class Field
     /* HTML helper routines */
     /*-------------------------------------------------------------------------*/
 
+    public static function html_print_attribute( $attr, $value )
+    {
+        if ( gettype( $value ) === 'boolean' )
+        {
+            if ( $value )
+            {
+                echo $attr . PHP_EOL;
+                return;
+            }
+        }
+        if ( ! empty( $value ) )
+        {
+            $value = esc_attr( $value );
+            echo $attr . '="' . $value . '"' . PHP_EOL;
+            return;
+        }
+    }
     public function html_print( )
     {
         $name           = esc_attr( $this->get_attribute( 'name' )                  );

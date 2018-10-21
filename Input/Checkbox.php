@@ -52,6 +52,7 @@ class Checkbox extends Field
             'selected'          => '',
             'css-input'         => 'input-checkbox',
             'css-label'         => 'checkbox',
+            'text-position'     => 'after',
         );
 
         $parent = parent::get_attributes_default();
@@ -111,15 +112,16 @@ class Checkbox extends Field
      */
     public function render( )
     {
-        $type           = esc_attr( $this->get_attribute( 'type' )           );
-        $name           = esc_attr( $this->get_attribute( 'name' )           );
-        $value          = esc_attr( $this->get_attribute( 'value' )          );
-        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
-        $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
-        $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
-        $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
-
+        $type           = $this->get_attribute( 'type' );
+        $name           = $this->get_attribute( 'name' );
+        $id             = $this->get_attribute( 'id' );
+        $value          = $this->get_attribute( 'value' );
+        $css_input      = $this->get_attribute( 'css-input' );
+        $css_label      = $this->get_attribute( 'css-label' );
+        $css_input_span = $this->get_attribute( 'css-input-span' );
         $checked        = $this->get_attribute( 'selected' ) === $this->get_attribute( 'value' );
+        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
+        $text_after    = $this->get_attribute( 'text-position' ) === 'after';
 
         /*
         \Wkwgs_Logger::log_function( 'Checkbox::render');
@@ -130,18 +132,24 @@ class Checkbox extends Field
         \Wkwgs_Logger::log_var( '$checked', $checked );
         \Wkwgs_Logger::log_var( 'get_attributes', $this->get_attributes() );
         */
-        $checked        = $checked ? 'checked="checked"' : '';
 
         ?>
-        <span class="<?php echo $css_input_span ?>">
-            <label class="<?php echo $css_label ?>">
+        <span
+            <?php Field::html_print_attribute('class', $css_input_span) ?>
+            <label
+                <?php Field::html_print_attribute('class', $css_label) ?>
+            >
+                <?php if ( ! $text_after ) { echo '&nbsp;' . $label_text; } ?>
                 <input
-                    type="<?php echo $type ?>"
-                    <?php if ( ! empty( $id ) ) { echo 'id="' . $id . '"'; } ?>
-                    name="<?php echo $name ?>"
-                    value="<?php echo $value ?>"
-                    class="<?php echo $css_input ?>"
-                    <?php echo $checked ?>/>&nbsp;<?php echo $label_text ?></label>
+                    <?php Field::html_print_attribute('type',       $type) ?>
+                    <?php Field::html_print_attribute('class',      $css_input) ?>
+                    <?php Field::html_print_attribute('name',       $name) ?>
+                    <?php Field::html_print_attribute('id',         $id) ?>
+                    <?php Field::html_print_attribute('value',      $value) ?>
+                    <?php Field::html_print_attribute('checked',    $checked) ?>
+                />
+                <?php if ( $text_after ) { echo '&nbsp;' . $label_text; } ?>
+             </label>
         </span>
         <?php    
     }

@@ -44,6 +44,7 @@ $form->add_field(
         'type'          => 'checkbox',
         'name'          => 'checkbox_with_label',
         'label'         => 'checkbox_with_label',
+        'text-position'     => 'before',
         )
     )
 );

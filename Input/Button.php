@@ -99,23 +99,24 @@ class Button extends Field
      */
     public function render( )
     {
-        $type           = esc_attr( $this->get_attribute( 'button-type' )    );
-        $name           = esc_attr( $this->get_attribute( 'name' )           );
-        $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
-        $value          = esc_attr( $this->get_attribute( 'value' )          );
+        $type           = $this->get_attribute( 'type' );
+        $name           = $this->get_attribute( 'name' );
+        $id             = $this->get_attribute( 'id' );
+        $value          = $this->get_attribute( 'value' );
+        $css_input      = $this->get_attribute( 'css-input' );
 
-        \Wkwgs_Logger::log_function( 'Button->render');
-        \Wkwgs_Logger::log_var( '$type', $type );
-        \Wkwgs_Logger::log_var( '$name', $name );
-        \Wkwgs_Logger::log_var( '$value', $value );
+        //\Wkwgs_Logger::log_function( 'Button->render');
+        //\Wkwgs_Logger::log_var( '$type', $type );
+        //\Wkwgs_Logger::log_var( '$name', $name );
+        //\Wkwgs_Logger::log_var( '$value', $value );
 
         ?>
         <button
-            type='<?php echo $type ?>'
-            name='<?php echo $name ?>'
-            class='<?php echo $css_input ?>' >
-            <?php echo $value ?>
-        </button>
+            <?php Field::html_print_attribute('type',       $type) ?>
+            <?php Field::html_print_attribute('class',      $css_input) ?>
+            <?php Field::html_print_attribute('name',       $name) ?>
+            <?php Field::html_print_attribute('id',         $id) ?>
+        ><?php echo $value ?></button>
         <?php    
     }
 }

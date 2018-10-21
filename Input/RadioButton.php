@@ -50,7 +50,7 @@ class RadioButton extends Field
             'type'              => self::Input_Type,
             'css-input'         => 'input-radio',
             'css-label'         => 'radio',
-            'choices'           => '',
+            'selected'          => '',
         );
 
         $parent = parent::get_attributes_default();
@@ -97,12 +97,14 @@ class RadioButton extends Field
      */
     public function render( )
     {
-        $type           = esc_attr( $this->get_attribute( 'type' )           );
-        $name           = esc_attr( $this->get_attribute( 'name' )           );
+        $type           = $this->get_attribute( 'type' );
+        $name           = $this->get_attribute( 'name' );
+        $id             = $this->get_attribute( 'id' );
+        $value          = $this->get_attribute( 'value' );
+        $css_input      = $this->get_attribute( 'css-input' );
+        $css_label      = $this->get_attribute( 'css-label' );
+        $css_input_span = $this->get_attribute( 'css-input-span' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
-        $css_input      = esc_attr( $this->get_attribute( 'css-input' )      );
-        $css_label      = esc_attr( $this->get_attribute( 'css-label' )      );
-        $css_input_span = esc_attr( $this->get_attribute( 'css-input-span' ) );
 
         $value          = $this->get_attribute( 'value' );
         $options        = $this->get_attribute( 'choices' );
@@ -112,25 +114,23 @@ class RadioButton extends Field
             ?>
             <span class="<?php echo $css_input_span ?>">
                 <label
-                    for="<?php echo $name; ?>"
-                    class="<?php echo $css_label ?>"><?php echo $label_text ?>
-                </label>
+                    <?php Field::html_print_attribute('for',        $name) ?>
+                    <?php Field::html_print_attribute('class',      $css_label) ?>
+                ><?php echo $label_text ?></label>
                 <?php
                 foreach ( $options as $option => $option_text )
                 {
-                    $option         = esc_attr( $option );
                     $option_text    = htmlspecialchars( $option_text );
-                    $option_id      = $name . '_' . $option;
                     $is_selected    = $option === $value;
 
                     ?>
                     <input
-                        type="<?php echo $type ?>"
-                        class="<?php echo $css_input ?>"
-                        name="<?php echo $name ?>"
-                        id="<?php echo $option_id ?>"
-                        value="<?php echo $option ?>"
-                        <?php if ($is_selected) { echo 'checked'; } ?>
+                        <?php Field::html_print_attribute('class',      $css_input) ?>
+                        <?php Field::html_print_attribute('type',       $type) ?>
+                        <?php Field::html_print_attribute('name',       $name) ?>
+                        <?php Field::html_print_attribute('id',         $name . '_' . $option) ?>
+                        <?php Field::html_print_attribute('value',      $value) ?>
+                        <?php Field::html_print_attribute('checked',    $is_selected) ?>
                     />&nbsp;<?php echo $option_text ?>
 
                     <?php
