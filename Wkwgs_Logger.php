@@ -41,8 +41,15 @@ class Wkwgs_Logger
     }
     public static function log_var( $var_name, $var )
     {
-        $var_text = isset( $var ) ? print_r( $var, true ) : '(unset)';
-        $msg = "===== Variable ===== $var_name = " . $var_text;
+        $msg  = "===== Variable ===== $var_name" . PHP_EOL;
+        if ( isset( $var ) )
+        {
+            $msg .= print_r( $var, true )   . PHP_EOL;
+        }
+        else
+        {
+            $msg .= "Type = (unset)" . PHP_EOL;
+        }
         Wkwgs_Logger::log( $msg );
     }
     public static function log_msg( $msg )
