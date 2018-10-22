@@ -74,6 +74,8 @@ $form->add_field(
     )
 );
 
+// -------------------------------------------------------------------------------
+
 $form->add_field(
     \Input\Factory::Get(
         array(
@@ -93,6 +95,8 @@ $form->add_field(
         )
     )
 );
+
+// -------------------------------------------------------------------------------
 
 // Store results in the session
 $post = $form->get_submit_data();
