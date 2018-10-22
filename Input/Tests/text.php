@@ -33,8 +33,8 @@ $form = \Input\Factory::Get(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'text',
-        'name'          => 'text_field',
+        'type'              => 'text',
+        'name'              => 'text_field',
         )
     )
 );
@@ -42,10 +42,12 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'text',
-        'name'          => 'required_text_field',
-        'label'         => 'Required data',
-        'required'      => 'yes',
+        'type'              => 'text',
+        'name'              => 'right_required',
+        'label'             => 'right, required',
+        'required'          => 'yes',
+        'text-position'     => 'right',
+        'placeholder'       => 'placeholder for right',
         )
     )
 );
@@ -53,9 +55,35 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'text',
-        'name'          => 'text_field_label',
-        'label'         => 'Enter text here!',
+        'type'              => 'text',
+        'name'              => 'left',
+        'label'             => 'left',
+        'text-position'     => 'left',
+        'placeholder'       => 'placeholder for left',
+        )
+    )
+);
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'              => 'text',
+        'name'              => 'top',
+        'label'             => 'Top',
+        'text-position'     => 'top',
+        'placeholder'       => 'placeholder for top',
+        )
+    )
+);
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'              => 'text',
+        'name'              => 'bottom',
+        'label'             => 'Bottom',
+        'text-position'     => 'bottom',
+        'help'              => 'This is the help text for bottom'
         )
     )
 );
@@ -67,7 +95,7 @@ $form->add_field(
         array(
         'type'          => 'button',
         'name'          => 'submit',
-        'value'         => 'All Done',
+        'value'         => 'Submit',
         )
     )
 );
@@ -81,8 +109,6 @@ $form->add_field(
         )
     )
 );
-
-$form->html_print();
 
 // -------------------------------------------------------------------------------
 
@@ -100,6 +126,8 @@ if ( isset( $post ) )
     exit();
 }
 
+$form->html_print();
+
 // Print out any results stored in the session
 if ( isset( $_SESSION['form_values'] ) )
 {
@@ -111,6 +139,7 @@ if ( isset( $_SESSION['form_values'] ) )
     }
     echo "</div>";
 }
+
 ?>
 
 </body>

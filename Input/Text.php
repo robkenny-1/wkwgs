@@ -48,6 +48,7 @@ class Text extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
+            'label'             => 'unset',
             'css-input'         => 'input-text',
             'css-label'         => '',
         );
@@ -108,27 +109,78 @@ class Text extends Field
         $placeholder    = $this->get_attribute( 'placeholder' );
         $value          = $this->get_attribute( 'value' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
+        $label_before   = True;
 
-        if ( $this->is_required() )
+        if ( $this->is_required() && empty($label_text) )
         {
             $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }
+        \Wkwgs_Logger::log_var( '$label_text', $label_text );
+
+        switch ( $this->get_attribute( 'text-position' ) )
+        {
+            case 'bottom':
+                if (! empty($label_text))
+                {
+                    $label_text = '</br>' . $label_text;
+                }
+                $label_before = False;
+                break;
+
+            case 'right':
+                if (! empty($label_text))
+                {
+                    $label_text = '&nbsp;' . $label_text;
+                }
+                $label_before = False;
+                break;
+
+            case 'top':
+                if (! empty($label_text))
+                {
+                    $label_text = $label_text . '</br>';
+                }
+                $label_before = True;
+                break;
+
+            case 'left':
+            default:
+                if (! empty($label_text))
+                {
+                    $label_text = $label_text . '&nbsp;';
+                }
+                $label_before = True;
+                break;
+        }
+        \Wkwgs_Logger::log_var( '$label_text', $label_text );
+
         ?>
-        <label
-            <?php Field::html_print_attribute('for',        $id) ?>
-            <?php Field::html_print_attribute('class',      $css_label) ?>
-        ><?php echo $label_text ?></label>
         <span
             <?php Field::html_print_attribute('class',      $css_input_span) ?>
-        >
-            <input
-                <?php Field::html_print_attribute('type',           $type) ?>
-                <?php Field::html_print_attribute('class',          $css_input) ?>
-                <?php Field::html_print_attribute('name',           $name) ?>
-                <?php Field::html_print_attribute('id',             $id) ?>
-                <?php Field::html_print_attribute('value',          $value) ?>
-                <?php Field::html_print_attribute('placeholder',    $placeholder) ?>
-            />
+            <label
+                <?php Field::html_print_attribute('class', $css_label) ?>
+            >
+                <?php
+                if ( $label_before )
+                {
+                    echo $label_text;
+                }
+                ?>
+                <input
+                    <?php Field::html_print_attribute('type',           $type) ?>
+                    <?php Field::html_print_attribute('class',          $css_input) ?>
+                    <?php Field::html_print_attribute('name',           $name) ?>
+                    <?php Field::html_print_attribute('id',             $id) ?>
+                    <?php Field::html_print_attribute('value',          $value) ?>
+                    <?php Field::html_print_attribute('placeholder',    $placeholder) ?>
+                />
+                <?php
+                if ( ! $label_before )
+                {
+                    echo $label_text;
+                }
+                ?>
+             </label>
         </span>
         <?php    
     }

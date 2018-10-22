@@ -46,7 +46,7 @@ abstract class Field
         $defaults = $this->get_attributes_default();
         $defaults[ 'name' ] = $name;
 
-        $this->set_attributes( $defaults );
+        $this->attributes = $defaults;
     }
 
     /**
@@ -60,6 +60,7 @@ abstract class Field
             'type'                  => self::Input_Type,
             'name'                  => '',
             'label'                 => '',
+            'text-position'         => 'left',
             'value'                 => '',
             'required'              => 'no',
             'id'                    => 0,
@@ -127,11 +128,10 @@ abstract class Field
     public function set_attributes( $attributes )
     {
         //\Wkwgs_Logger::log_function( 'Field::set_attributes');
+        //\Wkwgs_Logger::log_var( '$this->get_name()', $this->get_name() );
         //\Wkwgs_Logger::log_var( '$attributes', $attributes );
 
-        $this_attrs = is_null( $this->attributes ) ? array() : $this->attributes;
-
-        $this->attributes = array_merge( $this->get_attributes_default(), $this_attrs, $attributes );
+        $this->attributes = array_merge( $this->attributes, $attributes );
         //\Wkwgs_Logger::log_var( '$this->attributes', $this->attributes );
     }
 
@@ -268,7 +268,7 @@ abstract class Field
             if ( !empty( $help) )
             {
                 ?>
-                <span class="help"><?php $help ?></span>
+                <span class="help"><?php echo $help ?></span>
                 <?php
             }
             ?>

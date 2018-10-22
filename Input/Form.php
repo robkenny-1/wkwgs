@@ -111,6 +111,27 @@ class Form extends Field
         return True;
     }
 
+    public function render_fields( )
+    {
+        $id             = $this->get_attribute( 'id' );
+        $css_panel      = $this->get_attribute( 'class_panel' );
+
+        ?>	
+        <div
+            <?php Field::html_print_attribute('id',     $id . '_panel') ?>
+            <?php Field::html_print_attribute('class',  $css_panel) ?>
+        >
+            <?php
+            foreach ( $this->get_fields() as $field)
+            {
+                $field->html_print();
+            }
+            ?>
+        </div>
+
+        <?php
+    }
+
     public function render( )
     {
         $name           = $this->get_attribute( 'name' );
@@ -129,17 +150,7 @@ class Form extends Field
             <?php Field::html_print_attribute('method',     $method) ?>
             <?php Field::html_print_attribute('enctype',    $enctype) ?>
         >
-            <div
-                <?php Field::html_print_attribute('id',     $id . '_panel') ?>
-                <?php Field::html_print_attribute('class',  $css_panel) ?>
-            >
-                <?php
-                foreach ( $this->get_fields() as $field)
-                {
-                    $field->html_print();
-                }
-                ?>
-            </div>
+        <?php $this->render_fields(); ?>
         </form>
         <?php
     }
@@ -178,6 +189,47 @@ class Form extends Field
         }
     }
 
+    /**
+     * Get the input field matching the name
+     *
+     * @param string $name, name of field to find
+     * @return field
+     */
+    public function get_field( $name )
+    {
+        foreach ( $this->get_fields() as $field )
+        {
+            if ( $field->get_name() === $name )
+            {
+                return $field;
+            }
+        }
+    }
+    /**
+     * Set the values of the named input fields
+     *
+     * @return null
+     */
+    public function set_field_values( $field_values )
+    {
+        if ( ! empty( $field_values ) )
+        {
+            foreach ($field_values as $field_name => $value )
+            {
+                $field = $this->get_field( $field_name );
+                if ( isset( $field ) )
+                {
+                    $field->set_attribute( 'value', $value );
+                }
+            }
+        }
+    }
+
+    /**
+     * Get the submit button associated with this form
+     *
+     * @return submit button object
+     */
     public function get_submit_button( )
     {
         foreach ( $this->get_fields() as $field )
@@ -193,6 +245,12 @@ class Form extends Field
         }
         return null;
     }
+
+    /**
+     * Return either the GET or POST data, depending on the form submission
+     *
+     * @return array of posted data
+     */
     public function get_submit_data( )
     {
         $button = $this->get_submit_button();

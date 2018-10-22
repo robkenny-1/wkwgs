@@ -48,11 +48,11 @@ class Checkbox extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
-            'value'             => 'yes',
-            'selected'          => '',
+            'value'             => '', // when checked value === selection-value
+            'selection-value'   => 'yes',
+            'text-position'     => 'right',
             'css-input'         => 'input-checkbox',
             'css-label'         => 'checkbox',
-            'text-position'     => 'after',
         );
 
         $parent = parent::get_attributes_default();
@@ -69,6 +69,7 @@ class Checkbox extends Field
     {
         \Wkwgs_Logger::log_function( 'Checkbox::validate');
         \Wkwgs_Logger::log_var( '$this->get_name()', $this->get_name() );
+        \Wkwgs_Logger::log_var( '$post', $post );
 
         $is_valid = False;
 
@@ -77,11 +78,12 @@ class Checkbox extends Field
             $raw = $post[ $this->get_name() ];
 
             \Wkwgs_Logger::log_var( '$raw', $raw );
-            \Wkwgs_Logger::log_var( '$this->get_attribute( "value" )', $this->get_attribute( 'value' ) );
+            \Wkwgs_Logger::log_var( '$this->get_attribute( "value" )', $this->get_attribute( 'selection-value' ) );
 
-            $is_valid = $raw === $this->get_attribute( 'value' );
+            $is_valid = $raw === $this->get_attribute( 'selection-value' );
         }
 
+        \Wkwgs_Logger::log_var( 'return $is_valid', $is_valid );
         return $is_valid;
     }
 
@@ -92,6 +94,8 @@ class Checkbox extends Field
      */
     public function get_value( $post )
     {
+        \Wkwgs_Logger::log_function( 'Checkbox::get_value');
+
         $cleansed = '';
 
         if ( $this->validate( $post ) )
@@ -102,6 +106,7 @@ class Checkbox extends Field
             $cleansed = $raw;
         }
 
+        \Wkwgs_Logger::log_var( 'return $cleansed', $cleansed );
         return $cleansed;
     }
 
@@ -115,31 +120,40 @@ class Checkbox extends Field
         $type           = $this->get_attribute( 'type' );
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
-        $value          = $this->get_attribute( 'value' );
+        $value          = $this->get_attribute( 'selection-value' );
         $css_input      = $this->get_attribute( 'css-input' );
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
-        $checked        = $this->get_attribute( 'selected' ) === $this->get_attribute( 'value' );
+        $checked        = $this->get_attribute( 'selection-value' ) === $this->get_attribute( 'value' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
-        $text_after    = $this->get_attribute( 'text-position' ) === 'after';
+        $text_pos       = $this->get_attribute( 'text-position' );
 
         /*
         \Wkwgs_Logger::log_function( 'Checkbox::render');
         \Wkwgs_Logger::log_var( '$type', $type );
         \Wkwgs_Logger::log_var( '$name', $name );
         \Wkwgs_Logger::log_var( '$label_text', $label_text );
-        \Wkwgs_Logger::log_var( '$this->get_attribute( "value" )', $this->get_attribute( 'value' ) );
+        \Wkwgs_Logger::log_var( '$this->get_attribute( "selection-value" )', $this->get_attribute( 'selection-value' ) );
         \Wkwgs_Logger::log_var( '$checked', $checked );
         \Wkwgs_Logger::log_var( 'get_attributes', $this->get_attributes() );
         */
 
         ?>
         <span
-            <?php Field::html_print_attribute('class', $css_input_span) ?>
+            <?php Field::html_print_attribute('class',      $css_input_span) ?>
             <label
                 <?php Field::html_print_attribute('class', $css_label) ?>
             >
-                <?php if ( ! $text_after ) { echo '&nbsp;' . $label_text; } ?>
+                <?php
+                if ( $text_pos === 'top' )
+                {
+                    echo $label_text . '</br>';
+                }
+                else if ( $text_pos === 'left' )
+                {
+                    echo $label_text . '&nbsp;';
+                }
+                ?>
                 <input
                     <?php Field::html_print_attribute('type',       $type) ?>
                     <?php Field::html_print_attribute('class',      $css_input) ?>
@@ -148,7 +162,16 @@ class Checkbox extends Field
                     <?php Field::html_print_attribute('value',      $value) ?>
                     <?php Field::html_print_attribute('checked',    $checked) ?>
                 />
-                <?php if ( $text_after ) { echo '&nbsp;' . $label_text; } ?>
+                <?php
+                if ( $text_pos === 'bottom' )
+                {
+                    echo '</br>' . $label_text;
+                }
+                else if ( $text_pos === 'right' )
+                {
+                    echo '&nbsp;' . $label_text;
+                }
+                ?>
              </label>
         </span>
         <?php    

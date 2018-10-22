@@ -46,14 +46,15 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                 'wkwgs_is_dual_membership' => array(
 
                     'admin'             => array(
-                        'type'          => 'checkbox',
-                        'name'          => 'is_dual_membership',
-                        'label'         => __( 'Include Dual email',  Input\DOMAIN ),
-                        'required'      => 'yes',
+                        array(
+                            'type'          => 'checkbox',
+                            'name'          => 'wkwgs_is_dual_membership',
+                            'label'         => __( 'Include Dual email',  Input\DOMAIN ),
+                            )
                     ),
                     
-                    // Fields to display on product page
-                    'display_fields'	=> array(
+                    // Fields to display on product's cart page
+                    'cart'	=> array(
 
                         array(
                                 'name'          => 'wkwgs_is_dual_membership_first_name',
@@ -83,10 +84,10 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     protected function get_form( $form_type, $form_name, $form_desc )
     {
-        \Wkwgs_Logger::log_function( 'get_form' );
-        \Wkwgs_Logger::log_var( '$form_type', $form_type );
-        \Wkwgs_Logger::log_var( '$form_name', $form_name );
-        \Wkwgs_Logger::log_var( '$form_desc', $form_desc );
+        //\Wkwgs_Logger::log_function( 'get_form' );
+        //\Wkwgs_Logger::log_var( '$form_type', $form_type );
+        //\Wkwgs_Logger::log_var( '$form_name', $form_name );
+        //\Wkwgs_Logger::log_var( '$form_desc', $form_desc );
 
         if ( 
             empty( $form_type )
@@ -102,7 +103,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         $form = \Input\Factory::Get(
             array(
             'type'          => 'form',
-            'name'          => $form_name . $form_type . '_panel',
+            'name'          => $form_name . '_' . $form_type . '_panel',
             )
         );
 
@@ -112,8 +113,22 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             $form->add_field( \Input\Factory::Get( $field ) );
         }
 
-        \Wkwgs_Logger::log_var( '$form', $form );
+        //\Wkwgs_Logger::log_var( 'return $form', $form );
         return $form;
+    }
+
+    public function set_form_field_values( $product, $form )
+    {
+        \Wkwgs_Logger::log_function( 'set_form_field_values' );
+        foreach ( $form->get_fields() as $field )
+        {
+            $product_meta = $product->get_meta( $field->get_name(), True );
+            \Wkwgs_Logger::log_var( '$product_meta', $product_meta );
+            if ( isset( $product_meta ) )
+            {
+                $field->set_attributes( array( 'value' => $product_meta ) );
+            }
+        }
     }
 
     protected function getMainPluginFileName()
@@ -131,16 +146,15 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     public function addActionsAndFilters()
     {
         // Customer
-        add_action( 'woocommerce_before_add_to_cart_button',			array( $this, 'product_show_customized' ) );
-        add_filter( 'woocommerce_add_cart_item_data',					array( $this, 'product_save_customized' ), 10, 4 );
-        add_filter( 'woocommerce_get_item_data',                        array( $this, 'product_cart_display_customized' ), 10, 2 );
-        add_filter( 'woocommerce_add_to_cart_validation',               array( $this, 'product_add_to_cart_validation' ), 10, 3 );
+        add_action( 'woocommerce_before_add_to_cart_button',			array( $this, 'product_cart_show' ) );
+        add_filter( 'woocommerce_add_cart_item_data',					array( $this, 'product_cart_save' ), 10, 4 );
+        add_filter( 'woocommerce_add_to_cart_validation',               array( $this, 'product_cart_validation' ), 10, 3 );
+        add_filter( 'woocommerce_get_item_data',                        array( $this, 'product_cart_item_data' ), 10, 2 );
         
         // Editor/Administrator
-        add_filter( 'woocommerce_product_data_tabs',					array( $this, 'product_admin_add_tab' ), 10, 1 );
-        add_action( 'woocommerce_product_data_panels',					array( $this, 'product_admin_show_customized_checkboxes' ) );
-        add_action( 'woocommerce_process_product_meta',					array( $this, 'product_admin_save_customized_checkboxes' ) );
-        add_action('admin_menu',                                        array(&$this, 'addSettingsSubMenuPage'));
+        add_filter( 'woocommerce_product_data_tabs',					array( $this, 'product_admin_tab' ), 10, 1 );
+        add_action( 'woocommerce_product_data_panels',					array( $this, 'product_admin_show' ) );
+        add_action( 'woocommerce_process_product_meta',					array( $this, 'product_admin_save' ) );
     }
     
     /*
@@ -163,7 +177,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         {
             $is_meta_enabled = $product->get_meta( $key );
 
-            if ($is_meta_enabled == 1)
+            if ( \Input\Field::is_true( $is_meta_enabled ) )
             {
                 $enabled[$key] = $value;
             }
@@ -175,9 +189,9 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      * Display the product's custom fields on product page
      * @return null
      */
-    public function product_show_customized()
+    public function product_cart_show()
     {
-        \Wkwgs_Logger::log_function( 'product_show_customized');
+        \Wkwgs_Logger::log_function( 'product_cart_show');
 
         global $product;
 
@@ -192,10 +206,12 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <div class="options_group">
                 <?php
-                foreach ( $enabled as $product_name => $product_items )
+                foreach ( $enabled as $option_name => $option_items )
                 {
-                    $form = $this->get_form( 'display_fields', $product_name, $product_items );
-                    $form->html_print();
+                    $form = $this->get_form( 'cart', $option_name, $option_items );
+                    $this->set_form_field_values( $product, $form );
+
+                    $form->render_fields();
                 }
                 ?>
             </div>
@@ -203,9 +219,9 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         <?php
     }
 
-    public function product_add_to_cart_validation( $passed, $product_id, $quantity ) 
+    public function product_cart_validation( $passed, $product_id, $quantity ) 
     {
-        \Wkwgs_Logger::log_function( 'product_add_to_cart_validation');
+        \Wkwgs_Logger::log_function( 'product_cart_validation');
         \Wkwgs_Logger::log_var( '$passed', $passed );
         \Wkwgs_Logger::log_var( '$product_id', $product_id );
         \Wkwgs_Logger::log_var( '$quantity', $quantity );
@@ -226,9 +242,9 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      * Save the product's custom field values when added to the cart
      * @return null
      */
-    public function product_save_customized( $cart_item_data, $product_id, $variation_id, $quantity )
+    public function product_cart_save( $cart_item_data, $product_id, $variation_id, $quantity )
     {
-        \Wkwgs_Logger::log_function( 'product_save_customized');
+        \Wkwgs_Logger::log_function( 'product_cart_save');
         \Wkwgs_Logger::log_var( '$cart_item_data', $cart_item_data );
         \Wkwgs_Logger::log_var( '$product_id', $product_id );
         \Wkwgs_Logger::log_var( '$variation_id', $variation_id );
@@ -238,17 +254,23 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
  	    $product = wc_get_product( $variation_id ? $variation_id : $product_id );
         //\Wkwgs_Logger::log_var( '$product', $product );
 
-        $custom = $this->get_enabled_customized( $product );
+        $enabled = $this->get_enabled_customized( $product );
         //\Wkwgs_Logger::log_var( '$custom', $custom );
 
-        if ( ! empty($custom) )
+        if ( ! empty($enabled) )
         {
-		    $data = $this->get_form_data( $custom, $_POST );
-            \Wkwgs_Logger::log_var( '$data', $data );
-
-            foreach ($data as $key => $value )
+            // Loop over all enabled product options
+            foreach ( $enabled as $option_name => $option_items )
             {
-                $cart_item_data[ $key ] = $value;
+                // Get the option's values from the cart form
+                $form = $this->get_form( 'cart', $option_name, $option_items );
+                $form_values = $form->get_values( $_POST );
+
+                // Save all the values to the cart
+                foreach ($form_values as $key => $value )
+                {
+                    $cart_item_data[ $key ] = $value;
+                }
             }
         }
         
@@ -257,15 +279,16 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     }
 
     /**
-     * product_cart_display_customized
+     * product_cart_item_data
      */
-    public function product_cart_display_customized( $item_data, $cart_item )
+    public function product_cart_item_data( $item_data, $cart_item )
     {
-        \Wkwgs_Logger::log_function( 'product_cart_display_customized');
+        \Wkwgs_Logger::log_function( 'product_cart_item_data');
         \Wkwgs_Logger::log_var( '$item_data', $item_data );
-        \Wkwgs_Logger::log_var( '$cart_item', $cart_item );
+        //\Wkwgs_Logger::log_var( '$cart_item', $cart_item );
 
-        if ( empty( $cart_item['wkwgs_is_dual_membership_dual_membership_email'] ) ) {
+        if ( empty( $cart_item['wkwgs_is_dual_membership_dual_membership_email'] ) )
+        {
             return $item_data;
         }
  
@@ -291,7 +314,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         * @param   $tabs
         * @since   1.0.0
         */
-    public function product_admin_add_tab( $tabs )
+    public function product_admin_tab( $tabs )
     {
         $tabs['wkwgs'] = array(
             'label'         => __( 'WK & WGS', 'wkwgs' ),	// The name of your panel
@@ -303,18 +326,24 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     }
 
     /**
-    * Add the enable button for custom fields
-    * @return null
-    */
-    public function product_admin_show_customized_checkboxes()
+      * Add the enable button for custom fields
+      * @return null
+      */
+    public function product_admin_show( )
     {
+        global $thepostid, $product_object;
+
+        //\Wkwgs_Logger::log_function( 'product_admin_show' );
+        //\Wkwgs_Logger::log_var( '$product_object', $product_object );
         ?> 
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <?php
-            foreach ( $this->get_product_customized() as $product_name => $product_items )
+            foreach ( $this->get_product_customized() as $option_name => $option_items )
             {
-                $form = $this->get_form( 'admin', $product_name, $product_items );
-                $form->html_print();
+                $form = $this->get_form( 'admin', $option_name, $option_items );
+                $this->set_form_field_values( $product_object, $form );
+
+                $form->render_fields();
             }
             ?>
         </div>
@@ -322,134 +351,29 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     }
 
     /**
-     * extract POST data, perform data cleansing
-     */
-    private function extract_data_from_post($type, $key, $post)
-    {
-        //\Wkwgs_Logger::log_function( 'extract_data_from_post' );
-        //\Wkwgs_Logger::log_var( '$type', $type );
-        //\Wkwgs_Logger::log_var( '$key', $key );
-        //\Wkwgs_Logger::log_var( '$post', $post );
-
-        $value = '';
-
-		switch ( $type )
-        {
-			case 'checkbox':
-				$value = isset( $post[ $key ] ) ? 1 : 0; // WPCS: input var ok, CSRF ok.
-				break;
-			
-            case 'multiselect':
-				$value = isset( $post[ $key ] ) ? implode( ', ', wc_clean( wp_unslash( $post[ $key ] ) ) ) : ''; // WPCS: input var ok, CSRF ok.
-				break;
-			
-            case 'textarea':
-				$value = isset( $post[ $key ] ) ? wc_sanitize_textarea( wp_unslash( $post[ $key ] ) ) : ''; // WPCS: input var ok, CSRF ok.
-				break;
-			
-            case 'password':
-				$value = isset( $post[ $key ] ) ? wp_unslash( $post[ $key ] ) : ''; // WPCS: input var ok, CSRF ok, sanitization ok.
-				break;
-
-            case 'raw':
-				$value = $post[ $key ];
-				break;
-
-            case 'text':
-			default:
-				$value = isset( $post[ $key ] ) ? wc_clean( $post[ $key ] ) : ''; // WPCS: input var ok, CSRF ok.
-				break;
-		}
-    
-        //\Wkwgs_Logger::log_var( '$value', $value );
-        return $value;
-    }
- 
-    private function get_form_data( $form, $post )
-    {
-        \Wkwgs_Logger::log_function( 'get_form_data' );
-        \Wkwgs_Logger::log_var( '$form', $form );
-        \Wkwgs_Logger::log_var( '$post', $post );
-
-        $data = null;
-            
-		foreach ( $form as $key => $field )
-        {
-            \Wkwgs_Logger::log_var( '$key', $key );
-
-			$type = sanitize_title( isset( $field['type'] ) ? $field['type'] : 'text' );
-
-            // Get sanitized data from post
-            $value = $this->extract_data_from_post($type, $key, $post);
-            \Wkwgs_Logger::log_var( '$value', $value );
-
-			// Required fields
-			if ( ! empty( $field['required'] ) && empty( $value ) )
-            {
-				wc_add_notice( sprintf( __( '%s is a required field.', 'woocommerce' ), $field['label'] ), 'error' );
-			}
-
-            // Validate
-			if ( ! empty( $value ) )
-            {
-				// Validation rules.
-				if ( ! empty( $field['validate'] ) && is_array( $field['validate'] ) ) {
-					foreach ( $field['validate'] as $rule ) {
-						switch ( $rule ) {
-							case 'postcode' :
-								$post[ $key ] = strtoupper( str_replace( ' ', '', $post[ $key ] ) );
-
-								if ( ! WC_Validation::is_postcode( $post[ $key ], $post[ $load_address . '_country' ] ) ) {
-									wc_add_notice( __( 'Please enter a valid postcode / ZIP.', 'woocommerce' ), 'error' );
-								} else {
-									$post[ $key ] = wc_format_postcode( $post[ $key ], $post[ $load_address . '_country' ] );
-								}
-								break;
-							case 'phone' :
-								if ( ! WC_Validation::is_phone( $post[ $key ] ) ) {
-									wc_add_notice( sprintf( __( '%s is not a valid phone number.', 'woocommerce' ), '<strong>' . $field['label'] . '</strong>' ), 'error' );
-								}
-								break;
-							case 'email' :
-								$post[ $key ] = strtolower( $post[ $key ] );
-
-								if ( ! is_email( $post[ $key ] ) ) {
-									wc_add_notice( sprintf( __( '%s is not a valid email address.', 'woocommerce' ), '<strong>' . $field['label'] . '</strong>' ), 'error' );
-								}
-								break;
-						}
-					}
-				}
-			}
-
-            $data[ $key ] = $value;
-        }
-
-        \Wkwgs_Logger::log_var( 'return data', $data );
-        return $data;
-    }
-
-    /**
         * Save the enable button for custom fields
         * @param $post_id
         * @since 1.0.0
         */
-    public function product_admin_save_customized_checkboxes( $post_id )
+    public function product_admin_save( $post_id )
     {
-        \Wkwgs_Logger::log_function( 'product_admin_save_customized_checkboxes' );
+        \Wkwgs_Logger::log_function( 'product_admin_save' );
         \Wkwgs_Logger::log_var( '$post_id', $post_id );
-
-		$data = $this->get_form_data( $this->get_product_customized(), $_POST );
 
         $product = wc_get_product( $post_id );
 
-        foreach ($data as $key => $value )
+        foreach ( $this->get_product_customized() as $option_name => $option_items )
         {
-            \Wkwgs_Logger::log_var( '$key', $value );
+            $form = $this->get_form( 'admin', $option_name, $option_items );
+            $form_values = $form->get_values( $_POST );
+            
+            foreach ($form_values as $key => $value )
+            {
+                \Wkwgs_Logger::log_var( '$key', $value );
 
-            $product->update_meta_data( $key, $value );
+                $product->update_meta_data( $key, $value );
+            }
         }
-
         $product->save();
     }
 

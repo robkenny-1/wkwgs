@@ -44,7 +44,14 @@ class Wkwgs_Logger
         $msg  = "===== Variable ===== $var_name" . PHP_EOL;
         if ( isset( $var ) )
         {
-            $msg .= print_r( $var, true )   . PHP_EOL;
+            if ( gettype( $var ) === 'boolean' )
+            {
+                $msg .= $var ? 'True' : 'False';
+            }
+            else
+            {
+                $msg .= print_r( $var, true );
+            }
         }
         else
         {

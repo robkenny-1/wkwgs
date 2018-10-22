@@ -25,16 +25,16 @@ include_once( '..\Factory.php' );
 
 $form = \Input\Factory::Get(
         array(
-        'type'          => 'form',
-        'name'          => 'checkbox_test_form',
+        'type'              => 'form',
+        'name'              => 'checkbox_test_form',
     )
 );
 
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'checkbox',
-        'name'          => 'name_only'
+        'type'              => 'checkbox',
+        'name'              => 'name_only'
         )
     )
 );
@@ -42,10 +42,10 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'checkbox',
-        'name'          => 'checkbox_with_label',
-        'label'         => 'checkbox_with_label',
-        'text-position'     => 'before',
+        'type'              => 'checkbox',
+        'name'              => 'checkbox_with_label',
+        'label'             => 'checkbox_with_label',
+        'text-position'     => 'left',
         )
     )
 );
@@ -53,11 +53,12 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'checkbox',
-        'name'          => 'checkbox_enabled',
-        'label'         => 'checkbox_enabled',
-        'selected'      => 'boo',
-        'value'         => 'boo',
+        'type'              => 'checkbox',
+        'name'              => 'checkbox_enabled',
+        'label'             => 'checkbox_enabled',
+        'selection-value'   => 'boo',
+        'value'             => 'boo',
+        'text-position'     => 'top',
         )
     )
 );
@@ -65,9 +66,10 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'checkbox',
-        'name'          => 'html_and_special_chars',
-        'label'         => '< html & special chars >',
+        'type'              => 'checkbox',
+        'name'              => 'html_and_special_chars',
+        'label'             => '< html & special chars >',
+        'help'              => 'This checkbox contains special HTML chars like <, >, &',
         )
     )
 );
@@ -75,9 +77,9 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'          => 'button',
-        'name'          => 'submit',
-        'value'         => 'All Done',
+        'type'              => 'button',
+        'name'              => 'submit',
+        'value'             => 'Submit',
         )
     )
 );
@@ -92,8 +94,6 @@ $form->add_field(
     )
 );
 
-$form->html_print();
-
 // Store results in the session
 $post = $form->get_submit_data();
 if ( isset( $post ) )
@@ -107,6 +107,8 @@ if ( isset( $post ) )
     header("Location: " . $_SERVER['REQUEST_URI']);
     exit();
 }
+
+$form->html_print();
 
 // Print out any results stored in the session
 if ( isset( $_SESSION['form_values'] ) )
