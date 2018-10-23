@@ -105,10 +105,10 @@ class Button extends Field
 
         ?>
         <button
-            <?php Field::html_print_attribute('type',       $type) ?>
-            <?php Field::html_print_attribute('class',      $css_input) ?>
-            <?php Field::html_print_attribute('name',       $name) ?>
-            <?php Field::html_print_attribute('id',         $id) ?>
+            <?php HtmlHelper::print_attribute('type',       $type) ?>
+            <?php HtmlHelper::print_attribute('class',      $css_input) ?>
+            <?php HtmlHelper::print_attribute('name',       $name) ?>
+            <?php HtmlHelper::print_attribute('id',         $id) ?>
         ><?php echo $value ?></button>
         <?php    
     }

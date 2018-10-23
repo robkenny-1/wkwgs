@@ -85,7 +85,7 @@ class Label extends Field
 
         ?>
         <label
-            <?php Field::html_print_attribute('class', $css_label) ?>
+            <?php HtmlHelper::print_attribute('class', $css_label) ?>
         ><?php echo $label_text; ?></label>
         <?php    
     }

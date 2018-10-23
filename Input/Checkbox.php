@@ -172,7 +172,7 @@ class Checkbox extends Field
 
         ?>
         <label
-            <?php Field::html_print_attribute('class', $css_label) ?>
+            <?php HtmlHelper::print_attribute('class', $css_label) ?>
         >
             <?php
             if ( $label_before )
@@ -182,7 +182,7 @@ class Checkbox extends Field
             ?>
             <input
                 <?php parent::render_attributes( ) ?>
-                <?php Field::html_print_attribute('checked', $checked) ?>
+                <?php HtmlHelper::print_attribute('checked', $checked) ?>
             />
             <?php
             if ( ! $label_before )

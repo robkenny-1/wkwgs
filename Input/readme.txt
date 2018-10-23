@@ -15,6 +15,39 @@ HTML input classes
 Classes to managed the complexity of HTML input, including client
 and server side validation
 
+== HTML Input Types ==
+
+    Implemented
+    -------------------------
+    button
+    checkbox
+    radio
+    text
+    tel
+    email
+
+    NOT Implemented
+    -------------------------
+    color
+    date
+    datetime-local
+    hidden
+    image
+    month
+    number
+    password
+    range
+    reset
+    search
+    submit
+    time
+    url
+    week
+
+    Unlikely
+    -------------------------
+    file
+
 == Installation ==
 
 

@@ -130,8 +130,8 @@ class Form extends Field
 
         ?>	
         <div
-            <?php Field::html_print_attribute('id',     $id . '_panel') ?>
-            <?php Field::html_print_attribute('class',  $css_panel) ?>
+            <?php HtmlHelper::print_attribute('id',     $id . '_panel') ?>
+            <?php HtmlHelper::print_attribute('class',  $css_panel) ?>
         >
             <?php
             foreach ( $this->get_fields() as $field)
@@ -156,11 +156,11 @@ class Form extends Field
 
         ?>	
         <form 
-            <?php Field::html_print_attribute('name',       $name) ?>
-            <?php Field::html_print_attribute('id',         $id) ?>
-            <?php Field::html_print_attribute('action',     $action) ?>
-            <?php Field::html_print_attribute('method',     $method) ?>
-            <?php Field::html_print_attribute('enctype',    $enctype) ?>
+            <?php HtmlHelper::print_attribute('name',       $name) ?>
+            <?php HtmlHelper::print_attribute('id',         $id) ?>
+            <?php HtmlHelper::print_attribute('action',     $action) ?>
+            <?php HtmlHelper::print_attribute('method',     $method) ?>
+            <?php HtmlHelper::print_attribute('enctype',    $enctype) ?>
         >
         <?php $this->render_fields(); ?>
         </form>

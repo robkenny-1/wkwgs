@@ -155,17 +155,17 @@ abstract class Field
 
     public function render_attributes( $exclude = null )
     {
-        Field::html_print_attribute( 'type'             , $this->get_attribute( 'type'          ),                  $exclude );
-        Field::html_print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
-        Field::html_print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );
-        Field::html_print_attribute( 'value'            , $this->get_attribute( 'value'         ),                  $exclude );
-        Field::html_print_attribute( 'required'         , Field::is_true( $this->get_attribute( 'required' )),      $exclude );
-        Field::html_print_attribute( 'hidden'           , Field::is_true( $this->get_attribute( 'hidden' )),        $exclude );
-        Field::html_print_attribute( 'aria-hidden'      , Field::is_true( $this->get_attribute( 'aria-hidden' )),    $exclude );
+        HtmlHelper::print_attribute( 'type'             , $this->get_attribute( 'type'          ),                  $exclude );
+        HtmlHelper::print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
+        HtmlHelper::print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );
+        HtmlHelper::print_attribute( 'value'            , $this->get_attribute( 'value'         ),                  $exclude );
+        HtmlHelper::print_attribute( 'required'         , Field::is_true( $this->get_attribute( 'required' )),      $exclude );
+        HtmlHelper::print_attribute( 'hidden'           , Field::is_true( $this->get_attribute( 'hidden' )),        $exclude );
+        HtmlHelper::print_attribute( 'aria-hidden'      , Field::is_true( $this->get_attribute( 'aria-hidden' )),    $exclude );
         // move to <label>
-        //Field::html_print_attribute( 'width'            , $this->get_attribute( 'width'         ),              $exclude );
-        Field::html_print_attribute( 'placeholder'      , $this->get_attribute( 'placeholder'   ),                  $exclude );
-        Field::html_print_attribute( 'size'             , $this->get_attribute( 'size'          ),                  $exclude );
+        //HtmlHelper::print_attribute( 'width'            , $this->get_attribute( 'width'         ),              $exclude );
+        HtmlHelper::print_attribute( 'placeholder'      , $this->get_attribute( 'placeholder'   ),                  $exclude );
+        HtmlHelper::print_attribute( 'size'             , $this->get_attribute( 'size'          ),                  $exclude );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -261,37 +261,6 @@ abstract class Field
     /*-------------------------------------------------------------------------*/
     /* HTML helper routines */
     /*-------------------------------------------------------------------------*/
-
-    public static function html_print_attribute( $attr, $value, $exclude = null )
-    {
-        // Since attributes and values are not user-generated
-        // we should not need to cleanse their values
-
-        if ( gettype( $exclude ) === 'array' && in_array( $attr, $exclude ) )
-        {
-            return;
-        }
-
-        /*
-         * Boolean attributes, when set, are specified in only 1 of 3 ways
-         * When unset the attribute *must not* be present
-         * <input type=checkbox  name=cheese checked />
-         * <input type=checkbox  name=cheese checked='' />
-         * <input type=checkbox  name=cheese checked='checked' />
-         */
-        $is_boolean = in_array( $attr, HtmlHelper::get_boolean_attributes() );
-        if ( $is_boolean && $value)
-        {
-            echo $attr . PHP_EOL;
-            return;
-        }
-
-        if ( ! empty( $value ) )
-        {
-            echo $attr . '="' . $value . '"' . PHP_EOL;
-            return;
-        }
-    }
     public function html_print( )
     {
         $name           = $this->get_attribute( 'name' );
@@ -308,7 +277,7 @@ abstract class Field
         <div class="<?php echo $css_container ?>">
             <p class="<?php echo $css_row ?>">
                 <span
-                    <?php Field::html_print_attribute('class', $css_input_span) ?>
+                    <?php HtmlHelper::print_attribute('class', $css_input_span) ?>
                 >
                     <?php $this->render() ?>
                 </span>

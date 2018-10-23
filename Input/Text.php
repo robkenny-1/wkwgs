@@ -164,7 +164,7 @@ class Text extends Field
 
         ?>
         <label
-            <?php Field::html_print_attribute('class', $css_label) ?>
+            <?php HtmlHelper::print_attribute('class', $css_label) ?>
         >
             <?php
             if ( $label_before )

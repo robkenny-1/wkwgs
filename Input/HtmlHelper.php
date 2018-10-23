@@ -669,4 +669,35 @@ class HtmlHelper
 
         return self::$Attribute_boolean;
     }
+
+    public static function print_attribute( $attr, $value, $exclude = null )
+    {
+        // Since attributes and values are not user-generated
+        // we should not need to cleanse their values
+
+        if ( gettype( $exclude ) === 'array' && in_array( $attr, $exclude ) )
+        {
+            return;
+        }
+
+        /*
+         * Boolean attributes, when set, are specified in only 1 of 3 ways
+         * When unset the attribute *must not* be present
+         * <input type=checkbox  name=cheese checked />
+         * <input type=checkbox  name=cheese checked='' />
+         * <input type=checkbox  name=cheese checked='checked' />
+         */
+        $is_boolean = in_array( $attr, HtmlHelper::get_boolean_attributes() );
+        if ( $is_boolean && $value)
+        {
+            echo $attr . PHP_EOL;
+            return;
+        }
+
+        if ( ! empty( $value ) )
+        {
+            echo $attr . '="' . $value . '"' . PHP_EOL;
+            return;
+        }
+    }
 }
