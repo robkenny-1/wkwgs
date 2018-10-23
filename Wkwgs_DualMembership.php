@@ -26,6 +26,7 @@ include_once('Wkwgs_Logger.php');
 include_once(WP_PLUGIN_DIR . '/weforms/weforms.php' );
 include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Field.php' );
 include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Factory.php' );
+include_once(WP_PLUGIN_DIR . '/wkwgs/Input/HtmlHelper.php' );
 
 
 class Wkwgs_DualMembership extends Wkwgs_LifeCycle
@@ -177,7 +178,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         {
             $is_meta_enabled = $product->get_meta( $key );
 
-            if ( \Input\Field::is_true( $is_meta_enabled ) )
+            if ( \Input\HtmlHelper::is_true( $is_meta_enabled ) )
             {
                 $enabled[$key] = $value;
             }

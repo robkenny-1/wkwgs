@@ -687,8 +687,8 @@ class HtmlHelper
          * <input type=checkbox  name=cheese checked='' />
          * <input type=checkbox  name=cheese checked='checked' />
          */
-        $is_boolean = in_array( $attr, HtmlHelper::get_boolean_attributes() );
-        if ( $is_boolean && $value)
+        $attr_is_boolean = in_array( $attr, HtmlHelper::get_boolean_attributes() );
+        if ( $attr_is_boolean && self::is_true( $value ) )
         {
             echo $attr . PHP_EOL;
             return;
@@ -700,4 +700,30 @@ class HtmlHelper
             return;
         }
     }
+
+    /**
+     * Does the content of the string equate to a True value
+     * Does not rely on type conversion,
+     * it uses a whitelist of acceptable values for True,
+     * all other values are False
+     *
+     * @return True if $val is a true value
+     */
+    public static function is_true( $val )
+    {
+        if ( gettype( $val ) === 'boolean' )
+        {
+            return $val;
+        }
+
+        if ( gettype( $val ) === 'string' )
+        {
+            $val = strtolower( $val );
+
+            return in_array( $val, [ 'yes', '1', 'true' ] );
+        }
+
+        return False;
+    }
+
 }

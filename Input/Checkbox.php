@@ -126,7 +126,7 @@ class Checkbox extends Field
         $label_text     = $this->get_attribute( 'label' );
         $text_pos       = $this->get_attribute( 'text-position' );
         $css_label      = $this->get_attribute( 'class-label' );
-        $checked        = Field::is_true( $this->get_attribute( 'checked' ) );
+        $checked        = $this->get_attribute( 'checked' ) ;
         $required       = $this->is_required();
 
         switch ( $this->get_attribute( 'text-position' ) )

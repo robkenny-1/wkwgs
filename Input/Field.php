@@ -159,9 +159,9 @@ abstract class Field
         HtmlHelper::print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
         HtmlHelper::print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );
         HtmlHelper::print_attribute( 'value'            , $this->get_attribute( 'value'         ),                  $exclude );
-        HtmlHelper::print_attribute( 'required'         , Field::is_true( $this->get_attribute( 'required' )),      $exclude );
-        HtmlHelper::print_attribute( 'hidden'           , Field::is_true( $this->get_attribute( 'hidden' )),        $exclude );
-        HtmlHelper::print_attribute( 'aria-hidden'      , Field::is_true( $this->get_attribute( 'aria-hidden' )),    $exclude );
+        HtmlHelper::print_attribute( 'required'         , $this->get_attribute( 'required'      ),                  $exclude );
+        HtmlHelper::print_attribute( 'hidden'           , $this->get_attribute( 'hidden'        ),                  $exclude );
+        HtmlHelper::print_attribute( 'aria-hidden'      , $this->get_attribute( 'aria-hidden'   ),                  $exclude );
         // move to <label>
         //HtmlHelper::print_attribute( 'width'            , $this->get_attribute( 'width'         ),              $exclude );
         HtmlHelper::print_attribute( 'placeholder'      , $this->get_attribute( 'placeholder'   ),                  $exclude );
@@ -201,32 +201,7 @@ abstract class Field
      */
     public function is_required(  )
     {
-        return Field::is_true( $this->get_attribute('required') );
-    }
-
-    /**
-     * Does the content of the string equate to a True value
-     * Does not rely on type conversion,
-     * it uses a whitelist of acceptable values for True,
-     * all other values are False
-     *
-     * @return True if $val is a true value
-     */
-    public static function is_true( $val )
-    {
-        if ( gettype( $val ) === 'boolean' )
-        {
-            return $val;
-        }
-
-        if ( gettype( $val ) === 'string' )
-        {
-            $val = strtolower( $val );
-
-            return in_array( $val, [ 'yes', '1', 'true' ] );
-        }
-
-        return False;
+        return HtmlHelper::is_true( $this->get_attribute('required') );
     }
 
     /*-------------------------------------------------------------------------*/
