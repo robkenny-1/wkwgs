@@ -30,6 +30,7 @@ include_once('Text.php');
 include_once('Email.php');
 include_once('Telephone.php');
 include_once('Button.php');
+include_once('Label.php');
 
 class Factory
 {
@@ -45,13 +46,17 @@ class Factory
         Text        ::Input_Type        => 'Input\Text',
         Email       ::Input_Type        => 'Input\Email',
         Telephone   ::Input_Type        => 'Input\Telephone',
+        Label       ::Input_Type        => 'Input\Label',
     );
 
     public static function Get( $field_attrs )
     {
+        \Wkwgs_Logger::log_function( 'Factory::Get');
+
         if ( isset( $field_attrs[ 'name' ] ) && isset( $field_attrs[ 'type' ] ) )
         {
             $type = $field_attrs[ 'type' ];
+            \Wkwgs_Logger::log_var( '$type', $type );
 
             if ( isset( Factory::FactoryMachines[ $type ] ) )
             {
@@ -59,6 +64,7 @@ class Factory
                 $field = new $machine( $field_attrs );
                 return $field;
             }
+            \Wkwgs_Logger::log_msg( "$type does not exist" );
         }
 
         return null;
