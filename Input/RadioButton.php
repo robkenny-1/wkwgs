@@ -45,10 +45,9 @@ class RadioButton extends Field
             'type'              => self::Input_Type,
             'css-input'         => 'input-radio',
             'css-label'         => 'radio',
-            'label'             => [ 'Unset' ],     // note the redefinition
 
             // Unique to this class
-            'choices'           => [ 'unset' ],     // should this be value?
+            'choices'           => [ 'unset' => 'unset' ],
             'layout'            => 'horizontal',    // horizontal or vertical
         );
 
@@ -84,13 +83,14 @@ class RadioButton extends Field
             }
         }
         
-        $value = $this->get_attribute( 'value' );
-        if ( $raw === $value)
+        $values = array_keys( $this->get_attribute( 'choices' ) );
+        if ( in_array( $raw, $values, True ) )
         {
             return null;
         }
 
-        $error = "Selected value not valid ( '$raw' != '$value' )";
+        $acceptable = implode("', '", $values);
+        $error = "Selected value not valid ( '$raw' is not in '$acceptable' )";
         return new Field_Error( $this, $error, $value );
     }
 
@@ -122,71 +122,38 @@ class RadioButton extends Field
      */
     public function render( )
     {
+        $name           = $this->get_attribute( 'name' );
+        $value          = $this->get_attribute( 'value' );
         $choices        = $this->get_attribute( 'choices' );
-        $labels         = $this->get_attribute( 'label' );
         $horizontal     = $this->get_attribute( 'layout' ) === 'horizontal';
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
         $required       = $this->is_required();
 
-        if ( empty( $choices ) )
+        if ( empty( $choices ) || ! is_array( $choices ))
         {
             return;
         }
-        if ( ! is_array( $choices ) )
-        {
-            $choices = array( $choices );
-        }
-        if ( ! is_array( $labels ) )
-        {
-            $labels = array( $labels );
-        }
+
         ?>
         <span
             <?php Field::html_print_attribute('class', $css_input_span) ?>
         >
             <?php
-            $j = count($choices);
-            for($i = 0; $i < $j ; $i++)
+            foreach ( $choices as $radio => $label )
             {
-                $choice         = esc_attr( $choices[ $i ] );
-                $radio_id       = $name . '_' . $choice;
-                $checked        = $choices[ $i ] === $value;
+                $checked = $radio === $value;
 
-                if ( isset( $labels[ $i ] ) )
-                {
-                    $label = $labels[ $i ];
-                }
-                else
-                {
-                    $label = $choice;
-                }
                 $label_text     = htmlspecialchars( $label );
                 $label_before   = True;
                 switch ( $this->get_attribute( 'text-position' ) )
                 {
-                    case 'bottom':
-                        if (! empty($label_text))
-                        {
-                            $label_text = '</br>' . $label_text;
-                        }
-                        $label_before = False;
-                        break;
-
                     case 'right':
                         if (! empty($label_text))
                         {
                             $label_text = '&nbsp;' . $label_text;
                         }
                         $label_before = False;
-                        break;
-
-                    case 'top':
-                        if (! empty($label_text))
-                        {
-                            $label_text = $label_text . '</br>';
-                        }
-                        $label_before = True;
                         break;
 
                     case 'left':
@@ -209,7 +176,8 @@ class RadioButton extends Field
                 }
                 ?>
                 <input
-                    <?php parent::render_attributes( ) ?>
+                    <?php parent::render_attributes( [ 'value' ] ) ?>
+                    <?php Field::html_print_attribute('value',   $radio) ?>
                     <?php Field::html_print_attribute('checked', $checked) ?>
                 />
                 <?php
@@ -221,7 +189,7 @@ class RadioButton extends Field
                 <?php
                 if ( ! $horizontal )
                 {
-                    echo '</br>';
+                    echo '<br>';
                 }
                 ?>
             </label>
