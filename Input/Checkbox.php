@@ -124,11 +124,9 @@ class Checkbox extends Field
     public function render( )
     {
         $css_label      = $this->get_attribute( 'css-label' );
-        $css_input_span = $this->get_attribute( 'css-input-span' );
         $label_text     = $this->get_attribute( 'label' );
         $text_pos       = $this->get_attribute( 'text-position' );
         $css_label      = $this->get_attribute( 'css-label' );
-        $css_input_span = $this->get_attribute( 'css-input-span' );
         $checked        = Field::is_true( $this->get_attribute( 'checked' ) );
         $required       = $this->is_required();
 
@@ -174,30 +172,26 @@ class Checkbox extends Field
         }
 
         ?>
-        <span
-            <?php Field::html_print_attribute('class', $css_input_span) ?>
+        <label
+            <?php Field::html_print_attribute('class', $css_label) ?>
         >
-            <label
-                <?php Field::html_print_attribute('class', $css_label) ?>
-            >
-                <?php
-                if ( $label_before )
-                {
-                    echo $label_text;
-                }
-                ?>
-                <input
-                    <?php parent::render_attributes( ) ?>
-                    <?php Field::html_print_attribute('checked', $checked) ?>
-                />
-                <?php
-                if ( ! $label_before )
-                {
-                    echo $label_text;
-                }
-                ?>
-             </label>
-        </span>
+            <?php
+            if ( $label_before )
+            {
+                echo $label_text;
+            }
+            ?>
+            <input
+                <?php parent::render_attributes( ) ?>
+                <?php Field::html_print_attribute('checked', $checked) ?>
+            />
+            <?php
+            if ( ! $label_before )
+            {
+                echo $label_text;
+            }
+            ?>
+        </label>
         <?php    
     }
 }

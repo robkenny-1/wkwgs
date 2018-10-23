@@ -273,21 +273,24 @@ abstract class Field
         $help           = htmlspecialchars( $this->get_attribute( 'help' )          );
         $css_container  = esc_attr( $this->get_attribute( 'css-input-container' )   );
         $css_row        = esc_attr( $this->get_attribute( 'css-input-row' )         );
+        $css_input_span = $this->get_attribute( 'css-input-span' );
 
+        if ( !empty( $help) )
+        {
+            $help = '<span class="help">' . $help . '</span>';
+        }
         ?>
         <div class="<?php echo $css_container ?>">
-            <p class="<?php echo $css_row ?> " id="<?php echo $name . '_field' ?>" data-priority="">
-                <?php $this->render() ?>
+            <p class="<?php echo $css_row ?>">
+                <span
+                    <?php Field::html_print_attribute('class', $css_input_span) ?>
+                >
+                    <?php $this->render() ?>
+                </span>
             </p>
-            <?php
-            if ( !empty( $help) )
-            {
-                ?>
-                <span class="help"><?php echo $help ?></span>
-                <?php
-            }
-            ?>
+            <?php echo $help ?>
         </div>
         <?php
+
     }
 }

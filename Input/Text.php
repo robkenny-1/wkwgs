@@ -117,7 +117,6 @@ class Text extends Field
         $value          = $this->get_attribute( 'value' );
         $css_input      = $this->get_attribute( 'css-input' );
         $css_label      = $this->get_attribute( 'css-label' );
-        $css_input_span = $this->get_attribute( 'css-input-span' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
         $label_before   = True;
         $required       = $this->is_required();
@@ -164,29 +163,25 @@ class Text extends Field
         }
 
         ?>
-        <span
-            <?php Field::html_print_attribute('class',      $css_input_span) ?>
+        <label
+            <?php Field::html_print_attribute('class', $css_label) ?>
         >
-            <label
-                <?php Field::html_print_attribute('class', $css_label) ?>
-            >
-                <?php
-                if ( $label_before )
-                {
-                    echo $label_text;
-                }
-                ?>
-                <input
-                    <?php parent::render_attributes( ) ?>
-                />
-                <?php
-                if ( ! $label_before )
-                {
-                    echo $label_text;
-                }
-                ?>
-             </label>
-        </span>
+            <?php
+            if ( $label_before )
+            {
+                echo $label_text;
+            }
+            ?>
+            <input
+                <?php parent::render_attributes( ) ?>
+            />
+            <?php
+            if ( ! $label_before )
+            {
+                echo $label_text;
+            }
+            ?>
+            </label>
         <?php    
     }
 }

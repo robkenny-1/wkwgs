@@ -127,7 +127,6 @@ class RadioButton extends Field
         $choices        = $this->get_attribute( 'choices' );
         $horizontal     = $this->get_attribute( 'layout' ) === 'horizontal';
         $css_label      = $this->get_attribute( 'css-label' );
-        $css_input_span = $this->get_attribute( 'css-input-span' );
         $required       = $this->is_required();
 
         if ( empty( $choices ) || ! is_array( $choices ))
@@ -136,67 +135,61 @@ class RadioButton extends Field
         }
 
         ?>
-        <span
-            <?php Field::html_print_attribute('class', $css_input_span) ?>
+        <?php
+        foreach ( $choices as $radio => $label )
+        {
+            $checked = $radio === $value;
+
+            $label_text     = htmlspecialchars( $label );
+            $label_before   = True;
+            switch ( $this->get_attribute( 'text-position' ) )
+            {
+                case 'right':
+                    if (! empty($label_text))
+                    {
+                        $label_text = '&nbsp;' . $label_text;
+                    }
+                    $label_before = False;
+                    break;
+
+                case 'left':
+                default:
+                    if (! empty($label_text))
+                    {
+                        $label_text = $label_text . '&nbsp;';
+                    }
+                    $label_before = True;
+                    break;
+            }
+        ?>
+        <label
+            <?php Field::html_print_attribute('class', $css_label) ?>
         >
             <?php
-            foreach ( $choices as $radio => $label )
+            if ( $label_before )
             {
-                $checked = $radio === $value;
-
-                $label_text     = htmlspecialchars( $label );
-                $label_before   = True;
-                switch ( $this->get_attribute( 'text-position' ) )
-                {
-                    case 'right':
-                        if (! empty($label_text))
-                        {
-                            $label_text = '&nbsp;' . $label_text;
-                        }
-                        $label_before = False;
-                        break;
-
-                    case 'left':
-                    default:
-                        if (! empty($label_text))
-                        {
-                            $label_text = $label_text . '&nbsp;';
-                        }
-                        $label_before = True;
-                        break;
-                }
-            ?>
-            <label
-                <?php Field::html_print_attribute('class', $css_label) ?>
-            >
-                <?php
-                if ( $label_before )
-                {
-                    echo $label_text;
-                }
-                ?>
-                <input
-                    <?php parent::render_attributes( [ 'value' ] ) ?>
-                    <?php Field::html_print_attribute('value',   $radio) ?>
-                    <?php Field::html_print_attribute('checked', $checked) ?>
-                />
-                <?php
-                if ( ! $label_before )
-                {
-                    echo $label_text;
-                }
-                ?>
-                <?php
-                if ( ! $horizontal )
-                {
-                    echo '<br>';
-                }
-                ?>
-            </label>
-            <?php
+                echo $label_text;
             }
             ?>
-        </span>
+            <input
+                <?php parent::render_attributes( [ 'value' ] ) ?>
+                <?php Field::html_print_attribute('value',   $radio) ?>
+                <?php Field::html_print_attribute('checked', $checked) ?>
+            />
+            <?php
+            if ( ! $label_before )
+            {
+                echo $label_text;
+            }
+            ?>
+            <?php
+            if ( ! $horizontal )
+            {
+                echo '<br>';
+            }
+            ?>
+        </label>
         <?php
+        }
     }
 }
