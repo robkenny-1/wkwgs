@@ -24,6 +24,7 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
 include_once('Field_Error.php');
+include_once('HtmlHelper.php');
 include_once(__DIR__ . '/../Wkwgs_Logger.php' );
 
 /**
@@ -58,13 +59,15 @@ abstract class Field
             'name'                  => '',
             'id'                    => 0,
             'value'                 => '',
-            'required'              => 'no',
+            'required'              => False,
             'width'                 => 'large',
             'placeholder'           => '',
             'size'                  => 40,
             'help'                  => '',
             'label'                 => '',
             'text-position'         => 'right',
+            'hidden'                => False,
+            'aria-hidden'           => False,
             'class'                 => '',
             'class-label'           => '',
             'css-input-container'   => 'options_group',
@@ -152,15 +155,17 @@ abstract class Field
 
     public function render_attributes( $exclude = null )
     {
-        Field::html_print_attribute( 'type'         , $this->get_attribute( 'type'          ),              $exclude );
-        Field::html_print_attribute( 'name'         , $this->get_attribute( 'name'          ),              $exclude );
-        Field::html_print_attribute( 'id'           , $this->get_attribute( 'id'            ),              $exclude );
-        Field::html_print_attribute( 'value'        , $this->get_attribute( 'value'         ),              $exclude );
-        Field::html_print_attribute( 'required'     , Field::is_true( $this->get_attribute( 'required' )),  $exclude );
+        Field::html_print_attribute( 'type'             , $this->get_attribute( 'type'          ),                  $exclude );
+        Field::html_print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
+        Field::html_print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );
+        Field::html_print_attribute( 'value'            , $this->get_attribute( 'value'         ),                  $exclude );
+        Field::html_print_attribute( 'required'         , Field::is_true( $this->get_attribute( 'required' )),      $exclude );
+        Field::html_print_attribute( 'hidden'           , Field::is_true( $this->get_attribute( 'hidden' )),        $exclude );
+        Field::html_print_attribute( 'aria-hidden'      , Field::is_true( $this->get_attribute( 'aria-hidden' )),    $exclude );
         // move to <label>
-        //Field::html_print_attribute( 'width'        , $this->get_attribute( 'width'         ),              $exclude );
-        Field::html_print_attribute( 'placeholder'  , $this->get_attribute( 'placeholder'   ),              $exclude );
-        Field::html_print_attribute( 'size'         , $this->get_attribute( 'size'          ),              $exclude );
+        //Field::html_print_attribute( 'width'            , $this->get_attribute( 'width'         ),              $exclude );
+        Field::html_print_attribute( 'placeholder'      , $this->get_attribute( 'placeholder'   ),                  $exclude );
+        Field::html_print_attribute( 'size'             , $this->get_attribute( 'size'          ),                  $exclude );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -201,17 +206,27 @@ abstract class Field
 
     /**
      * Does the content of the string equate to a True value
+     * Does not rely on type conversion,
+     * it uses a whitelist of acceptable values for True,
+     * all other values are False
      *
-     * @return True if $str is a true value
+     * @return True if $val is a true value
      */
-    public static function is_true( $str )
+    public static function is_true( $val )
     {
-        $str = strtolower( $str );
+        if ( gettype( $val ) === 'boolean' )
+        {
+            return $val;
+        }
 
-        return
-            $str === 'yes'  ||
-            $str === '1'    ||
-            $str === 'true' ;
+        if ( gettype( $val ) === 'string' )
+        {
+            $val = strtolower( $val );
+
+            return in_array( $val, [ 'yes', '1', 'true' ] );
+        }
+
+        return False;
     }
 
     /*-------------------------------------------------------------------------*/
@@ -249,12 +264,23 @@ abstract class Field
 
     public static function html_print_attribute( $attr, $value, $exclude = null )
     {
+        // Since attributes and values are not user-generated
+        // we should not need to cleanse their values
+
         if ( gettype( $exclude ) === 'array' && in_array( $attr, $exclude ) )
         {
             return;
         }
 
-        if ( gettype( $value ) === 'boolean' && $value)
+        /*
+         * Boolean attributes, when set, are specified in only 1 of 3 ways
+         * When unset the attribute *must not* be present
+         * <input type=checkbox  name=cheese checked />
+         * <input type=checkbox  name=cheese checked='' />
+         * <input type=checkbox  name=cheese checked='checked' />
+         */
+        $is_boolean = in_array( $attr, HtmlHelper::get_boolean_attributes() );
+        if ( $is_boolean && $value)
         {
             echo $attr . PHP_EOL;
             return;
@@ -262,17 +288,16 @@ abstract class Field
 
         if ( ! empty( $value ) )
         {
-            $value = esc_attr( $value );
             echo $attr . '="' . $value . '"' . PHP_EOL;
             return;
         }
     }
     public function html_print( )
     {
-        $name           = esc_attr( $this->get_attribute( 'name' )                  );
-        $help           = htmlspecialchars( $this->get_attribute( 'help' )          );
-        $css_container  = esc_attr( $this->get_attribute( 'css-input-container' )   );
-        $css_row        = esc_attr( $this->get_attribute( 'css-input-row' )         );
+        $name           = $this->get_attribute( 'name' );
+        $help           = htmlspecialchars( $this->get_attribute( 'help' ) );
+        $css_container  = $this->get_attribute( 'css-input-container' );
+        $css_row        = $this->get_attribute( 'css-input-row' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
 
         if ( !empty( $help) )
