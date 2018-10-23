@@ -44,7 +44,7 @@ class Button extends Field
         $default = array(
             'type'              => self::Input_Type,
             'button-type'       => 'submit',
-            'css-input'         => 'button',
+            'class'             => 'button',
         );
 
         $parent = parent::get_attributes_default();
@@ -96,7 +96,7 @@ class Button extends Field
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
         $value          = $this->get_attribute( 'value' );
-        $css_input      = $this->get_attribute( 'css-input' );
+        $css_input      = $this->get_attribute( 'class' );
 
         //\Wkwgs_Logger::log_function( 'Button->render');
         //\Wkwgs_Logger::log_var( '$type', $type );
