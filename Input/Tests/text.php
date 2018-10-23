@@ -45,6 +45,8 @@ $form->add_field(
         'type'              => 'email',
         'name'              => 'email',
         'label'             => 'email address',
+        'requried'          => 'yes',
+        'value'             => 'abc@xyz.com',
         )
     )
 );

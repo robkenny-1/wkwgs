@@ -114,9 +114,6 @@ class Text extends Field
      */
     public function render( )
     {
-        \Wkwgs_Logger::log_function( 'Text::render');
-        \Wkwgs_Logger::log_var( '$this', $this );
-
         $type           = $this->get_attribute( 'type' );
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
@@ -134,7 +131,6 @@ class Text extends Field
         {
             $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }
-        \Wkwgs_Logger::log_var( '$label_text', $label_text );
 
         switch ( $this->get_attribute( 'text-position' ) )
         {
@@ -171,7 +167,6 @@ class Text extends Field
                 $label_before = True;
                 break;
         }
-        \Wkwgs_Logger::log_var( '$label_text', $label_text );
 
         ?>
         <span

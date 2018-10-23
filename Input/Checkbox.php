@@ -184,6 +184,11 @@ class Checkbox extends Field
                 break;
         }
 
+        if ( $required )
+        {
+            $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
+        }
+
         ?>
         <span
             <?php Field::html_print_attribute('class',      $css_input_span) ?>

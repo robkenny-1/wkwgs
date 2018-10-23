@@ -169,12 +169,7 @@ class RadioButton extends Field
                 {
                     $label = $choice;
                 }
-                $label_text = htmlspecialchars( $label );
-                if ( $this->is_required() && empty($label_text) )
-                {
-                    $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
-                }
-
+                $label_text     = htmlspecialchars( $label );
                 $label_before   = True;
                 switch ( $this->get_attribute( 'text-position' ) )
                 {
