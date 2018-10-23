@@ -48,7 +48,6 @@ class RadioButton extends Field
 
             // Unique to this class
             'choices'           => [ 'unset' => 'unset' ],
-            'layout'            => 'horizontal',    // horizontal or vertical
         );
 
         $parent = parent::get_attributes_default();
@@ -125,7 +124,6 @@ class RadioButton extends Field
         $name           = $this->get_attribute( 'name' );
         $value          = $this->get_attribute( 'value' );
         $choices        = $this->get_attribute( 'choices' );
-        $horizontal     = $this->get_attribute( 'layout' ) === 'horizontal';
         $css_label      = $this->get_attribute( 'class-label' );
         $required       = $this->is_required();
 
@@ -180,12 +178,6 @@ class RadioButton extends Field
             if ( ! $label_before )
             {
                 echo $label_text;
-            }
-            ?>
-            <?php
-            if ( ! $horizontal )
-            {
-                echo '<br>';
             }
             ?>
         </label>

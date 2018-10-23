@@ -37,6 +37,17 @@ $form->add_field(
     )
 );
 
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'              => 'label',
+        'name'              => 'label_1',
+        'label'             => "----- Required Values -----",
+        )
+    )
+);
+
 $form->add_field(
     \Input\Factory::Get(
         array(
@@ -86,42 +97,37 @@ $form->add_field(
     )
 );
 
-$layouts    = [ '', 'bogus', 'horizontal', 'vertical' ];
 $text_poss  = [ '', 'bogus', 'left', 'right' ];
 
-foreach ( $layouts as $layout)
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'              => 'label',
+        'name'              => 'label_2',
+        'label'             => "----- Text Positions -----",
+        )
+    )
+);
+
+foreach ( $text_poss as $text_pos )
 {
+
+    $name = ($text_pos === '' ? 'default' : $text_pos);
+                    
     $form->add_field(
         \Input\Factory::Get(
             array(
-            'type'              => 'label',
-            'name'              => 'label_' . $layout,
-            'label'             => "----- Layout: $layout -----",
+            'type'              => 'radio',
+            'name'              => $name,
+            'choices'           => array(
+                'choice1'   => "$name 1",
+                'choice2'   => "$name 2",
+                'choice3'   => "$name 3",
+            ),
+            'text-position'     => $text_pos,
             )
         )
     );
-    foreach ( $text_poss as $text_pos )
-    {
-        $name = ($layout   === '' ? 'default' : $layout) .
-                ', ' .
-                ($text_pos === '' ? 'default' : $text_pos);
-                    
-        $form->add_field(
-            \Input\Factory::Get(
-                array(
-                'type'              => 'radio',
-                'name'              => $name,
-                'choices'           => array(
-                    'choice1'   => "$name 1",
-                    'choice2'   => "$name 2",
-                    'choice3'   => "$name 3",
-                ),
-                'layout'            => $layout,
-                'text-position'     => $text_pos,
-                )
-            )
-        );
-    }
 }
 
 // -------------------------------------------------------------------------------
