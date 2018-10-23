@@ -44,8 +44,11 @@ $form->add_field(
         array(
         'type'              => 'radio',
         'name'              => 'required_1',
-        'choices'           => array( 'choice1', 'choice2', 'choice3' ),
-        'label'             => array( 'Choice 1', 'Choice 2', 'Choice 3' ),
+        'choices'           => array(
+            'choice1'   => 'Choice 1',
+            'choice2'   => 'Choice 2',
+            'choice3'   => 'Choice 3',
+        ),
         'value'             => 'something bogus',
         'required'          => 'yes',
         )
@@ -57,8 +60,11 @@ $form->add_field(
         array(
         'type'              => 'radio',
         'name'              => 'required_2',
-        'choices'           => array( 'choice1', 'choice2', 'choice3' ),
-        'label'             => array( 'Choice 1', 'Choice 2', 'Choice 3' ),
+        'choices'           => array(
+            'choice1'   => 'Choice 1',
+            'choice2'   => 'Choice 2',
+            'choice3'   => 'Choice 3',
+        ),
         'value'             => 'choice2',
         'required'          => 'yes',
         )
@@ -70,8 +76,12 @@ $form->add_field(
         array(
         'type'              => 'radio',
         'name'              => 'required_3',
-        'choices'           => array( 'choice1', 'choice2', 'choice3' ),
-        'label'             => array( 'Choice 1', 'Choice 2', 'Choice 3' ),
+        'choices'           => array(
+            'choice1'   => 'Choice 1',
+            'choice2'   => 'Choice 2',
+            'choice3'   => 'Choice 3',
+            'choice4'   => 'Choice 4',
+        ),
         'value'             => 'choice3',
         'required'          => 'yes',
         )
@@ -94,8 +104,11 @@ foreach ( $layouts as $layout)
                 array(
                 'type'              => 'radio',
                 'name'              => $name,
-                'choices'           => [ 'choice1', 'choice2', 'choice3' ],
-                'label'             => [ "$name 1", "$name 2", "$name 3" ],
+                'choices'           => array(
+                    'choice1'   => "$name 1",
+                    'choice2'   => "$name 2",
+                    'choice3'   => "$name 3",
+                ),
                 'layout'            => $layout,
                 'text-position'     => $text_pos,
                 )
