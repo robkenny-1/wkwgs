@@ -55,7 +55,7 @@ $form->add_field(
         'type'              => 'checkbox',
         'name'              => 'checkbox_enabled',
         'label'             => 'checkbox_enabled',
-        'selection-value'   => 'Has Been Checked',
+        'checked'           => 'yes',
         'value'             => 'Has Been Checked',
         )
     )
@@ -82,7 +82,6 @@ foreach ( [ '', 'bogus', 'top', 'bottom', 'left', 'right' ] as $text_pos )
             'type'              => 'checkbox',
             'name'              => $name,
             'label'             => $name,
-            'selection-value'   => 'Has Been Checked',
             'text-position'     => $text_pos,
             )
         )

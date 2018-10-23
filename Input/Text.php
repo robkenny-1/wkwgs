@@ -177,13 +177,7 @@ class Text extends Field
                 }
                 ?>
                 <input
-                    <?php Field::html_print_attribute('type',           $type) ?>
-                    <?php Field::html_print_attribute('name',           $name) ?>
-                    <?php Field::html_print_attribute('id',             $id) ?>
-                    <?php Field::html_print_attribute('value',          $value) ?>
-                    <?php Field::html_print_attribute('placeholder',    $placeholder) ?>
-                    <?php Field::html_print_attribute('class',          $css_input) ?>
-                    <?php Field::html_print_attribute('required',       $required) ?>
+                    <?php parent::render_attributes( ) ?>
                 />
                 <?php
                 if ( ! $label_before )

@@ -43,8 +43,8 @@ class Factory
         RadioButton ::Input_Type        => 'Input\RadioButton',
         Button      ::Input_Type        => 'Input\Button',
         Text        ::Input_Type        => 'Input\Text',
-        Email       ::Input_Type        => 'Input\Text',
-        Telephone   ::Input_Type        => 'Input\Text',
+        Email       ::Input_Type        => 'Input\Email',
+        Telephone   ::Input_Type        => 'Input\Telephone',
     );
 
     public static function Get( $field_attrs )

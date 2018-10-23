@@ -43,11 +43,12 @@ class Checkbox extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
-            'value'             => '', // when checked value === selection-value
-            'selection-value'   => 'yes',
-            'text-position'     => 'right',
+            'value'             => 'yes',
             'css-input'         => 'input-checkbox',
             'css-label'         => 'checkbox',
+
+            // Unique to this class
+            'checked'           => 'no',
         );
 
         $parent = parent::get_attributes_default();
@@ -83,13 +84,13 @@ class Checkbox extends Field
             return null;
         }
 
-        $value = $this->get_attribute( 'selection-value' );
+        $value = $this->get_attribute( 'value' );
         if ( $raw === $value)
         {
             return null;
         }
 
-        $error = "Selected value not valid ( '$raw' != '$value' )";
+        $error = "Selected value not valid ( '$raw', expected '$value' )";
         return new Field_Error( $this, $error, $value );
     }
 
@@ -122,27 +123,15 @@ class Checkbox extends Field
      */
     public function render( )
     {
-        $type           = $this->get_attribute( 'type' );
-        $name           = $this->get_attribute( 'name' );
-        $id             = $this->get_attribute( 'id' );
-        $value          = $this->get_attribute( 'selection-value' );
-        $css_input      = $this->get_attribute( 'css-input' );
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
-        $checked        = $this->get_attribute( 'selection-value' ) === $this->get_attribute( 'value' );
         $label_text     = $this->get_attribute( 'label' );
         $text_pos       = $this->get_attribute( 'text-position' );
+        $css_label      = $this->get_attribute( 'css-label' );
+        $css_input_span = $this->get_attribute( 'css-input-span' );
+        $checked        = Field::is_true( $this->get_attribute( 'checked' ) );
         $required       = $this->is_required();
 
-        /*
-        \Wkwgs_Logger::log_function( 'Checkbox::render');
-        \Wkwgs_Logger::log_var( '$type', $type );
-        \Wkwgs_Logger::log_var( '$name', $name );
-        \Wkwgs_Logger::log_var( '$label_text', $label_text );
-        \Wkwgs_Logger::log_var( '$this->get_attribute( "selection-value" )', $this->get_attribute( 'selection-value' ) );
-        \Wkwgs_Logger::log_var( '$checked', $checked );
-        \Wkwgs_Logger::log_var( 'get_attributes', $this->get_attributes() );
-        */
         switch ( $this->get_attribute( 'text-position' ) )
         {
             case 'bottom':
@@ -186,7 +175,7 @@ class Checkbox extends Field
 
         ?>
         <span
-            <?php Field::html_print_attribute('class',      $css_input_span) ?>
+            <?php Field::html_print_attribute('class', $css_input_span) ?>
         >
             <label
                 <?php Field::html_print_attribute('class', $css_label) ?>
@@ -198,13 +187,8 @@ class Checkbox extends Field
                 }
                 ?>
                 <input
-                    <?php Field::html_print_attribute('type',           $type) ?>
-                    <?php Field::html_print_attribute('name',           $name) ?>
-                    <?php Field::html_print_attribute('id',             $id) ?>
-                    <?php Field::html_print_attribute('value',          $value) ?>
-                    <?php Field::html_print_attribute('required',       $required) ?>
-                    <?php Field::html_print_attribute('class',          $css_input) ?>
-                    <?php Field::html_print_attribute('checked',        $checked) ?>
+                    <?php parent::render_attributes( ) ?>
+                    <?php Field::html_print_attribute('checked', $checked) ?>
                 />
                 <?php
                 if ( ! $label_before )

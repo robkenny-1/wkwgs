@@ -37,10 +37,6 @@ class Field_Error
         $this->raw_contents     = $field_contents;
         $this->error            = $error;
     }
-    public function is_error()
-    {
-        return empty( $error );
-    }
     public function get_error_value()
     {
         return $this->$raw_value;

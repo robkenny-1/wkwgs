@@ -45,9 +45,11 @@ class RadioButton extends Field
             'type'              => self::Input_Type,
             'css-input'         => 'input-radio',
             'css-label'         => 'radio',
-            'choices'           => [ 'unset' ],
-            'label'             => [ 'Unset' ],
-            'layout'            => 'horizontal', // horizontal or vertical
+            'label'             => [ 'Unset' ],     // note the redefinition
+
+            // Unique to this class
+            'choices'           => [ 'unset' ],     // should this be value?
+            'layout'            => 'horizontal',    // horizontal or vertical
         );
 
         $parent = parent::get_attributes_default();
@@ -120,14 +122,9 @@ class RadioButton extends Field
      */
     public function render( )
     {
-        $type           = $this->get_attribute( 'type' );
-        $name           = $this->get_attribute( 'name' );
-        $id             = $this->get_attribute( 'id' );
-        $value          = $this->get_attribute( 'value' );
         $choices        = $this->get_attribute( 'choices' );
         $labels         = $this->get_attribute( 'label' );
         $horizontal     = $this->get_attribute( 'layout' ) === 'horizontal';
-        $css_input      = $this->get_attribute( 'css-input' );
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
         $required       = $this->is_required();
@@ -212,13 +209,8 @@ class RadioButton extends Field
                 }
                 ?>
                 <input
-                    <?php Field::html_print_attribute('type',           $type) ?>
-                    <?php Field::html_print_attribute('name',           $name) ?>
-                    <?php Field::html_print_attribute('id',             $radio_id) ?>
-                    <?php Field::html_print_attribute('value',          $choice) ?>
-                    <?php Field::html_print_attribute('required',       $required) ?>
-                    <?php Field::html_print_attribute('class',          $css_input) ?>
-                    <?php Field::html_print_attribute('checked',        $checked) ?>
+                    <?php parent::render_attributes( ) ?>
+                    <?php Field::html_print_attribute('checked', $checked) ?>
                 />
                 <?php
                 if ( ! $label_before )

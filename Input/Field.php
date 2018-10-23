@@ -56,16 +56,15 @@ abstract class Field
         $default = array(
             'type'                  => self::Input_Type,
             'name'                  => '',
-            'label'                 => '',
-            'text-position'         => 'left',
+            'id'                    => 0,
             'value'                 => '',
             'required'              => 'no',
-            'id'                    => 0,
             'width'                 => 'large',
             'placeholder'           => '',
-            'default'               => '',
             'size'                  => 40,
             'help'                  => '',
+            'label'                 => '',
+            'text-position'         => 'right',
             'css-input'             => '',
             'css-label'             => '',
             'css-input-container'   => 'options_group',
@@ -149,6 +148,18 @@ abstract class Field
         }
 
         return $attr;
+    }
+
+    public function render_attributes( $except = null )
+    {
+        Field::html_print_attribute( 'type'         , $this->get_attribute( 'type'          ), $except );
+        Field::html_print_attribute( 'name'         , $this->get_attribute( 'name'          ), $except );
+        Field::html_print_attribute( 'id'           , $this->get_attribute( 'id'            ), $except );
+        Field::html_print_attribute( 'value'        , $this->get_attribute( 'value'         ), $except );
+        Field::html_print_attribute( 'required'     , Field::is_true( $this->get_attribute( 'required' )), $except );
+        Field::html_print_attribute( 'width'        , $this->get_attribute( 'width'         ), $except );
+        Field::html_print_attribute( 'placeholder'  , $this->get_attribute( 'placeholder'   ), $except );
+        Field::html_print_attribute( 'size'         , $this->get_attribute( 'size'          ), $except );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -235,13 +246,19 @@ abstract class Field
     /* HTML helper routines */
     /*-------------------------------------------------------------------------*/
 
-    public static function html_print_attribute( $attr, $value )
+    public static function html_print_attribute( $attr, $value, $except = null )
     {
+        if ( gettype( $except) === 'array' && array_contains( $attr, $exclude ) )
+        {
+            return;
+        }
+
         if ( gettype( $value ) === 'boolean' && $value)
         {
             echo $attr . PHP_EOL;
             return;
         }
+
         if ( ! empty( $value ) )
         {
             $value = esc_attr( $value );
