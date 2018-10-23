@@ -61,15 +61,29 @@ class Text extends Field
     /**
      * Verify status of input data
      *
-     * @return True if value meets criteria
+     * @return null if no error or Field_Error
      */
     public function validate( $post )
     {
-        if ( ! isset( $post[ $this->get_name() ] ) )
+        $name = $this->get_name();
+
+        if ( ! isset( $post[ $name ] ) )
         {
-            return False;
+            return new Field_Error( $this, 'Value not in POST' );
         }
-        return True;
+
+        $raw = $post[ $name ];
+
+        if ( empty( $raw ) )
+        {
+            if ( $this->is_required() )
+            {
+                return new Field_Error( $this, 'Value is required', $raw );
+            }
+            return null;
+        }
+
+        return null;
     }
 
     /**
@@ -79,14 +93,18 @@ class Text extends Field
      */
     public function get_value( $post )
     {
-        if ( ! $this->validate( $post ) )
+        $name = $this->get_name();
+
+        if ( $this->validate( $post ) != null )
         {
             return '';
         }
-        $raw = $post[ $this->get_name() ];
+        $raw = $post[ $name ];
 
-        // Should we always perform some cleansing or leave it up to the caller?
-        return $raw;
+        // No cleansing necessary
+        $cleansed = $raw;
+
+        return $cleansed;
     }
 
     /**
@@ -103,15 +121,16 @@ class Text extends Field
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
         $value          = $this->get_attribute( 'value' );
+        $placeholder    = $this->get_attribute( 'placeholder' );
+        $value          = $this->get_attribute( 'value' );
         $css_input      = $this->get_attribute( 'css-input' );
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
-        $placeholder    = $this->get_attribute( 'placeholder' );
-        $value          = $this->get_attribute( 'value' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
         $label_before   = True;
+        $required       = $this->is_required();
 
-        if ( $this->is_required() && empty($label_text) )
+        if ( $required && empty($label_text) )
         {
             $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }
@@ -157,6 +176,7 @@ class Text extends Field
         ?>
         <span
             <?php Field::html_print_attribute('class',      $css_input_span) ?>
+        >
             <label
                 <?php Field::html_print_attribute('class', $css_label) ?>
             >
@@ -168,11 +188,12 @@ class Text extends Field
                 ?>
                 <input
                     <?php Field::html_print_attribute('type',           $type) ?>
-                    <?php Field::html_print_attribute('class',          $css_input) ?>
                     <?php Field::html_print_attribute('name',           $name) ?>
                     <?php Field::html_print_attribute('id',             $id) ?>
                     <?php Field::html_print_attribute('value',          $value) ?>
                     <?php Field::html_print_attribute('placeholder',    $placeholder) ?>
+                    <?php Field::html_print_attribute('class',          $css_input) ?>
+                    <?php Field::html_print_attribute('required',       $required) ?>
                 />
                 <?php
                 if ( ! $label_before )

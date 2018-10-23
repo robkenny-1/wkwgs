@@ -264,7 +264,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             {
                 // Get the option's values from the cart form
                 $form = $this->get_form( 'cart', $option_name, $option_items );
-                $form_values = $form->get_values( $_POST );
+                $form_values = $form->get_form_values( $_POST );
 
                 // Save all the values to the cart
                 foreach ($form_values as $key => $value )
@@ -365,7 +365,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         foreach ( $this->get_product_customized() as $option_name => $option_items )
         {
             $form = $this->get_form( 'admin', $option_name, $option_items );
-            $form_values = $form->get_values( $_POST );
+            $form_values = $form->get_form_values( $_POST );
             
             foreach ($form_values as $key => $value )
             {

@@ -61,31 +61,43 @@ class Checkbox extends Field
     }
 
     /**
-     * Verify status of input data
+     * Verify data is conforms to an email address
      *
-     * @return True if value meets criteria
+     * @return null if no error or Field_Error
      */
     public function validate( $post )
     {
-        \Wkwgs_Logger::log_function( 'Checkbox::validate');
-        \Wkwgs_Logger::log_var( '$this->get_name()', $this->get_name() );
-        \Wkwgs_Logger::log_var( '$post', $post );
+        $name = $this->get_name();
 
-        $is_valid = False;
-
-        if ( isset( $post[ $this->get_name() ] ) )
+        // Unselected checkbox are not present in POST
+        if ( ! isset( $post[ $name ] ) )
         {
-            $raw = $post[ $this->get_name() ];
-
-            \Wkwgs_Logger::log_var( '$raw', $raw );
-            \Wkwgs_Logger::log_var( '$this->get_attribute( "value" )', $this->get_attribute( 'selection-value' ) );
-
-            $is_valid = $raw === $this->get_attribute( 'selection-value' );
+            $raw = '';
+        }
+        else
+        {
+            $raw = $post[ $name ];
         }
 
-        \Wkwgs_Logger::log_var( 'return $is_valid', $is_valid );
-        return $is_valid;
+        if ( empty( $raw ) )
+        {
+            if ( $this->is_required() )
+            {
+                return new Field_Error( $this, 'Value is required', $raw );
+            }
+            return null;
+        }
+
+        $value = $this->get_attribute( 'selection-value' );
+        if ( $raw === $value)
+        {
+            return null;
+        }
+
+        $error = "Selected value not valid ( '$raw' != '$value' )";
+        return new Field_Error( $this, $error, $value );
     }
+
 
     /**
      * Extract object's value from post data
@@ -94,19 +106,17 @@ class Checkbox extends Field
      */
     public function get_value( $post )
     {
-        \Wkwgs_Logger::log_function( 'Checkbox::get_value');
+        $name = $this->get_name();
 
-        $cleansed = '';
-
-        if ( $this->validate( $post ) )
+        if ( ! isset( $post[ $name ] ) || $this->validate( $post ) != null )
         {
-            $raw = $post[ $this->get_name() ];
-
-            // No cleansing necessary
-            $cleansed = $raw;
+            return '';
         }
+        $raw = $post[ $name ];
 
-        \Wkwgs_Logger::log_var( 'return $cleansed', $cleansed );
+        // No cleansing necessary
+        $cleansed = $raw;
+
         return $cleansed;
     }
 
@@ -125,8 +135,9 @@ class Checkbox extends Field
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
         $checked        = $this->get_attribute( 'selection-value' ) === $this->get_attribute( 'value' );
-        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
+        $label_text     = $this->get_attribute( 'label' );
         $text_pos       = $this->get_attribute( 'text-position' );
+        $required       = $this->is_required();
 
         /*
         \Wkwgs_Logger::log_function( 'Checkbox::render');
@@ -137,39 +148,68 @@ class Checkbox extends Field
         \Wkwgs_Logger::log_var( '$checked', $checked );
         \Wkwgs_Logger::log_var( 'get_attributes', $this->get_attributes() );
         */
+        switch ( $this->get_attribute( 'text-position' ) )
+        {
+            case 'bottom':
+                if (! empty($label_text))
+                {
+                    $label_text = '</br>' . $label_text;
+                }
+                $label_before = False;
+                break;
+
+            case 'right':
+                if (! empty($label_text))
+                {
+                    $label_text = '&nbsp;' . $label_text;
+                }
+                $label_before = False;
+                break;
+
+            case 'top':
+                if (! empty($label_text))
+                {
+                    $label_text = $label_text . '</br>';
+                }
+                $label_before = True;
+                break;
+
+            case 'left':
+            default:
+                if (! empty($label_text))
+                {
+                    $label_text = $label_text . '&nbsp;';
+                }
+                $label_before = True;
+                break;
+        }
 
         ?>
         <span
             <?php Field::html_print_attribute('class',      $css_input_span) ?>
+        >
             <label
                 <?php Field::html_print_attribute('class', $css_label) ?>
             >
                 <?php
-                if ( $text_pos === 'top' )
+                if ( $label_before )
                 {
-                    echo $label_text . '</br>';
-                }
-                else if ( $text_pos === 'left' )
-                {
-                    echo $label_text . '&nbsp;';
+                    echo $label_text;
                 }
                 ?>
                 <input
-                    <?php Field::html_print_attribute('type',       $type) ?>
-                    <?php Field::html_print_attribute('class',      $css_input) ?>
-                    <?php Field::html_print_attribute('name',       $name) ?>
-                    <?php Field::html_print_attribute('id',         $id) ?>
-                    <?php Field::html_print_attribute('value',      $value) ?>
-                    <?php Field::html_print_attribute('checked',    $checked) ?>
+                    <?php Field::html_print_attribute('type',           $type) ?>
+                    <?php Field::html_print_attribute('name',           $name) ?>
+                    <?php Field::html_print_attribute('id',             $id) ?>
+                    <?php Field::html_print_attribute('value',          $value) ?>
+                    <?php Field::html_print_attribute('required',       $required) ?>
+                    <?php Field::html_print_attribute('class',          $css_input) ?>
+                    <?php Field::html_print_attribute('checked',        $checked) ?>
                 />
                 <?php
-                if ( $text_pos === 'bottom' )
+                if ( ! $label_before )
                 {
-                    echo '</br>' . $label_text;
-                }
-                else if ( $text_pos === 'right' )
-                {
-                    echo '&nbsp;' . $label_text;
+                    echo $label_text;
                 }
                 ?>
              </label>

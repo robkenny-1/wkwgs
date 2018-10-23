@@ -50,7 +50,9 @@ class RadioButton extends Field
             'type'              => self::Input_Type,
             'css-input'         => 'input-radio',
             'css-label'         => 'radio',
-            'selected'          => '',
+            'choices'           => [ 'unset' ],
+            'label'             => [ 'Unset' ],
+            'layout'            => 'horizontal', // horizontal or vertical
         );
 
         $parent = parent::get_attributes_default();
@@ -59,19 +61,40 @@ class RadioButton extends Field
     }
 
     /**
-     * Verify status of input data
+     * Verify data is conforms to an email address
      *
-     * @return True if value meets criteria
+     * @return null if no error or Field_Error
      */
     public function validate( $post )
     {
-        if ( ! isset( $post[ $this->get_name() ] ) )
-        {
-            return False;
-        }
-        $raw = $post[ $this->get_name() ];
+        $name = $this->get_name();
 
-        return in_array( $raw, $this->get_attribute( 'choices' ) );
+        if ( ! isset( $post[ $name ] ) )
+        {
+            return null;
+        }
+        $raw = $post[ $name ];
+
+        if ( empty( $raw ) )
+        {
+            if ( $this->is_required() )
+            {
+                return new Field_Error( $this, 'Value is required', $raw );
+            }
+            else
+            {
+                return null;
+            }
+        }
+        
+        $value = $this->get_attribute( 'value' );
+        if ( $raw === $value)
+        {
+            return null;
+        }
+
+        $error = "Selected value not valid ( '$raw' != '$value' )";
+        return new Field_Error( $this, $error, $value );
     }
 
     /**
@@ -81,13 +104,18 @@ class RadioButton extends Field
      */
     public function get_value( $post )
     {
-        if ( ! $this->validate( $post ) )
+        $name = $this->get_name();
+
+        if ( ! isset( $post[ $name ] ) || $this->validate( $post ) != null )
         {
             return '';
         }
-        $raw = $post[ $this->get_name() ];
+        $raw = $post[ $name ];
 
-        return $raw;
+        // No cleansing necessary
+        $cleansed = $raw;
+
+        return $cleansed;
     }
 
     /**
@@ -101,41 +129,124 @@ class RadioButton extends Field
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
         $value          = $this->get_attribute( 'value' );
+        $choices        = $this->get_attribute( 'choices' );
+        $labels         = $this->get_attribute( 'label' );
+        $horizontal     = $this->get_attribute( 'layout' ) === 'horizontal';
         $css_input      = $this->get_attribute( 'css-input' );
         $css_label      = $this->get_attribute( 'css-label' );
         $css_input_span = $this->get_attribute( 'css-input-span' );
-        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
+        $required       = $this->is_required();
 
-        $value          = $this->get_attribute( 'value' );
-        $options        = $this->get_attribute( 'choices' );
-
-        if ( ! empty( $options ) )
+        if ( empty( $choices ) )
         {
-            ?>
-            <span class="<?php echo $css_input_span ?>">
-                <label
-                    <?php Field::html_print_attribute('for',        $id) ?>
-                    <?php Field::html_print_attribute('class',      $css_label) ?>
-                ><?php echo $label_text ?></label>
-                <?php
-                foreach ( $options as $option => $option_text )
-                {
-                    $option_text    = htmlspecialchars( $option_text );
-                    $is_selected    = $option === $value;
-
-                    ?>
-                    <input
-                        <?php Field::html_print_attribute('class',      $css_input) ?>
-                        <?php Field::html_print_attribute('type',       $type) ?>
-                        <?php Field::html_print_attribute('name',       $name) ?>
-                        <?php Field::html_print_attribute('id',         $name . '_' . $option) ?>
-                        <?php Field::html_print_attribute('value',      $value) ?>
-                        <?php Field::html_print_attribute('checked',    $is_selected) ?>
-                    />&nbsp;<?php echo $option_text ?>
-
-                    <?php
-                }
-            ?></span><?php
+            return;
         }
+        if ( ! is_array( $choices ) )
+        {
+            $choices = array( $choices );
+        }
+        if ( ! is_array( $labels ) )
+        {
+            $labels = array( $labels );
+        }
+        ?>
+        <span
+            <?php Field::html_print_attribute('class', $css_input_span) ?>
+        >
+            <?php
+            $j = count($choices);
+            for($i = 0; $i < $j ; $i++)
+            {
+                $choice         = esc_attr( $choices[ $i ] );
+                $radio_id       = $name . '_' . $choice;
+                $checked        = $choices[ $i ] === $value;
+
+                if ( isset( $labels[ $i ] ) )
+                {
+                    $label = $labels[ $i ];
+                }
+                else
+                {
+                    $label = $choice;
+                }
+                $label_text = htmlspecialchars( $label );
+                if ( $this->is_required() && empty($label_text) )
+                {
+                    $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
+                }
+
+                $label_before   = True;
+                switch ( $this->get_attribute( 'text-position' ) )
+                {
+                    case 'bottom':
+                        if (! empty($label_text))
+                        {
+                            $label_text = '</br>' . $label_text;
+                        }
+                        $label_before = False;
+                        break;
+
+                    case 'right':
+                        if (! empty($label_text))
+                        {
+                            $label_text = '&nbsp;' . $label_text;
+                        }
+                        $label_before = False;
+                        break;
+
+                    case 'top':
+                        if (! empty($label_text))
+                        {
+                            $label_text = $label_text . '</br>';
+                        }
+                        $label_before = True;
+                        break;
+
+                    case 'left':
+                    default:
+                        if (! empty($label_text))
+                        {
+                            $label_text = $label_text . '&nbsp;';
+                        }
+                        $label_before = True;
+                        break;
+                }
+            ?>
+            <label
+                <?php Field::html_print_attribute('class', $css_label) ?>
+            >
+                <?php
+                if ( $label_before )
+                {
+                    echo $label_text;
+                }
+                ?>
+                <input
+                    <?php Field::html_print_attribute('type',           $type) ?>
+                    <?php Field::html_print_attribute('name',           $name) ?>
+                    <?php Field::html_print_attribute('id',             $radio_id) ?>
+                    <?php Field::html_print_attribute('value',          $choice) ?>
+                    <?php Field::html_print_attribute('required',       $required) ?>
+                    <?php Field::html_print_attribute('class',          $css_input) ?>
+                    <?php Field::html_print_attribute('checked',        $checked) ?>
+                />
+                <?php
+                if ( ! $label_before )
+                {
+                    echo $label_text;
+                }
+                ?>
+                <?php
+                if ( ! $horizontal )
+                {
+                    echo '</br>';
+                }
+                ?>
+            </label>
+            <?php
+            }
+            ?>
+        </span>
+        <?php
     }
 }

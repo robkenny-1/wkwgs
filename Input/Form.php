@@ -33,6 +33,7 @@ include_once('Field.php');
 class Form extends Field
 {
     const Input_Type = 'form';
+    private $validation_errors = [];
 
     /**
      * The Constructor
@@ -96,19 +97,40 @@ class Form extends Field
      */
     public function validate( $post )
     {
+        $this->validation_errors = [];
+
         if ( empty( $post ) )
         {
-            return false;
+            $this->validation_errors[ $this->get_name() ] =
+            [
+                'field'         => $this,
+                'error'         => '$post is empty',
+            ];
         }
-
-        foreach ( $this->get_fields() as $field )
+        else
         {
-            if ( ! $field->validate( $post ) )
+            foreach ( $this->get_fields() as $field )
             {
-                return False;
+                $error = $field->validate( $post );
+
+                if ( ! is_null( $error ) )
+                {
+                    $this->validation_errors[ $error->get_error_object_name() ] = $error;
+                }
             }
         }
-        return True;
+
+        return empty( $this->validation_errors );
+    }
+
+    /**
+     * Get all errors detected from last call to validate()
+     *
+     * @return array
+     */
+    public function get_validate_errors()
+    {
+        return $this->validation_errors;
     }
 
     public function render_fields( )
@@ -284,7 +306,7 @@ class Form extends Field
 
     /*-----------------------------------------------------------------------*/
 
-    public function get_values( $post = null )
+    public function get_form_values( $post = null )
     {
         if ( is_null( $post ) )
         {
@@ -292,7 +314,7 @@ class Form extends Field
         }
         $values = $this->get_value( $post );  
 
-        \Wkwgs_Logger::log_function( 'Form::get_values');
+        \Wkwgs_Logger::log_function( 'Form::get_form_values');
         \Wkwgs_Logger::log_var( '$this->get_attribute( "method" )', $this->get_attribute( 'method' ) );
         \Wkwgs_Logger::log_var( '$post', $post );
         \Wkwgs_Logger::log_var( '$values', $values );

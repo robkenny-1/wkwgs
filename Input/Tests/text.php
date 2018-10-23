@@ -42,103 +42,40 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'              => 'text',
-        'name'              => 'right_required',
-        'label'             => 'right, required',
-        'required'          => 'yes',
-        'text-position'     => 'right',
-        'placeholder'       => 'placeholder for right',
+        'type'              => 'email',
+        'name'              => 'email',
+        'label'             => 'email address',
         )
     )
 );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'text',
-        'name'              => 'left',
-        'label'             => 'left',
-        'text-position'     => 'left',
-        'placeholder'       => 'placeholder for left',
-        )
-    )
-);
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'text',
-        'name'              => 'top',
-        'label'             => 'Top',
-        'text-position'     => 'top',
-        'placeholder'       => 'placeholder for top',
-        )
-    )
-);
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'text',
-        'name'              => 'bottom',
-        'label'             => 'Bottom',
-        'text-position'     => 'bottom',
-        'help'              => 'This is the help text for bottom'
-        )
-    )
-);
-
-// -------------------------------------------------------------------------------
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'button',
-        'name'          => 'submit',
-        'value'         => 'Submit',
-        )
-    )
-);
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'button',
-        'name'          => 'reset',
-        'value'         => 'Reset',
-        )
-    )
-);
-
-// -------------------------------------------------------------------------------
-
-// Store results in the session
-$post = $form->get_submit_data();
-if ( isset( $post ) )
+foreach ( [ '', 'bogus', 'top', 'bottom', 'left', 'right' ] as $text_pos )
 {
-    $form_values = $form->get_values();
+    $name = empty( $text_pos ) ? 'empty' : $text_pos;
 
-    $_SESSION['form_values'] = $form_values;
-
-    // Post/Redirect/Get
-    // Redirect to this page
-    header("Location: " . $_SERVER['REQUEST_URI']);
-    exit();
+    $form->add_field(
+        \Input\Factory::Get(
+            array(
+            'type'              => 'text',
+            'name'              => $name,
+            'label'             => $name,
+            'text-position'     => $text_pos,
+            'placeholder'       => 'placeholder',
+            )
+        )
+    );
 }
 
-$form->html_print();
-
-// Print out any results stored in the session
-if ( isset( $_SESSION['form_values'] ) )
+// -------------------------------------------------------------------------------
+// Called if we should muck with the post data to test validation
+function falsify_post( $post )
 {
-    echo "<div>";
-    echo "<h1>Values from last SUBMIT</h1>";
-    foreach ( $_SESSION['form_values'] as $name => $value)
-    {
-        echo "$name = $value</br>";
-    }
-    echo "</div>";
+    $post[ 'email' ] = 'this-is-not-a-valid-email-address <&>';
+
+    return $post;
 }
+
+include_once( 'test_common_submit.php' );
 
 ?>
 

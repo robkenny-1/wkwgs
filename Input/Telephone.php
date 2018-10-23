@@ -54,4 +54,27 @@ class Telephone extends Text
 
         return array_merge($parent, $default);
     }
+
+    /**
+     * Verify data is conforms to an email address
+     *
+     * @return null if no error or Field_Error
+     */
+    public function validate( $post )
+    {
+        $name = $this->get_name();
+
+        if ( ! isset( $post[ $name ] ) )
+        {
+            return new Field_Error( $this, 'Value not in post' );
+        }
+
+        $raw = $post[ $name ];
+        if ( ! $this->is_required() && empty( $raw ) )
+        {
+            return null;
+        }
+        
+        return null;
+    }
 }

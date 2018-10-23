@@ -23,6 +23,7 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
+include_once('Field_Error.php');
 include_once(__DIR__ . '/../Wkwgs_Logger.php' );
 
 /**
@@ -237,13 +238,10 @@ abstract class Field
 
     public static function html_print_attribute( $attr, $value )
     {
-        if ( gettype( $value ) === 'boolean' )
+        if ( gettype( $value ) === 'boolean' && $value)
         {
-            if ( $value )
-            {
-                echo $attr . PHP_EOL;
-                return;
-            }
+            echo $attr . PHP_EOL;
+            return;
         }
         if ( ! empty( $value ) )
         {

@@ -45,7 +45,6 @@ $form->add_field(
         'type'              => 'checkbox',
         'name'              => 'checkbox_with_label',
         'label'             => 'checkbox_with_label',
-        'text-position'     => 'left',
         )
     )
 );
@@ -56,9 +55,8 @@ $form->add_field(
         'type'              => 'checkbox',
         'name'              => 'checkbox_enabled',
         'label'             => 'checkbox_enabled',
-        'selection-value'   => 'boo',
-        'value'             => 'boo',
-        'text-position'     => 'top',
+        'selection-value'   => 'Has Been Checked',
+        'value'             => 'Has Been Checked',
         )
     )
 );
@@ -73,6 +71,24 @@ $form->add_field(
         )
     )
 );
+
+foreach ( [ '', 'bogus', 'top', 'bottom', 'left', 'right' ] as $text_pos )
+{
+    $name = empty( $text_pos ) ? 'empty' : $text_pos;
+
+    $form->add_field(
+        \Input\Factory::Get(
+            array(
+            'type'              => 'checkbox',
+            'name'              => $name,
+            'label'             => $name,
+            'selection-value'   => 'Has Been Checked',
+            'text-position'     => $text_pos,
+            )
+        )
+    );
+}
+
 
 // -------------------------------------------------------------------------------
 
@@ -92,39 +108,22 @@ $form->add_field(
         'type'          => 'button',
         'name'          => 'reset',
         'value'         => 'Reset',
+        'button-type'   => 'reset',
         )
     )
 );
 
 // -------------------------------------------------------------------------------
-
-// Store results in the session
-$post = $form->get_submit_data();
-if ( isset( $post ) )
+// Called if we should muck with the post data to test validation
+function falsify_post( $post )
 {
-    $form_values = $form->get_values();
+    $post[ 'checkbox_enabled' ] = 'does not match';
 
-    $_SESSION['form_values'] = $form_values;
-
-    // Post/Redirect/Get
-    // Redirect to this page
-    header("Location: " . $_SERVER['REQUEST_URI']);
-    exit();
+    return $post;
 }
 
-$form->html_print();
+include_once( 'test_common_submit.php' );
 
-// Print out any results stored in the session
-if ( isset( $_SESSION['form_values'] ) )
-{
-    echo "<div>";
-    echo "<h1>Values from last SUBMIT</h1>";
-    foreach ( $_SESSION['form_values'] as $name => $value)
-    {
-        echo "$name = $value</br>";
-    }
-    echo "</div>";
-}
 ?>
 
 </body>

@@ -64,11 +64,7 @@ class Button extends Field
      */
     public function validate( $post )
     {
-        if ( ! isset( $post[ $this->get_name() ] ) )
-        {
-            return False;
-        }
-        return True;
+        return null;
     }
 
     /**
@@ -78,11 +74,13 @@ class Button extends Field
      */
     public function get_value( $post )
     {
-        if ( ! $this->validate( $post ) )
+        $name = $this->get_name();
+
+        if ( ! isset( $post[ $name ] ) || $this->validate( $post ) != null )
         {
             return '';
         }
-        $raw = $post[ $this->get_name() ];
+        $raw = $post[ $name ];
 
         // The button should only return 'value'
         if ( $raw === $this->get_attribute( 'value' ) )
