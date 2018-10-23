@@ -89,7 +89,7 @@ $form->add_field(
 );
 
 $layouts    = [ '', 'bogus', 'horizontal', 'vertical' ];
-$text_poss  = [ '', 'bogus', 'top', 'bottom', 'left', 'right' ];
+$text_poss  = [ '', 'bogus', 'left', 'right' ];
 
 foreach ( $layouts as $layout)
 {
