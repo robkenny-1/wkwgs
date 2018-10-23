@@ -157,7 +157,8 @@ abstract class Field
         Field::html_print_attribute( 'id'           , $this->get_attribute( 'id'            ),              $exclude );
         Field::html_print_attribute( 'value'        , $this->get_attribute( 'value'         ),              $exclude );
         Field::html_print_attribute( 'required'     , Field::is_true( $this->get_attribute( 'required' )),  $exclude );
-        Field::html_print_attribute( 'width'        , $this->get_attribute( 'width'         ),              $exclude );
+        // move to <label>
+        //Field::html_print_attribute( 'width'        , $this->get_attribute( 'width'         ),              $exclude );
         Field::html_print_attribute( 'placeholder'  , $this->get_attribute( 'placeholder'   ),              $exclude );
         Field::html_print_attribute( 'size'         , $this->get_attribute( 'size'          ),              $exclude );
     }

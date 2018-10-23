@@ -132,7 +132,7 @@ class Text extends Field
             case 'bottom':
                 if (! empty($label_text))
                 {
-                    $label_text = '</br>' . $label_text;
+                    $label_text = '<br>' . $label_text;
                 }
                 $label_before = False;
                 break;
@@ -148,7 +148,7 @@ class Text extends Field
             case 'top':
                 if (! empty($label_text))
                 {
-                    $label_text = $label_text . '</br>';
+                    $label_text = $label_text . '<br>';
                 }
                 $label_before = True;
                 break;
