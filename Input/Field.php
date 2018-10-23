@@ -150,16 +150,16 @@ abstract class Field
         return $attr;
     }
 
-    public function render_attributes( $except = null )
+    public function render_attributes( $exclude = null )
     {
-        Field::html_print_attribute( 'type'         , $this->get_attribute( 'type'          ), $except );
-        Field::html_print_attribute( 'name'         , $this->get_attribute( 'name'          ), $except );
-        Field::html_print_attribute( 'id'           , $this->get_attribute( 'id'            ), $except );
-        Field::html_print_attribute( 'value'        , $this->get_attribute( 'value'         ), $except );
-        Field::html_print_attribute( 'required'     , Field::is_true( $this->get_attribute( 'required' )), $except );
-        Field::html_print_attribute( 'width'        , $this->get_attribute( 'width'         ), $except );
-        Field::html_print_attribute( 'placeholder'  , $this->get_attribute( 'placeholder'   ), $except );
-        Field::html_print_attribute( 'size'         , $this->get_attribute( 'size'          ), $except );
+        Field::html_print_attribute( 'type'         , $this->get_attribute( 'type'          ),              $exclude );
+        Field::html_print_attribute( 'name'         , $this->get_attribute( 'name'          ),              $exclude );
+        Field::html_print_attribute( 'id'           , $this->get_attribute( 'id'            ),              $exclude );
+        Field::html_print_attribute( 'value'        , $this->get_attribute( 'value'         ),              $exclude );
+        Field::html_print_attribute( 'required'     , Field::is_true( $this->get_attribute( 'required' )),  $exclude );
+        Field::html_print_attribute( 'width'        , $this->get_attribute( 'width'         ),              $exclude );
+        Field::html_print_attribute( 'placeholder'  , $this->get_attribute( 'placeholder'   ),              $exclude );
+        Field::html_print_attribute( 'size'         , $this->get_attribute( 'size'          ),              $exclude );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -246,9 +246,9 @@ abstract class Field
     /* HTML helper routines */
     /*-------------------------------------------------------------------------*/
 
-    public static function html_print_attribute( $attr, $value, $except = null )
+    public static function html_print_attribute( $attr, $value, $exclude = null )
     {
-        if ( gettype( $except) === 'array' && array_contains( $attr, $exclude ) )
+        if ( gettype( $exclude ) === 'array' && in_array( $attr, $exclude ) )
         {
             return;
         }
