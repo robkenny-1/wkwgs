@@ -15,8 +15,6 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL|E_STRICT);
 
 define( 'ABSPATH', '1');
-function esc_attr( $attr ) { return $attr; }
-function apply_filters( $name, $values) { return $values; }
 
 session_start();
 include_once( '..\Factory.php' );
@@ -93,6 +91,15 @@ $text_poss  = [ '', 'bogus', 'left', 'right' ];
 
 foreach ( $layouts as $layout)
 {
+    $form->add_field(
+        \Input\Factory::Get(
+            array(
+            'type'              => 'label',
+            'name'              => 'label_' . $layout,
+            'label'             => "----- Layout: $layout -----",
+            )
+        )
+    );
     foreach ( $text_poss as $text_pos )
     {
         $name = ($layout   === '' ? 'default' : $layout) .
