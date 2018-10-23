@@ -34,11 +34,6 @@ class Email extends Text
 {
     const Input_Type = 'email';
 
-    function __construct( $name )
-    {
-        parent::__construct( $name );
-    }
-
     /**
      * Attributes of the input element
      *

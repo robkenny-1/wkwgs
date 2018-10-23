@@ -34,10 +34,6 @@ class Telephone extends Text
 {
     const Input_Type = 'tel';
 
-    function __construct( $name )
-    {
-        parent::__construct( $name );
-    }
 
     /**
      * Attributes of the input element

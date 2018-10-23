@@ -33,7 +33,6 @@ include_once(__DIR__ . '/../Wkwgs_Logger.php' );
  */
 abstract class Field
 {
-
     /*-------------------------------------------------------------------------*/
     /*                                                                         */
     /* All input classes must implement/override these                         */
@@ -42,12 +41,9 @@ abstract class Field
 
     const Input_Type = '';
 
-    public function __construct( $name )
+    public function __construct( $attributes )
     {
-        $defaults = $this->get_attributes_default();
-        $defaults[ 'name' ] = $name;
-
-        $this->attributes = $defaults;
+        $this->set_attributes( $attributes );
     }
 
     /**
@@ -131,7 +127,10 @@ abstract class Field
         //\Wkwgs_Logger::log_function( 'Field::set_attributes');
         //\Wkwgs_Logger::log_var( '$this->get_name()', $this->get_name() );
         //\Wkwgs_Logger::log_var( '$attributes', $attributes );
-
+        if ( is_null( $this->attributes) )
+        {
+            $this->attributes = $this->get_attributes_default();
+        }
         $this->attributes = array_merge( $this->attributes, $attributes );
         //\Wkwgs_Logger::log_var( '$this->attributes', $this->attributes );
     }

@@ -36,16 +36,6 @@ class Form extends Field
     private $validation_errors = [];
 
     /**
-     * The Constructor
-     *
-     * @param string $name
-     */
-    public function __construct( $name )
-    {
-        parent::__construct( $name );
-    }
-
-    /**
      * Get all the *default* attributes of the form
      *
      * @return string, empty string if unset

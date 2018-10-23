@@ -34,11 +34,6 @@ class Checkbox extends Field
 {
     const Input_Type = 'checkbox';
 
-    function __construct( $name )
-    {
-        parent::__construct( $name );
-    }
-
     /**
      * Attributes of the input element
      *

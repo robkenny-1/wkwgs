@@ -41,24 +41,22 @@ class Factory
         Form        ::Input_Type        => 'Input\Form',
         Checkbox    ::Input_Type        => 'Input\Checkbox',
         RadioButton ::Input_Type        => 'Input\RadioButton',
-        Text        ::Input_Type        => 'Input\Text',
-        Email       ::Input_Type        => 'Input\Email',
-        Telephone   ::Input_Type        => 'Input\Telephone',
         Button      ::Input_Type        => 'Input\Button',
+        Text        ::Input_Type        => 'Input\Text',
+        Email       ::Input_Type        => 'Input\Text',
+        Telephone   ::Input_Type        => 'Input\Text',
     );
 
     public static function Get( $field_attrs )
     {
         if ( isset( $field_attrs[ 'name' ] ) && isset( $field_attrs[ 'type' ] ) )
         {
-            $name = $field_attrs[ 'name' ];
             $type = $field_attrs[ 'type' ];
 
             if ( isset( Factory::FactoryMachines[ $type ] ) )
             {
                 $machine = Factory::FactoryMachines[ $type ];
-                $field = new $machine( $name );
-                $field->set_attributes( $field_attrs );
+                $field = new $machine( $field_attrs );
                 return $field;
             }
         }

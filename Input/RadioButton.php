@@ -34,11 +34,6 @@ class RadioButton extends Field
 {
     const Input_Type = 'radio';
 
-    function __construct( $name )
-    {
-        parent::__construct( $name );
-    }
-
     /**
      * Attributes of the input element
      *

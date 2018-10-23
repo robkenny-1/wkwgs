@@ -34,11 +34,6 @@ class Text extends Field
 {
     const Input_Type = 'text';
 
-    function __construct( $name )
-    {
-        parent::__construct( $name );
-    }
-
     /**
      * Attributes of the input element
      *

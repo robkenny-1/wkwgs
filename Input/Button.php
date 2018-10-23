@@ -34,11 +34,6 @@ class Button extends Field
 {
     const Input_Type = 'button';
 
-    function __construct( $name )
-    {
-        parent::__construct( $name );
-    }
-
     /**
      * Attributes of this input element
      *
