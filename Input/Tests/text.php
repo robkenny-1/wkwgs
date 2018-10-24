@@ -29,12 +29,12 @@ form {
 * inputs, but hey, it's new and cool and could remove the 
 * pesky delay.
 */
-label.fancy-label, input.fancy-input {
+label.fancy, input.fancy {
   transition: all 0.2s;
   touch-action: manipulation;
 }
 
-input.fancy-input {
+input.fancy {
   font-size: 1.5em;
   border: 0;
   border-bottom: 1px solid #ccc;
@@ -45,12 +45,12 @@ input.fancy-input {
   cursor: text;
 }
 
-input.fancy-input:focus {
+input.fancy:focus {
   outline: 0;
   border-bottom: 1px solid #666;
 }
 
-label.fancy-label {
+label.fancy {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -60,7 +60,7 @@ label.fancy-label {
 * Also make sure the label is only on one row, at max 2/3rds of the
 * field—to make sure it scales properly and doesn't wrap.
 */
-input.fancy-input:placeholder-shown + label.fancy-label {
+input.fancy:placeholder-shown + label.fancy {
   cursor: text;
   max-width: 66.66%;
   white-space: nowrap;
@@ -80,7 +80,7 @@ input.fancy-input:placeholder-shown + label.fancy-label {
 /**
 * Show the placeholder when the input is focused.
 */
-input.fancy-input:focus::-webkit-input-placeholder {
+input.fancy:focus::-webkit-input-placeholder {
   opacity: 1;
 }
 /**
@@ -88,8 +88,8 @@ input.fancy-input:focus::-webkit-input-placeholder {
 * Also, do this when the placeholder is _not_ shown, i.e. when 
 * there's something in the input at all.
 */
-input.fancy-input:not(:placeholder-shown) + label.fancy-label,
-input.fancy-input:focus + label.fancy-label {
+input.fancy:not(:placeholder-shown) + label.fancy,
+input.fancy:focus + label.fancy {
   transform: translate(0, 0) scale(1);
   cursor: pointer;
   }
@@ -139,8 +139,8 @@ $form->add_field(
         'help'                  => 'You gotta type in stuff',
         'css-input-container'   => '',
         'css-input-span'        => '', 
-        'css-label'             => 'fancy-label',
-        'css-input'             => 'fancy-input',
+        'css-label'             => 'fancy',
+        'css-input'             => 'fancy',
         )
     )
 );
