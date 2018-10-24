@@ -44,8 +44,8 @@ class Checkbox extends Field
         $default = array(
             'type'              => self::Input_Type,
             'value'             => 'yes',
-            'class'             => 'input-checkbox',
-            'class-label'       => 'checkbox',
+            'css-input'             => 'input-checkbox',
+            'css-label'       => 'checkbox',
 
             // Unique to this class
             'checked'           => 'no',
@@ -125,7 +125,7 @@ class Checkbox extends Field
     {
         $label_text     = $this->get_attribute( 'label' );
         $text_pos       = $this->get_attribute( 'text-position' );
-        $css_label      = $this->get_attribute( 'class-label' );
+        $css_label      = $this->get_attribute( 'css-label' );
         $checked        = $this->get_attribute( 'checked' ) ;
         $required       = $this->is_required();
 
@@ -181,7 +181,7 @@ class Checkbox extends Field
             }
             ?>
             <input
-                <?php parent::render_attributes( ) ?>
+                <?php parent::render_input_attributes( ) ?>
                 <?php HtmlHelper::print_attribute('checked', $checked) ?>
             />
             <?php

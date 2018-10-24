@@ -48,7 +48,7 @@ class Form extends Field
             'action'            => '#', // submit data to same page
             'method'            => 'post',
             'enctype'           => 'multipart/form-data',
-            'class'             => '',
+            'css-input'             => '',
             'class_panel'       => '',
         );
 
@@ -151,7 +151,7 @@ class Form extends Field
         $action         = $this->get_attribute( 'action' );
         $method         = $this->get_attribute( 'method' );
         $enctype        = $this->get_attribute( 'enctype' );
-        $css            = $this->get_attribute( 'class' );
+        $css            = $this->get_attribute( 'css-input' );
         $css_panel      = $this->get_attribute( 'class_panel' );
 
         ?>	

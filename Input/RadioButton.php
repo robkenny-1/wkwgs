@@ -43,8 +43,8 @@ class RadioButton extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
-            'class'             => 'input-radio',
-            'class-label'       => 'radio',
+            'css-input'             => 'input-radio',
+            'css-label'       => 'radio',
 
             // Unique to this class
             'choices'           => [ 'unset' => 'unset' ],
@@ -124,7 +124,7 @@ class RadioButton extends Field
         $name           = $this->get_attribute( 'name' );
         $value          = $this->get_attribute( 'value' );
         $choices        = $this->get_attribute( 'choices' );
-        $css_label      = $this->get_attribute( 'class-label' );
+        $css_label      = $this->get_attribute( 'css-label' );
         $required       = $this->is_required();
 
         if ( empty( $choices ) || ! is_array( $choices ))
@@ -170,7 +170,7 @@ class RadioButton extends Field
             }
             ?>
             <input
-                <?php parent::render_attributes( [ 'value' ] ) ?>
+                <?php parent::render_input_attributes( [ 'value' ] ) ?>
                 <?php HtmlHelper::print_attribute('value',   $radio) ?>
                 <?php HtmlHelper::print_attribute('checked', $checked) ?>
             />

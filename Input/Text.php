@@ -43,9 +43,6 @@ class Text extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
-            'label'             => 'unset',
-            'class'             => 'input-text',
-            'class-label'       => '',
         );
 
         $parent = parent::get_attributes_default();
@@ -115,8 +112,8 @@ class Text extends Field
         $value          = $this->get_attribute( 'value' );
         $placeholder    = $this->get_attribute( 'placeholder' );
         $value          = $this->get_attribute( 'value' );
-        $css_input      = $this->get_attribute( 'class' );
-        $css_label      = $this->get_attribute( 'class-label' );
+        $css_input      = $this->get_attribute( 'css-input' );
+        $css_label      = $this->get_attribute( 'css-label' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
         $label_before   = True;
         $required       = $this->is_required();
@@ -173,7 +170,7 @@ class Text extends Field
             }
             ?>
             <input
-                <?php parent::render_attributes( ) ?>
+                <?php parent::render_input_attributes( ) ?>
             />
             <?php
             if ( ! $label_before )

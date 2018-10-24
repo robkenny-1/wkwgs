@@ -43,7 +43,7 @@ class Label extends Field
     {
         $default = array(
             'type'              => self::Input_Type,
-            'class'             => 'input-text',
+            'css-input'             => 'input-text',
         );
 
         $parent = parent::get_attributes_default();
@@ -79,7 +79,7 @@ class Label extends Field
     public function render( )
     {
         \Wkwgs_Logger::log_function( 'Label::render');
-        $css_label      = $this->get_attribute( 'class-label' );
+        $css_label      = $this->get_attribute( 'css-label' );
         $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
         \Wkwgs_Logger::log_var( '$label_text', $label_text );
 

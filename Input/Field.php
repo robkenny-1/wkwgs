@@ -30,6 +30,20 @@ include_once(__DIR__ . '/../Wkwgs_Logger.php' );
 /**
  * The Field Class
  *
+ * Layout of the output field
+ *  <div class="css-input-container">
+ *     <span class="css-input-span">
+ *     <label class="css-label">
+ *       <input type="text"
+ *              name="text_field"
+ *              class="input-text"
+ *              size="40" />
+ *     &nbsp;unset
+ *     </label>
+ *     </span>
+ *  </div>
+ *
+ *
  * @since 1.0.0
  */
 abstract class Field
@@ -68,11 +82,10 @@ abstract class Field
             'text-position'         => 'right',
             'hidden'                => False,
             'aria-hidden'           => False,
-            'class'                 => '',
-            'class-label'           => '',
-            'css-input-container'   => 'options_group',
-            'css-input-row'         => 'form-row',
-            'css-input-span'        => 'woocommerce-input-wrapper', 
+            'css-input-container'   => '',
+            'css-input-span'        => '', 
+            'css-label'             => '',
+            'css-input'             => '',
         );
 
         return $default;
@@ -153,12 +166,13 @@ abstract class Field
         return $attr;
     }
 
-    public function render_attributes( $exclude = null )
+    public function render_input_attributes( $exclude = null )
     {
         HtmlHelper::print_attribute( 'type'             , $this->get_attribute( 'type'          ),                  $exclude );
         HtmlHelper::print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
         HtmlHelper::print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );
         HtmlHelper::print_attribute( 'value'            , $this->get_attribute( 'value'         ),                  $exclude );
+        HtmlHelper::print_attribute( 'class'            , $this->get_attribute( 'css-input'     ),                  $exclude );
         HtmlHelper::print_attribute( 'required'         , $this->get_attribute( 'required'      ),                  $exclude );
         HtmlHelper::print_attribute( 'hidden'           , $this->get_attribute( 'hidden'        ),                  $exclude );
         HtmlHelper::print_attribute( 'aria-hidden'      , $this->get_attribute( 'aria-hidden'   ),                  $exclude );
@@ -250,16 +264,13 @@ abstract class Field
         }
         ?>
         <div class="<?php echo $css_container ?>">
-            <p class="<?php echo $css_row ?>">
-                <span
-                    <?php HtmlHelper::print_attribute('class', $css_input_span) ?>
-                >
-                    <?php $this->render() ?>
-                </span>
-            </p>
-            <?php echo $help ?>
+        <span
+            <?php HtmlHelper::print_attribute('class', $css_input_span) ?>
+        >
+            <?php $this->render() ?>
+        </span>
+        <?php echo $help ?>
         </div>
         <?php
-
     }
 }

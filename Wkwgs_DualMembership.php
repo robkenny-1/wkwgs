@@ -320,7 +320,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         $tabs['wkwgs'] = array(
             'label'         => __( 'WK & WGS', 'wkwgs' ),	// The name of your panel
             'target'        => 'wkwgs_product_panel',		// Will be used to create an anchor link so needs to be unique
-            'class'         => array( 'wkwgs_tab', 'show_if_simple', 'show_if_variable' ), // Class for your panel tab - helps hide/show depending on product type
+            'css-input'         => array( 'wkwgs_tab', 'show_if_simple', 'show_if_variable' ), // Class for your panel tab - helps hide/show depending on product type
             'priority'      => 80, // Where your panel will appear. By default, 70 is last item
         );
         return $tabs;

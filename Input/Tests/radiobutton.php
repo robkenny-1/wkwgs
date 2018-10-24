@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 </head>
 <body>
 <h1 id="logo">
@@ -24,7 +25,7 @@ include_once( '..\Factory.php' );
 $form = \Input\Factory::Get(
         array(
         'type'              => 'form',
-        'name'              => 'checkbox_test_form',
+        'name'              => 'woocommerce',
     )
 );
 
