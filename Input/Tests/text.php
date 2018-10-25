@@ -7,98 +7,59 @@
 <style>
 
 body {
-  font-family: Avenir Next, Avenir, SegoeUI, sans-serif;
+  font  : 21px sans-serif;
+  padding : 2em;
+  margin  : 0;
+  background : #eeeeee;
 }
-
-
 form {
   margin: 2em 0;
+  background : #dddddd;
 }
-/**
-* Make the field a flex-container, reverse the order so label is on top.
-*/
- 
-.field {
-  display: flex;
-  flex-flow: column-reverse;
-  margin-bottom: 1em;
+ form input {
+   border: 2px solid #555555;
+ }
+
+/*-----Tool tip-----*/
+.tooltip-special {
+  position:relative;
+  display:inline-block;
+  padding:5px;
+  background-color : steelblue;
 }
-/**
-* Add a transition to the label and input.
-* I'm not even sure that touch-action: manipulation works on
-* inputs, but hey, it's new and cool and could remove the 
-* pesky delay.
-*/
-label.fancy, input.fancy {
-  transition: all 0.2s;
-  touch-action: manipulation;
+[data-tooltip] {
+  cursor:help;
+  background-color : lightyellow;
+}
+[data-tooltip]:after{
+  visibility:hidden;
+  opacity:0;
+  position:absolute;
+  content:attr(data-tooltip);
+  background-color:white;
+  box-shadow: 0 0px 1px 0px rgba(0, 0, 0, .1);
+  border-bottom: 1px solid rgba(0, 0, 0, .15);
+  border-radius:3px;
+  width:320px;
+  padding:10px;
+  text-align:justify;
+  margin-top:10px;
+  margin-left:-10px;
+  left:100%;
+  transition: all .2s linear;
 }
 
-input.fancy {
-  font-size: 1.5em;
-  border: 0;
-  border-bottom: 1px solid #ccc;
-  font-family: inherit;
-  -webkit-appearance: none;
-  border-radius: 0;
-  padding: 0;
-  cursor: text;
+[data-tooltip]:hover:after, [data-tooltip] + input {
+  visibility:visible;
+  opacity:1;
 }
 
-input.fancy:focus {
-  outline: 0;
-  border-bottom: 1px solid #666;
-}
-
-label.fancy {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-/**
-* Translate down and scale the label up to cover the placeholder,
-* when following an input (with placeholder-shown support).
-* Also make sure the label is only on one row, at max 2/3rds of the
-* field—to make sure it scales properly and doesn't wrap.
-*/
-input.fancy:placeholder-shown + label.fancy {
-  cursor: text;
-  max-width: 66.66%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transform-origin: left bottom;
-  transform: translate(0, 2.125rem) scale(1.5);
-}
-/**
-* By default, the placeholder should be transparent. Also, it should 
-* inherit the transition.
-*/
-::-webkit-input-placeholder {
-  opacity: 0;
-  transition: inherit;
-}
-/**
-* Show the placeholder when the input is focused.
-*/
-input.fancy:focus::-webkit-input-placeholder {
-  opacity: 1;
-}
-/**
-* When the element is focused, remove the label transform.
-* Also, do this when the placeholder is _not_ shown, i.e. when 
-* there's something in the input at all.
-*/
-input.fancy:not(:placeholder-shown) + label.fancy,
-input.fancy:focus + label.fancy {
-  transform: translate(0, 0) scale(1);
-  cursor: pointer;
-  }
 
 </style>
 </head>
 <body>
 <h1 id="logo">
-RadioButton Unit Tests
+Text Unit Tests
 </h1>
 
 <?php
@@ -119,7 +80,6 @@ $form = \Input\Factory::Get(
     )
 );
 
-
 $form->add_field(
     \Input\Factory::Get(
         array(
@@ -132,19 +92,14 @@ $form->add_field(
 $form->add_field(
     \Input\Factory::Get(
         array(
-        'type'                  => 'text',
-        'name'                  => 'Fancy_Text_Field',
-        'label'                 => 'Fancy Text input via CSS',
-        'placeholder'           => 'enter text here',
-        'help'                  => 'You gotta type in stuff',
-        'css-input-container'   => '',
-        'css-input-span'        => '', 
-        'css-label'             => 'fancy',
-        'css-input'             => 'fancy',
+        'type'          => 'text',
+        'name'          => 'tooltip',
+        'label'         => 'input with tooltip',
+        'data-tooltip'  => 'This is a tooltip message',
+        'css-container' => 'tooltip-special'
         )
     )
 );
-
 
 $form->add_field(
     \Input\Factory::Get(
@@ -152,28 +107,11 @@ $form->add_field(
         'type'              => 'email',
         'name'              => 'email',
         'label'             => 'email address',
-        'requried'          => 'yes',
+        'required'          => 'yes',
         'value'             => 'abc@xyz.com',
         )
     )
 );
-
-foreach ( [ '', 'bogus', 'top', 'bottom', 'left', 'right' ] as $text_pos )
-{
-    $name = empty( $text_pos ) ? 'empty' : $text_pos;
-
-    $form->add_field(
-        \Input\Factory::Get(
-            array(
-            'type'              => 'text',
-            'name'              => $name,
-            'label'             => $name,
-            'text-position'     => $text_pos,
-            'placeholder'       => 'placeholder',
-            )
-        )
-    );
-}
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation

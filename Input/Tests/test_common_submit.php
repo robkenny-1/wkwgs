@@ -25,6 +25,16 @@ defined( 'ABSPATH' ) || exit;
 $form->add_field(
     \Input\Factory::Get(
         array(
+        'type'              => 'label',
+        'name'              => 'label_before_buttons',
+        'label'             => "--------------------------",
+        )
+    )
+);
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
         'type'              => 'checkbox',
         'name'              => 'validate_post',
         'label'             => 'Use mock POST data',

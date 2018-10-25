@@ -32,28 +32,22 @@ include_once('Field.php');
  */
 class Form extends Field
 {
-    const Input_Type = 'form';
-    private $validation_errors = [];
-
-    /**
-     * Get all the *default* attributes of the form
-     *
-     * @return string, empty string if unset
-     */
-    public function get_attributes_default()
-    {
-        $default = array(
+    const Input_Type            = 'form';
+    const Default_Attributes    = array(
             'type'              => self::Input_Type,
             'name'              => 'form0',
             'action'            => '#', // submit data to same page
             'method'            => 'post',
             'enctype'           => 'multipart/form-data',
-            'css-input'             => '',
-            'class_panel'       => '',
         );
 
-        return $default;
+    public function __construct( $attributes )
+    {
+        parent::__construct( $attributes );
+        $this->merge_attributes_default( self::Default_Attributes );
     }
+
+    private $validation_errors = [];
 
     /**
      * Extract object's value from post data
@@ -265,9 +259,12 @@ class Form extends Field
      */
     public function get_submit_data( )
     {
+        \Wkwgs_Logger::log_function( 'Form::get_submit_data' );
+
         $button = $this->get_submit_button();
         if ( ! isset( $button ) )
         {
+            \Wkwgs_Logger::log_msg( 'No submit button found' );
             return;
         }
 

@@ -32,27 +32,18 @@ include_once('Field.php');
  */
 class RadioButton extends Field
 {
-    const Input_Type = 'radio';
-
-    /**
-     * Attributes of the input element
-     *
-     * @return array
-     */
-    public function get_attributes_default( )
-    {
-        $default = array(
+    const Input_Type            = 'radio';
+    const Default_Attributes    = array(
             'type'              => self::Input_Type,
-            'css-input'             => 'input-radio',
-            'css-label'       => 'radio',
-
+        
             // Unique to this class
             'choices'           => [ 'unset' => 'unset' ],
-        );
+);
 
-        $parent = parent::get_attributes_default();
-
-        return array_merge($parent, $default);
+    public function __construct( $attributes )
+    {
+        parent::__construct( $attributes );
+        $this->merge_attributes_default( self::Default_Attributes );
     }
 
     /**
@@ -121,67 +112,29 @@ class RadioButton extends Field
      */
     public function render( )
     {
-        $name           = $this->get_attribute( 'name' );
         $value          = $this->get_attribute( 'value' );
         $choices        = $this->get_attribute( 'choices' );
-        $css_label      = $this->get_attribute( 'css-label' );
-        $required       = $this->is_required();
+        $exclude        = [ 'value' ];
 
         if ( empty( $choices ) || ! is_array( $choices ))
         {
             return;
         }
 
-        ?>
-        <?php
+
         foreach ( $choices as $radio => $label )
         {
             $checked = $radio === $value;
 
-            $label_text     = htmlspecialchars( $label );
-            $label_before   = True;
-            switch ( $this->get_attribute( 'text-position' ) )
-            {
-                case 'right':
-                    if (! empty($label_text))
-                    {
-                        $label_text = '&nbsp;' . $label_text;
-                    }
-                    $label_before = False;
-                    break;
-
-                case 'left':
-                default:
-                    if (! empty($label_text))
-                    {
-                        $label_text = $label_text . '&nbsp;';
-                    }
-                    $label_before = True;
-                    break;
-            }
-        ?>
-        <label
-            <?php HtmlHelper::print_attribute('class', $css_label) ?>
-        >
-            <?php
-            if ( $label_before )
-            {
-                echo $label_text;
-            }
+            $this->render_label_open();
             ?>
             <input
-                <?php parent::render_input_attributes( [ 'value' ] ) ?>
+                <?php parent::render_input_attributes( $exclude ) ?>
                 <?php HtmlHelper::print_attribute('value',   $radio) ?>
                 <?php HtmlHelper::print_attribute('checked', $checked) ?>
             />
             <?php
-            if ( ! $label_before )
-            {
-                echo $label_text;
-            }
-            ?>
-        </label>
-        <?php
+            $this->render_label_close();
         }
     }
 }

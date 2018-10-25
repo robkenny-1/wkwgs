@@ -33,27 +33,18 @@ include_once('Field.php');
 class Checkbox extends Field
 {
     const Input_Type = 'checkbox';
-
-    /**
-     * Attributes of the input element
-     *
-     * @return array
-     */
-    public function get_attributes_default( )
-    {
-        $default = array(
+    const Default_Attributes    = array(
             'type'              => self::Input_Type,
             'value'             => 'yes',
-            'css-input'             => 'input-checkbox',
-            'css-label'       => 'checkbox',
 
             // Unique to this class
             'checked'           => 'no',
         );
 
-        $parent = parent::get_attributes_default();
-
-        return array_merge($parent, $default);
+    public function __construct( $attributes )
+    {
+        parent::__construct( $attributes );
+        $this->merge_attributes_default( self::Default_Attributes );
     }
 
     /**
@@ -123,74 +114,16 @@ class Checkbox extends Field
      */
     public function render( )
     {
-        $label_text     = $this->get_attribute( 'label' );
-        $text_pos       = $this->get_attribute( 'text-position' );
-        $css_label      = $this->get_attribute( 'css-label' );
-        $checked        = $this->get_attribute( 'checked' ) ;
-        $required       = $this->is_required();
+        $checked        = HtmlHelper::is_true( $this->get_attribute( 'checked' ) );
 
-        switch ( $this->get_attribute( 'text-position' ) )
-        {
-            case 'bottom':
-                if (! empty($label_text))
-                {
-                    $label_text = '<br>' . $label_text;
-                }
-                $label_before = False;
-                break;
-
-            case 'right':
-                if (! empty($label_text))
-                {
-                    $label_text = '&nbsp;' . $label_text;
-                }
-                $label_before = False;
-                break;
-
-            case 'top':
-                if (! empty($label_text))
-                {
-                    $label_text = $label_text . '<br>';
-                }
-                $label_before = True;
-                break;
-
-            case 'left':
-            default:
-                if (! empty($label_text))
-                {
-                    $label_text = $label_text . '&nbsp;';
-                }
-                $label_before = True;
-                break;
-        }
-
-        if ( $required )
-        {
-            $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
-        }
-
+        $this->render_label_open();
         ?>
-        <label
-            <?php HtmlHelper::print_attribute('class', $css_label) ?>
+        <input
+            <?php parent::render_input_attributes( ); ?>
+            <?php HtmlHelper::print_attribute('checked', $checked) ?>
         >
-            <?php
-            if ( $label_before )
-            {
-                echo $label_text;
-            }
-            ?>
-            <input
-                <?php parent::render_input_attributes( ) ?>
-                <?php HtmlHelper::print_attribute('checked', $checked) ?>
-            />
-            <?php
-            if ( ! $label_before )
-            {
-                echo $label_text;
-            }
-            ?>
-        </label>
-        <?php    
+        <?php
+        $this->render_label_close();
+  
     }
 }

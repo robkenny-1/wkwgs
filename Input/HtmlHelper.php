@@ -24,6 +24,7 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
 include_once('Field.php');
+include_once(__DIR__ . '/../Wkwgs_Logger.php' );
 
 /**
  * A collection of HTML goodies/helpers

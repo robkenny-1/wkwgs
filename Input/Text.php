@@ -32,22 +32,15 @@ include_once('Field.php');
  */
 class Text extends Field
 {
-    const Input_Type = 'text';
-
-    /**
-     * Attributes of the input element
-     *
-     * @return array
-     */
-    public function get_attributes_default( )
-    {
-        $default = array(
+    const Input_Type            = 'text';
+    const Default_Attributes    = array(
             'type'              => self::Input_Type,
         );
 
-        $parent = parent::get_attributes_default();
-
-        return array_merge($parent, $default);
+    public function __construct( $attributes )
+    {
+        parent::__construct( $attributes );
+        $this->merge_attributes_default( self::Default_Attributes );
     }
 
     /**
@@ -106,79 +99,12 @@ class Text extends Field
      */
     public function render( )
     {
-        $type           = $this->get_attribute( 'type' );
-        $name           = $this->get_attribute( 'name' );
-        $id             = $this->get_attribute( 'id' );
-        $value          = $this->get_attribute( 'value' );
-        $placeholder    = $this->get_attribute( 'placeholder' );
-        $value          = $this->get_attribute( 'value' );
-        $css_input      = $this->get_attribute( 'css-input' );
-        $css_label      = $this->get_attribute( 'css-label' );
-        $label_text     = htmlspecialchars( $this->get_attribute( 'label' )  );
-        $label_before   = True;
-        $required       = $this->is_required();
-
-        if ( $required && empty($label_text) )
-        {
-            $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
-        }
-
-        switch ( $this->get_attribute( 'text-position' ) )
-        {
-            case 'bottom':
-                if (! empty($label_text))
-                {
-                    $label_text = '<br>' . $label_text;
-                }
-                $label_before = False;
-                break;
-
-            case 'right':
-                if (! empty($label_text))
-                {
-                    $label_text = '&nbsp;' . $label_text;
-                }
-                $label_before = False;
-                break;
-
-            case 'top':
-                if (! empty($label_text))
-                {
-                    $label_text = $label_text . '<br>';
-                }
-                $label_before = True;
-                break;
-
-            case 'left':
-            default:
-                if (! empty($label_text))
-                {
-                    $label_text = $label_text . '&nbsp;';
-                }
-                $label_before = True;
-                break;
-        }
-
+        $this->render_label_open();
         ?>
-        <label
-            <?php HtmlHelper::print_attribute('class', $css_label) ?>
+        <input
+            <?php parent::render_input_attributes( ); ?>
         >
-            <?php
-            if ( $label_before )
-            {
-                echo $label_text;
-            }
-            ?>
-            <input
-                <?php parent::render_input_attributes( ) ?>
-            />
-            <?php
-            if ( ! $label_before )
-            {
-                echo $label_text;
-            }
-            ?>
-            </label>
-        <?php    
+        <?php
+        $this->render_label_close();
     }
 }

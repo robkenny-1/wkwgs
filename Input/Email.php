@@ -33,21 +33,14 @@ include_once('Field.php');
 class Email extends Text
 {
     const Input_Type = 'email';
-
-    /**
-     * Attributes of the input element
-     *
-     * @return array
-     */
-    public function get_attributes_default( )
-    {
-        $default = array(
+    const Default_Attributes    = array(
             'type'              => self::Input_Type,
         );
 
-        $parent = parent::get_attributes_default();
-
-        return array_merge($parent, $default);
+    public function __construct( $attributes )
+    {
+        parent::__construct( $attributes );
+        $this->merge_attributes_default( self::Default_Attributes );
     }
 
     /**

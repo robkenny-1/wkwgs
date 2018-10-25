@@ -32,23 +32,15 @@ include_once('Field.php');
  */
 class Label extends Field
 {
-    const Input_Type = 'label';
-
-    /**
-     * Attributes of the input element
-     *
-     * @return array
-     */
-    public function get_attributes_default( )
-    {
-        $default = array(
+    const Input_Type            = 'label';
+    const Default_Attributes    = array(
             'type'              => self::Input_Type,
-            'css-input'             => 'input-text',
         );
 
-        $parent = parent::get_attributes_default();
-
-        return array_merge($parent, $default);
+    public function __construct( $attributes )
+    {
+        parent::__construct( $attributes );
+        $this->merge_attributes_default( self::Default_Attributes );
     }
 
     /**
