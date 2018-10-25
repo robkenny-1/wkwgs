@@ -48,12 +48,26 @@ form {
   left:100%;
   transition: all .2s linear;
 }
-
 [data-tooltip]:hover:after, [data-tooltip] + input {
   visibility:visible;
   opacity:1;
 }
 
+// Style to put label text on right
+.text-input-label-right {
+  position: relative;
+  background: orange;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+.text-input-label-right input {
+  float: left;
+  background: green;
+}
+.text-input-label-right label {
+  margin-left: 5px;
+}
 
 </style>
 </head>
@@ -97,6 +111,17 @@ $form->add_field(
         'label'         => 'input with tooltip',
         'data-tooltip'  => 'This is a tooltip message',
         'css-container' => 'tooltip-special'
+        )
+    )
+);
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'          => 'text',
+        'name'          => 'tooltip',
+        'label'         => "I'm on the right",
+        'css-container' => 'text-input-label-right'
         )
     )
 );
