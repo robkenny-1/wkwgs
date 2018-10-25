@@ -98,39 +98,6 @@ $form->add_field(
     )
 );
 
-$text_poss  = [ '', 'bogus', 'left', 'right' ];
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'label',
-        'name'              => 'label_2',
-        'label'             => "----- Text Positions -----",
-        )
-    )
-);
-
-foreach ( $text_poss as $text_pos )
-{
-
-    $name = ($text_pos === '' ? 'default' : $text_pos);
-                    
-    $form->add_field(
-        \Input\Factory::Get(
-            array(
-            'type'              => 'radio',
-            'name'              => $name,
-            'choices'           => array(
-                'choice1'   => "$name 1",
-                'choice2'   => "$name 2",
-                'choice3'   => "$name 3",
-            ),
-            'text-position'     => $text_pos,
-            )
-        )
-    );
-}
-
 // -------------------------------------------------------------------------------
 
 $form->add_field(

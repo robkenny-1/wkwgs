@@ -93,18 +93,26 @@ class Text extends Field
     }
 
     /**
+     * Render the <input> element
+     *
+     */
+    public function render_input( $exclude )
+    {
+        echo '<input ';
+        parent::render_input_attributes( $exclude );
+        echo '/>';
+    }
+
+    /**
      * Render the field in the frontend, this spits out the necessary HTML
+     * Expected output
+     * <label>Label Text<input type='text' /></label>
      *
      * @return void
      */
     public function render( )
     {
-        $this->render_label_open();
-        ?>
-        <input
-            <?php parent::render_input_attributes( ); ?>
-        >
-        <?php
-        $this->render_label_close();
+        $exclude = [];
+        $this->render_label( [$this, 'render_input' ], [ $exclude ] );
     }
 }

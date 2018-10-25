@@ -297,47 +297,68 @@ abstract class Field
         <?php
     }
 
-    public function render_label_open()
+    /**
+     * Render the label and any children
+     * does not require $this
+     *
+     * @return null
+     */
+    public function render_label_explicit(
+        $input_callback,
+        $input_callback_params,
+        $label,
+        $tooltip,
+        $css,
+        $required
+        )
     {
-        \Wkwgs_Logger::log_function( 'Field::render_label_open' );
-        \Wkwgs_Logger::log_var( '$this->get_name()', $this->get_name() );
-        \Wkwgs_Logger::log_var( '$this->get_attributes()', $this->get_attributes() );
-  
-        $label          = $this->get_attribute( 'label'        );
-        $tooltip        = $this->get_attribute( 'data-tooltip' );
-        $css_label      = $this->get_attribute( 'css-label'    );
-        \Wkwgs_Logger::log_var( 'label'         , $label      );
-        \Wkwgs_Logger::log_var( 'data-tooltip'  , $tooltip    );
-        \Wkwgs_Logger::log_var( 'css-label'     , $css_label  );
-        $label          = htmlspecialchars( $label );
-        $tooltip        = htmlspecialchars( $tooltip );
-        $css_label      = $this->get_attribute( 'css-label' );
-        $required       = $this->is_required();
-
-        \Wkwgs_Logger::log_var( '$required', $required );
-
-        if ( $required && ! empty($label) )
+        if ( $required )
         {
             $label .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }
 
         ?>
         <label
-            <?php HtmlHelper::print_attribute( 'class',         $css_label ) ?>
+            <?php HtmlHelper::print_attribute( 'class',         $css ) ?>
             <?php HtmlHelper::print_attribute( 'data-tooltip',  $tooltip ) ?>
         >
         <?php
         echo $label;
+        call_user_func_array( $input_callback, $input_callback_params );
+        ?></label><?php             
     }
 
-    public function render_label_close()
+    /**
+     * Generic routine to render the input's Label
+     *
+     * @return null
+     */
+    public function render_label(
+        $input_callback,
+        $input_callback_params
+        )
     {
-        echo '</label>';
+        $label          = $this->get_attribute( 'label'        );
+        $tooltip        = $this->get_attribute( 'data-tooltip' );
+        $css_label      = $this->get_attribute( 'css-label'    );
+        $required       = $this->is_required();
+
+        $this->render_label_explicit(
+            $input_callback,
+            $input_callback_params,
+            $label,
+            $tooltip,
+            $css_label,
+            $required
+        );
     }
 
+    /**
+     * Render the attributes common to all input objects
+     *
+     */
     public function render_input_attributes( $exclude = null )
     {
-
         HtmlHelper::print_attribute( 'type'             , $this->get_attribute( 'type'          ),                  $exclude );
         HtmlHelper::print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
         HtmlHelper::print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );

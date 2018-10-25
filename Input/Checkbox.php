@@ -108,22 +108,29 @@ class Checkbox extends Field
     }
 
     /**
+     * Render the <input> element
+     *
+     */
+    public function render_input( $exclude, $checked )
+    {
+        echo '<input ';
+        parent::render_input_attributes( $exclude );
+        HtmlHelper::print_attribute('checked', $checked );
+        echo '/>';
+    }
+
+    /**
      * Render the field in the frontend, this spits out the necessary HTML
+     * Expected output
+     * <label>Label Text<input type='text' /></label>
      *
      * @return void
      */
     public function render( )
     {
         $checked        = HtmlHelper::is_true( $this->get_attribute( 'checked' ) );
+        $exclude = [];
 
-        $this->render_label_open();
-        ?>
-        <input
-            <?php parent::render_input_attributes( ); ?>
-            <?php HtmlHelper::print_attribute('checked', $checked) ?>
-        >
-        <?php
-        $this->render_label_close();
-  
+        $this->render_label( [$this, 'render_input' ], [ $exclude, $checked ] );
     }
 }

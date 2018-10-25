@@ -106,7 +106,22 @@ class RadioButton extends Field
     }
 
     /**
+     * Render the <input> element
+     *
+     */
+    public function render_input( $exclude, $radio, $checked )
+    {
+        echo '<input ';
+        parent::render_input_attributes( $exclude );
+        HtmlHelper::print_attribute('value',   $radio );
+        HtmlHelper::print_attribute('checked', $checked );
+        echo '/>';
+    }
+
+    /**
      * Render the field in the frontend, this spits out the necessary HTML
+     * Expected output
+     * <label>Label Text<input type='text' /></label>
      *
      * @return void
      */
@@ -114,6 +129,9 @@ class RadioButton extends Field
     {
         $value          = $this->get_attribute( 'value' );
         $choices        = $this->get_attribute( 'choices' );
+        $label          = $this->get_attribute( 'label'        );
+        $tooltip        = $this->get_attribute( 'data-tooltip' );
+        $css_label      = $this->get_attribute( 'css-label'    );
         $exclude        = [ 'value' ];
 
         if ( empty( $choices ) || ! is_array( $choices ))
@@ -121,20 +139,19 @@ class RadioButton extends Field
             return;
         }
 
-
         foreach ( $choices as $radio => $label )
         {
             $checked = $radio === $value;
 
-            $this->render_label_open();
-            ?>
-            <input
-                <?php parent::render_input_attributes( $exclude ) ?>
-                <?php HtmlHelper::print_attribute('value',   $radio) ?>
-                <?php HtmlHelper::print_attribute('checked', $checked) ?>
-            />
-            <?php
-            $this->render_label_close();
+            $params = [ $exclude, $radio, $checked ];
+            $this->render_label_explicit(
+                [$this, 'render_input'],
+                $params,
+                $label,
+                $tooltip,
+                $css_label,
+                False // Don't annotate radio button's label with * (required)
+            );
         }
     }
 }
