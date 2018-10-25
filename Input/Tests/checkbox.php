@@ -14,6 +14,8 @@ Checkbox Unit Tests
 ini_set('display_errors', 1);
 error_reporting(E_ALL|E_STRICT);
 
+define( 'ABSPATH', '1');
+
 session_start();
 include_once( '..\Factory.php' );
 
@@ -49,6 +51,17 @@ $form->add_field(
     \Input\Factory::Get(
         array(
         'type'              => 'checkbox',
+        'name'              => 'checkbox_required',
+        'label'             => 'Value Required',
+        'required'          => 'True',
+        )
+    )
+);
+
+$form->add_field(
+    \Input\Factory::Get(
+        array(
+        'type'              => 'checkbox',
         'name'              => 'checkbox_enabled',
         'label'             => 'checkbox_enabled',
         'checked'           => 'yes',
@@ -64,46 +77,6 @@ $form->add_field(
         'name'              => 'html_and_special_chars',
         'label'             => '< html & special chars >',
         'help'              => 'This checkbox contains special HTML chars like <, >, &',
-        )
-    )
-);
-
-foreach ( [ '', 'bogus', 'top', 'bottom', 'left', 'right' ] as $text_pos )
-{
-    $name = empty( $text_pos ) ? 'empty' : $text_pos;
-
-    $form->add_field(
-        \Input\Factory::Get(
-            array(
-            'type'              => 'checkbox',
-            'name'              => $name,
-            'label'             => $name,
-            'text-position'     => $text_pos,
-            )
-        )
-    );
-}
-
-
-// -------------------------------------------------------------------------------
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'button',
-        'name'              => 'submit',
-        'value'             => 'Submit',
-        )
-    )
-);
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'button',
-        'name'          => 'reset',
-        'value'         => 'Reset',
-        'button-type'   => 'reset',
         )
     )
 );
