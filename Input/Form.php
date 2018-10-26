@@ -228,7 +228,7 @@ class Form extends Field
     /**
      * Set the values of the named input fields
      *
-     * @return null
+     * @return nothing
      */
     public function set_field_values( $field_values )
     {
