@@ -38,7 +38,7 @@ class RadioButton extends Field
         
             // Unique to this class
             'choices'           => [ 'unset' => 'unset' ],
-);
+    );
 
     public function __construct( $attributes )
     {
