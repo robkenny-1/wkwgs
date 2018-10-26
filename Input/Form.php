@@ -119,6 +119,8 @@ class Form extends Field
 
     public function render_fields( )
     {
+        $this->log_function( __FUNCTION__ );
+
         $id             = $this->get_attribute( 'id' );
         $css_panel      = $this->get_attribute( 'class_panel' );
 
@@ -130,6 +132,7 @@ class Form extends Field
             <?php
             foreach ( $this->get_fields() as $field)
             {
+                $this->log_var( '$field', $field );
                 $field->html_print();
             }
             ?>
@@ -140,6 +143,8 @@ class Form extends Field
 
     public function render( )
     {
+        $this->log_function( __FUNCTION__ );
+
         $name           = $this->get_attribute( 'name' );
         $id             = $this->get_attribute( 'id' );
         $action         = $this->get_attribute( 'action' );
@@ -162,6 +167,7 @@ class Form extends Field
     }
 
     /*-------------------------------------------------------------------------*/
+    
     /**
      * Form fields
      *
@@ -180,18 +186,25 @@ class Form extends Field
     }
 
     /**
-     * Add a form field to this form
+     * Add a Field to this form
      *
      * @return array
      */
     public function add_field( $field )
     {
+        $this->log_function( __FUNCTION__ );
+        $this->log_var( '$field ', $field );
         if ( ! is_null( $field ) )
         {
-            $field->set_form_id( $this->get_name( ) );
+            $form_name  = $this->get_name();
+            $field_name = $field->get_name();
+            $this->log_var( '$form_name ', $form_name );
+            $this->log_var( '$field_name', $field_name );
 
-            $field_name = $field->get_name( );
+            $field->set_form_id( $form_name );
             $this->form_fields[ $field_name ] = $field;
+
+            $this->log_var( '$this->form_fields', $this->form_fields );
         }
     }
 
@@ -211,6 +224,7 @@ class Form extends Field
             }
         }
     }
+
     /**
      * Set the values of the named input fields
      *
@@ -259,12 +273,12 @@ class Form extends Field
      */
     public function get_submit_data( )
     {
-        \Wkwgs_Logger::log_function( 'Form::get_submit_data' );
+        $this->log_function( __FUNCTION__ );
 
         $button = $this->get_submit_button();
         if ( ! isset( $button ) )
         {
-            \Wkwgs_Logger::log_msg( 'No submit button found' );
+            $this->log_msg( 'No submit button found' );
             return;
         }
 
@@ -288,6 +302,7 @@ class Form extends Field
 
     public function html_print( )
     {
+        $this->log_function( __FUNCTION__ );
         return $this->render();
     }
 
@@ -301,10 +316,10 @@ class Form extends Field
         }
         $values = $this->get_value( $post );  
 
-        \Wkwgs_Logger::log_function( 'Form::get_form_values');
-        \Wkwgs_Logger::log_var( '$this->get_attribute( "method" )', $this->get_attribute( 'method' ) );
-        \Wkwgs_Logger::log_var( '$post', $post );
-        \Wkwgs_Logger::log_var( '$values', $values );
+        $this->log_function( __FUNCTION__ );
+        $this->log_var( '$this->get_attribute( "method" )', $this->get_attribute( 'method' ) );
+        $this->log_var( '$post', $post );
+        $this->log_var( '$values', $values );
 
         return $values;
     }

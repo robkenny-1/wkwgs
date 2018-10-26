@@ -51,12 +51,11 @@ class Factory
 
     public static function Get( $field_attrs )
     {
-        \Wkwgs_Logger::log_function( 'Factory::Get');
+        \Wkwgs_Logger::log_function( __FUNCTION__ );
 
         if ( isset( $field_attrs[ 'name' ] ) && isset( $field_attrs[ 'type' ] ) )
         {
             $type = $field_attrs[ 'type' ];
-            \Wkwgs_Logger::log_var( '$type', $type );
 
             if ( isset( Factory::FactoryMachines[ $type ] ) )
             {
@@ -64,9 +63,10 @@ class Factory
                 $field = new $machine( $field_attrs );
                 return $field;
             }
-            \Wkwgs_Logger::log_msg( "$type does not exist" );
         }
 
+        \Wkwgs_Logger::log_msg( "Unable to create type" );
+        \Wkwgs_Logger::log_var( "$field_attrs", $field_attrs );
         return null;
     }
 }

@@ -53,6 +53,7 @@ include_once(__DIR__ . '/../Wkwgs_Logger.php' );
  * }
  * 
  */
+
 abstract class Field
 {
     /*-------------------------------------------------------------------------*/
@@ -135,18 +136,13 @@ abstract class Field
      */
     public function get_attributes()
     {
-
         // If no cached value, calculate now
         if ( is_null( $this->attributes_combined_cached ) )
         {
-            \Wkwgs_Logger::log_function( 'Field::get_attributes' );
-            \Wkwgs_Logger::log_var( '$this->get_name()', $this->get_name() );
+            $this->log_function( __FUNCTION__ );
             $combine_defaults = $this->get_attributes_default();
-            \Wkwgs_Logger::log_msg( 'Calculating attributes' );
-            \Wkwgs_Logger::log_var( '$combine_defaults', $combine_defaults );
-            \Wkwgs_Logger::log_var( '$this->attributes', $this->attributes );
             $this->attributes_combined_cached = array_merge( $this->get_attributes_default(), $this->attributes );
-            \Wkwgs_Logger::log_var( 'combined attributes', $this->attributes_combined_cached );
+            $this->log_var( 'combined attributes', $this->attributes_combined_cached );
         }
 
         return $this->attributes_combined_cached;
@@ -160,6 +156,7 @@ abstract class Field
      */
     public function set_attributes( $attributes )
     {
+        $this->log_function( __FUNCTION__ );
         // Clear the cached value
         $this->attributes_combined_cached = null;
 
@@ -216,6 +213,24 @@ abstract class Field
         return $attr;
     }
 
+    /**
+     * Set the specified attribute
+     *
+     * @return nothing
+     */
+    public function set_attribute( $name, $value )
+    {
+        $this->log_function( __FUNCTION__ );
+        // Clear the cached value
+        $this->attributes_combined_cached = null;
+
+        if ( is_null( $this->attributes ) )
+        {
+            $this->attributes = [];
+        }
+        $this->attributes[ $name ] = $value;
+    }
+
     /*-------------------------------------------------------------------------*/
     /* Accessors for commonly used values */
     /*-------------------------------------------------------------------------*/
@@ -227,7 +242,7 @@ abstract class Field
      */
     public function get_type()
     {
-        return $this->attributes[ 'type' ];
+        return $this->get_attributes( 'type' );
     }
 
     /**
@@ -237,7 +252,7 @@ abstract class Field
      */
     public function get_name()
     {
-        return $this->attributes[ 'name' ];
+        return $this->get_attribute( 'name' );
     }
 
     /**
@@ -247,7 +262,7 @@ abstract class Field
      *
      * @return boolean
      */
-    public function is_required(  )
+    public function is_required()
     {
         $required = $this->get_attribute( 'required' );
 
@@ -268,7 +283,7 @@ abstract class Field
      *
      * @return string
      */
-    public function get_form_id( )
+    public function get_form_id()
     {
         return $this->form_id;
     }
@@ -288,6 +303,7 @@ abstract class Field
     /*-------------------------------------------------------------------------*/
     public function html_print( )
     {
+        $this->log_function( __FUNCTION__ );
         $css_container  = $this->get_attribute( 'css-container' );
 
         ?>
@@ -338,10 +354,17 @@ abstract class Field
         $input_callback_params
         )
     {
+        $this->log_function( __FUNCTION__ );
+
         $label          = $this->get_attribute( 'label'        );
         $tooltip        = $this->get_attribute( 'data-tooltip' );
         $css_label      = $this->get_attribute( 'css-label'    );
         $required       = $this->is_required();
+
+        $this->log_var( '$label'    , $label    );
+        $this->log_var( '$tooltip'  , $tooltip  );
+        $this->log_var( '$css_label', $css_label);
+        $this->log_var( '$required ', $required );
 
         $this->render_label_explicit(
             $input_callback,
@@ -371,5 +394,31 @@ abstract class Field
         //HtmlHelper::print_attribute( 'width'            , $this->get_attribute( 'width'         ),              $exclude );
         HtmlHelper::print_attribute( 'placeholder'      , $this->get_attribute( 'placeholder'   ),                  $exclude );
         HtmlHelper::print_attribute( 'size'             , $this->get_attribute( 'size'          ),                  $exclude );
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Logging routines */
+    /*-------------------------------------------------------------------------*/
+    public function log_function( $func )
+    {
+        $msg = get_class( $this ) . "::$func";
+
+        if ( isset( $this->attributes[ 'name' ] ) )
+        {
+            $msg .= ' (' . $this->attributes[ 'name' ] . ')';
+        }
+        else
+        {
+            $msg .= ' (name is unset)';
+        }
+        \Wkwgs_Logger::log_function( $msg );
+    }
+    public function log_var( $var_name, $var )
+    {
+        \Wkwgs_Logger::log_var( $var_name, $var );    
+    }
+    public function log_msg( $msg )
+    {
+        \Wkwgs_Logger::log_msg( $msg );    
     }
 }

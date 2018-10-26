@@ -98,6 +98,8 @@ class Text extends Field
      */
     public function render_input( $exclude )
     {
+        $this->log_function( __FUNCTION__ );
+
         echo '<input ';
         parent::render_input_attributes( $exclude );
         echo '/>';
@@ -112,6 +114,8 @@ class Text extends Field
      */
     public function render( )
     {
+        $this->log_function( __FUNCTION__ );
+
         $exclude = [];
         $this->render_label( [$this, 'render_input' ], [ $exclude ] );
     }

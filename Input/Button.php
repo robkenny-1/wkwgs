@@ -90,10 +90,10 @@ class Button extends Field
         $value          = $this->get_attribute( 'value' );
         $css_input      = $this->get_attribute( 'css-input' );
 
-        //\Wkwgs_Logger::log_function( 'Button->render');
-        //\Wkwgs_Logger::log_var( '$type', $type );
-        //\Wkwgs_Logger::log_var( '$name', $name );
-        //\Wkwgs_Logger::log_var( '$value', $value );
+        //$this->log_function( 'Button->render');
+        //$this->log_var( '$type', $type );
+        //$this->log_var( '$name', $name );
+        //$this->log_var( '$value', $value );
 
         ?>
         <button
