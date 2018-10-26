@@ -85,11 +85,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     protected function get_form( $form_type, $form_name, $form_desc )
     {
-        //\Wkwgs_Logger::log_function( 'get_form' );
-        //\Wkwgs_Logger::log_var( '$form_type', $form_type );
-        //\Wkwgs_Logger::log_var( '$form_name', $form_name );
-        //\Wkwgs_Logger::log_var( '$form_desc', $form_desc );
-
         if ( 
             empty( $form_type )
             ||
@@ -114,20 +109,19 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             $form->add_field( \Input\Factory::Get( $field ) );
         }
 
-        //\Wkwgs_Logger::log_var( 'return $form', $form );
         return $form;
     }
 
     public function set_form_field_values( $product, $form )
     {
-        \Wkwgs_Logger::log_function( 'set_form_field_values' );
+        \Wkwgs_Logger::log_function( __FUNCTION__ );
         foreach ( $form->get_fields() as $field )
         {
             $product_meta = $product->get_meta( $field->get_name(), True );
             \Wkwgs_Logger::log_var( '$product_meta', $product_meta );
             if ( isset( $product_meta ) )
             {
-                $field->set_attributes( array( 'value' => $product_meta ) );
+                $field->set_attribute( 'value', $product_meta );
             }
         }
     }
@@ -192,7 +186,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_show()
     {
-        \Wkwgs_Logger::log_function( 'product_cart_show');
+        \Wkwgs_Logger::log_function( __FUNCTION__ );
 
         global $product;
 
@@ -222,7 +216,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     public function product_cart_validation( $passed, $product_id, $quantity ) 
     {
-        \Wkwgs_Logger::log_function( 'product_cart_validation');
+        \Wkwgs_Logger::log_function( __FUNCTION__ );
         \Wkwgs_Logger::log_var( '$passed', $passed );
         \Wkwgs_Logger::log_var( '$product_id', $product_id );
         \Wkwgs_Logger::log_var( '$quantity', $quantity );
@@ -245,7 +239,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_save( $cart_item_data, $product_id, $variation_id, $quantity )
     {
-        \Wkwgs_Logger::log_function( 'product_cart_save');
+        \Wkwgs_Logger::log_function( __FUNCTION__ );
         \Wkwgs_Logger::log_var( '$cart_item_data', $cart_item_data );
         \Wkwgs_Logger::log_var( '$product_id', $product_id );
         \Wkwgs_Logger::log_var( '$variation_id', $variation_id );
@@ -284,7 +278,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_item_data( $item_data, $cart_item )
     {
-        \Wkwgs_Logger::log_function( 'product_cart_item_data');
+        \Wkwgs_Logger::log_function( __FUNCTION__ );
         \Wkwgs_Logger::log_var( '$item_data', $item_data );
         //\Wkwgs_Logger::log_var( '$cart_item', $cart_item );
 
@@ -334,7 +328,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     {
         global $thepostid, $product_object;
 
-        //\Wkwgs_Logger::log_function( 'product_admin_show' );
+        //\Wkwgs_Logger::log_function( __FUNCTION__ );
         //\Wkwgs_Logger::log_var( '$product_object', $product_object );
         ?> 
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
@@ -358,7 +352,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         */
     public function product_admin_save( $post_id )
     {
-        \Wkwgs_Logger::log_function( 'product_admin_save' );
+        \Wkwgs_Logger::log_function( __FUNCTION__ );
         \Wkwgs_Logger::log_var( '$post_id', $post_id );
 
         $product = wc_get_product( $post_id );
