@@ -182,7 +182,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     /**
      * Display the product's custom fields on product page
-     * @return nothing
+     * @return void
      */
     public function product_cart_show()
     {
@@ -322,7 +322,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     /**
       * Add the enable button for custom fields
-      * @return nothing
+      * @return void
       */
     public function product_admin_show( )
     {
