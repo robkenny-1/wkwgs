@@ -36,12 +36,12 @@ class Wkwgs_Logger
     }
     public static function log_function( $func )
     {
-        $msg = "===== Function ===== $func";
+        $msg = PHP_EOL . "===== Function ===== $func";
         Wkwgs_Logger::log( $msg );
     }
     public static function log_var( $var_name, $var )
     {
-        $msg  = "===== Variable ===== $var_name" . PHP_EOL;
+        $msg  = "----- Variable ----- $var_name" . PHP_EOL;
         if ( isset( $var ) )
         {
             if ( gettype( $var ) === 'boolean' )
@@ -61,6 +61,7 @@ class Wkwgs_Logger
     }
     public static function log_msg( $msg )
     {
+        $msg = "------ Message ----- $func";
         Wkwgs_Logger::log( $msg );
     }
 
