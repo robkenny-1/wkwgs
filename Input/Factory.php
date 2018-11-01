@@ -23,6 +23,7 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
+include_once('HtmlHelper.php');
 include_once('Form.php');
 include_once('Checkbox.php');
 include_once('RadioButton.php');
