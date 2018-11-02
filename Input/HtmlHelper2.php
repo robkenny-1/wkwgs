@@ -62,7 +62,7 @@ class Helper
         ),
         'align' => array(
             'string',
-            "<applet>, <caption>, <col>, <colgroup>, <hr>, <iframe>, <img>, <table>, <tbody>, <td>, <tfoot> , <th>, <thead>, <tr>",
+            "<applet>, <caption>, <col>, <colgroup>, <hr>, <iframe>, <img>, <table>, <tbody>, <td>, <tfoot>, <th>, <thead>, <tr>",
             "Specifies the horizontal alignment of the element."
         ),
         'allow' => array(
@@ -648,7 +648,7 @@ class Helper
         'wrap' => array(
             'string',
             "<textarea>",
-            "Indicates whether the text should be wrapped." 
+            "Indicates whether the text should be wrapped."
         ),
     ];
 
@@ -691,159 +691,244 @@ class Helper
         ];
         return in_array( strtolower( $tag ), $empty_tags );
     }
-
-    /*
-    public static function callback( $callback )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args() );
-        $logger->log_var( '$callback', $callback );
-
-        if ( ! isset( $callback[ 'callback' ] ) )
-        {
-            $logger->log_msg( '$callback is not correct' );
-            return;
-        }
-
-        if ( isset( $callback[ 'params' ] ) )
-        {
-            call_user_func_array( $callback[ 'callback' ], $callback[ 'params' ] );
-        }
-        else
-        {
-            call_user_func( $callback[ 'callback' ] );
-        }
-        $logger->log_msg( __FUNCTION__ );
-    }
-
-    public static function render_element( $element )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args() );
-
-        if ( isset( $element[ 'element' ] ) )
-        {
-            $type       = $element[ 'element' ];
-            $attributes = isset( $element[ 'attributes' ] ) ? $element[ 'attributes' ] : null;
-            $contents   = isset( $element[ 'contents' ] )   ? $element[ 'contents' ]   : null;
-            $logger->log_var( '$type', $type );
-
-            echo "<$type ";
-            self::render_attributes( $attributes );
-            echo '>';
-            if ( isset( $contents ) )
-            {
-                self::render( $contents );
-            }
-            echo "</$type>";
-        }
-        else
-        {
-            $logger->log_var( '$element is not correct', $element );
-        }
-    }
-
-    public static function render( $elements )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args() );
-
-        if ( is_null( $elements ) )
-        {
-            return;
-        }
-        if ( gettype( $elements ) === 'string' )
-        {
-            $logger->log_msg( 'text contents only' );
-            echo $elements;
-            return;
-        }
-        foreach ( $elements as $element )
-        {
-            $logger->log_value( '$element', $element, 'Loop' );
-            // discern the type of Element
-            if ( isset( $element[ 'element' ] ) )
-            {
-                self::render_element2( $element );
-            }
-            else if ( isset( $element[ 'callback' ] ) )
-            {
-                self::callback( $element );
-            }
-            else if ( isset( $element[ 'text' ] ) )
-            {
-                echo $element[ 'text' ];
-            }
-            else
-            {
-                // else silently ignore
-                $logger->log_msg( 'Ignored' );
-            }
-        }
-    }
-    */
-
-    public static function get_html( $elements )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        if ( is_null( $elements ) )
-        {
-            return;
-        }
-        $html = '';
-
-        if ( ! is_array( $elements ) )
-        {
-            $html = $elements->get_html();
-        }
-        else
-        {
-            foreach ( $elements as $element )
-            {
-                $html .= $element->get_html();
-            }
-        }
-
-        $logger->log_return( $html );
-        return $html;
-    }
-    public static function render( $elements )
-    {
-        echo self::get_html( $elements );
-    }
 }
+
+/*-------------------------------------------------------------------------*/
+/* Interfaces */
+/*-------------------------------------------------------------------------*/
 
 interface IHtmlPrinter
 {
     public function get_html();
 }
 
-class Text implements IHtmlPrinter
+interface IAttributes
 {
-    protected $text = '';
+    /**
+     * Get all the attributes of the field
+     *
+     * @return string, empty string if unset
+     */
+    public function get_attributes();
 
-    public function __construct( $text )
-    {
-        $this->text = $text;
-    }
-    public function get_html()
-    {
-        return $this->text;
-    }
+    /**
+     * Set the attributes for this input object,
+     * this overrides any previous attributes
+     *
+     * @return void
+     */
+    public function set_attributes( $attributes );
+
+    /**
+     * Get the default values for this input object
+     * it recursively calls and merges all the parent's defaults as well
+     *
+     * @return array|fully merged list of default values
+     */
+    public function get_attributes_default();
+
+    /**
+     * Set the default attributes for this input object,
+     * this overrides any previous defaults
+     *
+     * @return void
+     */
+    public function merge_attributes_default( $attributes );
+
+    /**
+     * Get the value of a single attribute of the field
+     *
+     * @return string
+     */
+    public function get_attribute( $name );
+
+    /**
+     * Set the specified attribute
+     *
+     * @return void
+     */
+    public function set_attribute( $name, $value );
 }
 
-class Attributes implements IHtmlPrinter
+interface IHtmlInput
 {
-    protected $attributes = [];
+    public function validate( $post );
+    
+    public function get_value( $post );
 
+    /**
+     * Get the assigned form identity
+     *
+     * @return string
+     */
+    public function get_form_id();
+
+    /**
+     * Set the identity of the owning form
+     *
+     * @return string
+     */
+    public function set_form_id( $form_id );
+}
+
+/*-------------------------------------------------------------------------*/
+/* Manage a set of key/value pairs (aka HTML attributes) */
+/*-------------------------------------------------------------------------*/
+
+class Attributes implements IHtmlPrinter, IAttributes
+{
     public function __construct( $attributes )
     {
+        if ( is_null( $attributes ) )
+        {
+            $attributes = [];
+        }
         $this->attributes = $attributes;
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+    
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     */
     public function get_html()
     {
-        $html = self::get_attributes( $this->attributes );
+        $html = self::get_html_attributes( $this->attributes );
 
         return $html;
     }
 
+    /*-------------------------------------------------------------------------*/
+    /* IAttributes routines */
+    /*-------------------------------------------------------------------------*/
+    
+    /*
+     * Current attributes
+     */
+    protected $attributes = [];
+
+    /*
+     * Default attributes
+     */
+    private $attributes_default;
+
+    /*
+     * Attributes + defaults, used to improve perf of get_attribute
+     */
+    private $attributes_combined_cached;
+
+    /**
+     * Get all the attributes of the field
+     *
+     * @return string, empty string if unset
+     */
+    public function get_attributes()
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        // If no cached value, calculate now
+        if ( is_null( $this->attributes_combined_cached ) )
+        {
+            $combine_defaults = $this->get_attributes_default();
+            $this->attributes_combined_cached = array_merge( $this->get_attributes_default(), $this->attributes );
+            $logger->log_var( 'combined attributes', $this->attributes_combined_cached );
+        }
+
+        $logger->log_return( $this->attributes_combined_cached );
+        return $this->attributes_combined_cached;
+    }
+
+    /**
+     * Set the attributes for this input object,
+     * this overrides any previous attributes
+     *
+     * @return void
+     */
+    public function set_attributes( $attributes )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        // Clear the cached value
+        $this->attributes_combined_cached = null;
+
+        $this->attributes = $attributes;
+    }
+
+    /**
+     * Get the default values for this input object
+     * it recursively calls and merges all the parent's defaults as well
+     *
+     * @return array|fully merged list of default values
+     */
+    public function get_attributes_default()
+    {
+        if ( get_parent_class( $this ) !== False )
+        {
+            return $this->attributes_default;
+        }
+        return array_merge( parent::get_attributes_default(), $this->attributes_default);
+    }
+    /**
+     * Set the default attributes for this input object,
+     * this overrides any previous defaults
+     *
+     * @return void
+     */
+    public function merge_attributes_default( $attributes )
+    {
+        // Clear the cached value
+        $this->attributes_combined_cached = null;
+
+        if ( is_null( $this->attributes_default ) )
+        {
+            $this->attributes_default = $attributes;
+        }
+        $this->attributes_default = array_merge( $this->attributes_default, $attributes );
+    }
+
+    /**
+     * Get the value of a single attribute of the field
+     *
+     * @return string
+     */
+    public function get_attribute( $name )
+    {
+        $attributes = $this->get_attributes();
+
+        $attr = '';
+        if ( isset( $attributes[ $name ] ) )
+        {
+            $attr = $attributes[ $name ];
+        }
+
+        return $attr;
+    }
+
+    /**
+     * Set the specified attribute
+     *
+     * @return void
+     */
+    public function set_attribute( $name, $value )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        // Clear the cached value
+        $this->attributes_combined_cached = null;
+
+        if ( is_null( $this->attributes ) )
+        {
+            $this->attributes = [];
+        }
+        $this->attributes[ $name ] = $value;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Helper routines */
+    /*-------------------------------------------------------------------------*/
     /**
      * Does the content of the string equate to a True value
      * Does not rely on type conversion,
@@ -869,7 +954,12 @@ class Attributes implements IHtmlPrinter
         return False;
     }
 
-    public static function get_attribute( $attr, $value )
+    /**
+     * Get the html for the specific attribute
+     *
+     * @return string
+     */
+    public static function get_html_attribute( $attr, $value )
     {
         /*
          * Boolean attributes, when set, are specified in only 1 of 3 ways
@@ -896,7 +986,12 @@ class Attributes implements IHtmlPrinter
         return $html;
     }
 
-    public static function get_attributes( $attributes )
+    /**
+     * Get the html for the specific attributes
+     *
+     * @return string
+     */
+    public static function get_html_attributes( $attributes )
     {
         $html = '';
 
@@ -905,14 +1000,17 @@ class Attributes implements IHtmlPrinter
             foreach ( $attributes as $attribute => $value )
             {
                 $html .= ' ';
-                $html .= self::get_attribute( $attribute, $value );
+                $html .= self::get_html_attribute( $attribute, $value );
             }
         }
 
         return $html;
     }
-
 }
+
+/*-------------------------------------------------------------------------*/
+/* Special types of Content */
+/*-------------------------------------------------------------------------*/
 
 class Callback implements IHtmlPrinter
 {
@@ -924,74 +1022,142 @@ class Callback implements IHtmlPrinter
         $this->callback     = $callback;
         $this->params       = $params;
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
     public function get_html()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args() );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $html = '';
 
         if ( ! empty( $this->params ) )
         {
-            call_user_func_array( $this->callback, $this->params );
+            $html .= call_user_func_array( $this->callback, $this->params );
         }
         else
         {
-            call_user_func( $this->callback );
+            $html .= call_user_func( $this->callback );
         }
+
+        $logger->log_return( $html );
+        return $html;
     }
 }
 
+class Text implements IHtmlPrinter
+{
+    protected $text = '';
+
+    public function __construct( $text )
+    {
+        $this->text = $text;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_html()
+    {
+        return $this->text;
+    }
+}
+
+/*-------------------------------------------------------------------------*/
+/* HTML Element */
+/*-------------------------------------------------------------------------*/
+
 class Element implements IHtmlPrinter
 {
-    protected $name;
-    protected $attributes;
-    protected $content;
+    protected $html_name;           // string
+    protected $html_attributes;     // IHtmlPrinter, IAttributes
+    protected $html_content;        // [ IHtmlPrinter ]
 
-    /*
-    public function __construct( $name, $attributes = null, $content = null )
-    {
-        $this->name = $name;
-        $this->set_attributes( $attributes );
-        $this->set_content( $content );
-    }
-    */
     public function __construct( $desc )
     {
         if ( gettype( $desc ) === 'string' )
         {
-            $this->name = $desc;
+            $this->html_name = $desc;
             return;
         }
-        if ( isset( $desc[ 'type' ] ) )
+
+        if ( ! isset(  $desc[ 'type' ] ) )
         {
-            $this->name = $desc[ 'type' ];
+            return;
         }
+
+        $this->html_name = $desc[ 'type' ];
+
         if ( isset( $desc[ 'attributes' ] ) )
         {
-            $this->set_attributes( $desc[ 'attributes' ] );
+            $this->set_attribute( $desc[ 'attributes' ] );
         }
+
         if ( isset( $desc[ 'contents' ] ) )
         {
             $this->set_content( $desc[ 'contents' ] );
         }
     }
-    public function set_attributes( $attributes )
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_html()
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $html = '';
+
+        if ( isset( $this->html_name ) )
+        {
+            $html .= "<{$this->html_name}";
+            $html .= $this->get_html_attributes();
+            $html .= '>';
+            if ( ! Helper::is_void_element( $this->html_name ) )
+            {
+                $html .= $this->get_html_content();
+                $html .= "</{$this->html_name}>";
+            }
+        }
+
+        $logger->log_return( $html );
+        return $html;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Data Manipulation routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function set_attribute( $attributes )
     {
         if ( gettype( $attributes ) === 'array' )
         {
-            $attributes = new Attributes( $attributes );
+            $this->html_attributes =  new Attributes( $attributes );
         }
-        $this->attributes = $attributes;
+        else if ( $attributes instanceof IHtmlPrinter && $attributes instanceof IAttributes )
+        {
+            $this->html_attributes = $attributes;
+        }
+        else
+        {
+            $this->html_attributes = new Attributes( [] );
+        }
     }
+
     public function get_attributes()
     {
-        $html = '';
-
-        if ( ! is_null( $this->attributes ) )
-        {
-            $html .= $this->attributes->get_html();
-        }
-
-        return $html;
+        return $this->$html_attributes;
     }
+
+    /**
+     * Append a single content item
+     *
+     * @return null
+     */
     public function add_content( $content )
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
@@ -1006,13 +1172,19 @@ class Element implements IHtmlPrinter
             $logger->log_msg( 'Converting to Text()' );
             $content = new Text( $content );
         }
-        array_push( $this->content, $content );
+        array_push( $this->html_content, $content );
     }
+
+    /**
+     * Replace all content with the new values
+     *
+     * @return null
+     */
     public function set_content( $contents )
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        $this->content = [];
+        $this->html_content = [];
 
         if ( gettype( $contents ) === 'string' )
         {
@@ -1030,36 +1202,70 @@ class Element implements IHtmlPrinter
             $this->add_content( $contents );
         }
 
-        $logger->log_return( $this->content );
+        $logger->log_return( $this->html_content );
     }
+
+    /**
+     * Access all defined content
+     *
+     * @return array of content types (Text, Callback, or Element)
+     */
     public function get_content()
+    {
+        return $this->html_content;
+    }
+    /*-------------------------------------------------------------------------*/
+    /* Helper routines for HTML */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get a string containing the attribute declarations, suitable for HTML
+     *
+     * @return string of attribte values
+     */
+    protected function get_html_attributes()
     {
         $html = '';
 
-        if ( ! empty( $this->content ) )
+        if ( ! is_null( $this->html_attributes ) )
         {
-            foreach ( $this->content as $content )
+            $html .= $this->html_attributes->get_html();
+        }
+
+        return $html;
+    }
+
+    /**
+     * Get a string containing the contents of this element ( aka children )
+     *
+     * @return HTML string containing all children declarations
+     */
+    protected function get_html_content()
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $html = '';
+
+        if ( ! empty( $this->html_content ) )
+        {
+            foreach ( $this->html_content as $content )
             {
                 $html .= $content->get_html();
             }
         }
 
-        return $html;
-    }
-    public function get_html()
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        $html  = "<{$this->name}";
-        $html .= $this->get_attributes();
-        $html .= '>';
-        if ( ! Helper::is_void_element( $this->name ) )
-        {
-            $html .= $this->get_content();
-            $html .= "</{$this->name}>";
-        }
-
         $logger->log_return( $html );
         return $html;
+    }
+
+    /**
+     * Echo this objects HTML string to output
+     *
+     * @return null
+     */
+    public function render()
+    {
+        $html = $this->get_html();
+        echo $html;
     }
 }
