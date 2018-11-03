@@ -84,59 +84,62 @@ define( 'ABSPATH', '1');
 
 session_start();
 include_once( '..\Factory.php' );
+include_once('..\HtmlHelper2.php');
+include_once('..\Form.php');
+include_once('..\Text.php');
 
-//Wkwgs_Logger::clear();
+use Input\HtmlHelper as hh;
 
-$form = \Input\Factory::Get(
-        array(
-        'type'          => 'form',
-        'name'          => 'text_test_form',
-    )
-);
+Wkwgs_Logger::clear();
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'text',
-        'name'              => 'text_field',
-        )
-    )
-);
+$form = new hh\Form( [] );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'text',
-        'name'          => 'tooltip',
-        'label'         => 'input with tooltip',
-        'data-tooltip'  => 'This is a tooltip message',
-        'css-container' => 'tooltip-special'
-        )
-    )
-);
+$text = new hh\Text( [
+        'attributes'    => [
+            'class' => 'color-steelblue',
+            'label' => 'test1'
+        ],
+        'contents'      => [   ],
+    ]);
+$form->get_children()->add_child( $text );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'text',
+/* ------------------------------------------------------------------------------------ */
+
+$text = new hh\Text( [
+        'attributes'    => [
+            'name'          => 'tooltip',
+            'label'         => 'input with tooltip',
+            'data-tooltip'  => 'This is a tooltip message',
+            'css-container' => 'tooltip-special'
+        ],
+        'contents'      => [
+            'I have a tooltip!',
+        ]
+    ]);
+$form->get_children()->add_child( $text );
+
+/* ------------------------------------------------------------------------------------ */
+
+$text = new hh\Text( [
+        'attributes'    => [
         'name'          => 'tooltip',
         'label'         => "I'm on the right",
         'css-container' => 'text-input-label-right'
-        )
-    )
-);
+        ],
+    ]);
+$form->get_children()->add_child( $text );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'email',
+/* ------------------------------------------------------------------------------------ */
+
+$text = new hh\Text( [
+        'attributes'    => [
         'name'              => 'email',
         'label'             => 'email address',
         'required'          => 'yes',
         'value'             => 'abc@xyz.com',
-        )
-    )
-);
+        ],
+    ]);
+$form->get_children()->add_child( $text );
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation

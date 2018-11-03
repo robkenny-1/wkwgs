@@ -63,12 +63,16 @@ class Wkwgs_Logger
     {
         if ( isset( $value ) )
         {
-            self::log_var( 'return', $value );
+            $value = self::var_to_text( $value );
+            $message = "===== Exit $func = $value";
         }
-        $message = "===== Exit  $func";
+        else
+        {
+            $message = "===== Exit $func";
+        }
         self::log_internal( $message );
     }
-    public static function log_value( $var_name, $var, $prefix = 'Variable' )
+    protected static function var_to_text( $var )
     {
         if ( isset( $var ) )
         {
@@ -85,7 +89,12 @@ class Wkwgs_Logger
         {
             $var = "(unset)";
         }
-        $message   = "----- $prefix $var_name = $var" . PHP_EOL;
+        return $var;
+    }
+    public static function log_value( $var_name, $var, $prefix = 'Variable' )
+    {
+        $var = self::var_to_text( $var );
+        $message   = "----- $prefix $var_name = $var";
         self::log_internal( $message );
     }
     public static function log_var( $var_name, $var )
@@ -98,7 +107,7 @@ class Wkwgs_Logger
     }
     public static function log_msg( $message )
     {
-        $message = "------ Message ----- $message";
+        $message = "------ $message";
         self::log_internal( $message );
     }
 	public static function log( $message )
@@ -111,6 +120,11 @@ class Wkwgs_Logger
         {
             return;
         }
+
+        // Normalize EOL
+        $message = str_replace( "\r\n", PHP_EOL, $message );
+        $message = str_replace( "\r", PHP_EOL, $message );
+        $message = str_replace( "\n", PHP_EOL, $message );
 
         $full_msg = '';
         foreach( explode( PHP_EOL, $message ) as $text )
@@ -148,32 +162,42 @@ class Wkwgs_Logger
     }
 }
 
-class Wkwgs_Function_Logger extends Wkwgs_Logger
+class Wkwgs_Function_Logger
 {
     private $function_name = '';
+    private $function_return;
 
-    public function __construct( $func, $params = null )
+    public function __construct( $func, $params = null, $object_type = '' )
     {
+        if ( ! empty( $object_type ) )
+        {
+            $func = "$object_type::$func";
+        }
         $this->function_name = $func;
+
         Wkwgs_Logger::$Indent += 2;
-        $this->log_function( $this->function_name, $params );
+        Wkwgs_Logger::log_function( $this->function_name, $params );
     }
 
     public function __destruct()
     {
-        $this->log_return( $this->function_name );
+        Wkwgs_Logger::log_return( $this->function_name, $this->function_return );
         Wkwgs_Logger::$Indent -= 2;
     }
 
-    public static function log_var( $var_name, $var )
+    public function log_var( $var_name, $var )
     {
         Wkwgs_Logger::log_var( $var_name, $var );
     }
-    public static function log_msg( $message )
+    public function log_msg( $message )
     {
         Wkwgs_Logger::log_msg( $message );
     }
-	public static function log( $message )
+    public function log_return( $var )
+    {
+       $this->function_return = $var;
+    }
+	public function log( $message )
     {
         Wkwgs_Logger::log( $message );
     }

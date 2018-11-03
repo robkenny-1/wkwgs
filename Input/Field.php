@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
 include_once('Field_Error.php');
-include_once('HtmlHelper.php');
+include_once('HtmlHelper2.php');
 include_once(__DIR__ . '/../Wkwgs_Logger.php' );
 
 /**
@@ -41,20 +41,20 @@ include_once(__DIR__ . '/../Wkwgs_Logger.php' );
  * You don't need all three class definitions to style the elements
  * CSS Example:
  *
- * .checkbox {
+ * .css-container {
  *   background-color: Blue;
  * }
- * .checkbox label {
+ * .css-container label {
  *   background-color: LightYellow;
  * }
  * 
- * .checkbox input {
+ * .css-container input {
  *   background-color: SeaGreen;
  * }
  * 
  */
 
-abstract class Field
+abstract class Field implements \Input\HtmlHelper\IHtmlPrinter
 {
     /*-------------------------------------------------------------------------*/
     /*                                                                         */
@@ -78,8 +78,8 @@ abstract class Field
             'text-position'         => 'right',
             'hidden'                => False,
             'aria-hidden'           => False,
+            'container'             => 'div',
             'css-container'         => '',
-            'css-input-help'        => '', 
             'css-label'             => '',
             'css-input'             => '',
         );
@@ -103,14 +103,6 @@ abstract class Field
      * @return input value
      */
     abstract function get_value( $post );
-
-    /**
-     * Render of the field in the frontend
-     * This spits out the necessary HTML
-     *
-     * @return void
-     */
-    abstract function render( );
 
     /*-------------------------------------------------------------------------*/
 
@@ -136,15 +128,17 @@ abstract class Field
      */
     public function get_attributes()
     {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         // If no cached value, calculate now
         if ( is_null( $this->attributes_combined_cached ) )
         {
-            $this->log_function( __FUNCTION__ );
             $combine_defaults = $this->get_attributes_default();
             $this->attributes_combined_cached = array_merge( $this->get_attributes_default(), $this->attributes );
-            $this->log_var( 'combined attributes', $this->attributes_combined_cached );
+            $logger->log_var( 'combined attributes', $this->attributes_combined_cached );
         }
 
+        $logger->log_return( $this->attributes_combined_cached );
         return $this->attributes_combined_cached;
     }
 
@@ -156,7 +150,7 @@ abstract class Field
      */
     public function set_attributes( $attributes )
     {
-        $this->log_function( __FUNCTION__ );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         // Clear the cached value
         $this->attributes_combined_cached = null;
 
@@ -220,7 +214,8 @@ abstract class Field
      */
     public function set_attribute( $name, $value )
     {
-        $this->log_function( __FUNCTION__ );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         // Clear the cached value
         $this->attributes_combined_cached = null;
 
@@ -266,7 +261,7 @@ abstract class Field
     {
         $required = $this->get_attribute( 'required' );
 
-        return HtmlHelper::is_true( $required );
+        return \Input\HtmlHelper\HtmlHelper::is_true( $required );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -303,11 +298,12 @@ abstract class Field
     /*-------------------------------------------------------------------------*/
     public function html_print( )
     {
-        $this->log_function( __FUNCTION__ );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         $css_container  = $this->get_attribute( 'css-container' );
 
         ?>
-        <div <?php HtmlHelper::print_attribute('class', $css_container) ?> >
+        <div <?php \Input\HtmlHelper\HtmlHelper::print_attribute('class', $css_container) ?> >
             <?php $this->render() ?>
         </div>
         <?php
@@ -333,15 +329,21 @@ abstract class Field
             $label .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }
 
-        ?>
-        <label
-            <?php HtmlHelper::print_attribute( 'class',         $css ) ?>
-            <?php HtmlHelper::print_attribute( 'data-tooltip',  $tooltip ) ?>
-        >
-        <?php
-        echo $label;
-        call_user_func_array( $input_callback, $input_callback_params );
-        ?></label><?php             
+        \Input\HtmlHelper\HtmlHelper::render_element(
+            'label',
+            [
+                'class'         => $css,
+                'data-tooltip'  => $tooltip,
+            ],
+            [
+                'text'      => $label,
+                'child'     =>
+                [
+                    'callback'  => $input_callback,
+                    'params'    => $input_callback_params
+                ],
+            ]
+        );
     }
 
     /**
@@ -354,17 +356,17 @@ abstract class Field
         $input_callback_params
         )
     {
-        $this->log_function( __FUNCTION__ );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $label          = $this->get_attribute( 'label'        );
         $tooltip        = $this->get_attribute( 'data-tooltip' );
         $css_label      = $this->get_attribute( 'css-label'    );
         $required       = $this->is_required();
 
-        $this->log_var( '$label'    , $label    );
-        $this->log_var( '$tooltip'  , $tooltip  );
-        $this->log_var( '$css_label', $css_label);
-        $this->log_var( '$required ', $required );
+        $logger->log_var( '$label'    , $label    );
+        $logger->log_var( '$tooltip'  , $tooltip  );
+        $logger->log_var( '$css_label', $css_label);
+        $logger->log_var( '$required ', $required );
 
         $this->render_label_explicit(
             $input_callback,
@@ -382,43 +384,23 @@ abstract class Field
      */
     public function render_input_attributes( $exclude = null )
     {
-        HtmlHelper::print_attribute( 'type'             , $this->get_attribute( 'type'          ),                  $exclude );
-        HtmlHelper::print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
-        HtmlHelper::print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );
-        HtmlHelper::print_attribute( 'value'            , $this->get_attribute( 'value'         ),                  $exclude );
-        HtmlHelper::print_attribute( 'class'            , $this->get_attribute( 'css-input'     ),                  $exclude );
-        HtmlHelper::print_attribute( 'required'         , $this->get_attribute( 'required'      ),                  $exclude );
-        HtmlHelper::print_attribute( 'hidden'           , $this->get_attribute( 'hidden'        ),                  $exclude );
-        HtmlHelper::print_attribute( 'aria-hidden'      , $this->get_attribute( 'aria-hidden'   ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'type'             , $this->get_attribute( 'type'          ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'name'             , $this->get_attribute( 'name'          ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'id'               , $this->get_attribute( 'id'            ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'value'            , $this->get_attribute( 'value'         ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'class'            , $this->get_attribute( 'css-input'     ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'required'         , $this->get_attribute( 'required'      ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'hidden'           , $this->get_attribute( 'hidden'        ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'aria-hidden'      , $this->get_attribute( 'aria-hidden'   ),                  $exclude );
         // move to <label>
-        //HtmlHelper::print_attribute( 'width'            , $this->get_attribute( 'width'         ),              $exclude );
-        HtmlHelper::print_attribute( 'placeholder'      , $this->get_attribute( 'placeholder'   ),                  $exclude );
-        HtmlHelper::print_attribute( 'size'             , $this->get_attribute( 'size'          ),                  $exclude );
+        //\Input\HtmlHelper\HtmlHelper::print_attribute( 'width'            , $this->get_attribute( 'width'         ),              $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'placeholder'      , $this->get_attribute( 'placeholder'   ),                  $exclude );
+        \Input\HtmlHelper\HtmlHelper::print_attribute( 'size'             , $this->get_attribute( 'size'          ),                  $exclude );
     }
 
-    /*-------------------------------------------------------------------------*/
-    /* Logging routines */
-    /*-------------------------------------------------------------------------*/
-    public function log_function( $func )
+    public function render()
     {
-        $msg = get_class( $this ) . "::$func";
-
-        if ( isset( $this->attributes[ 'name' ] ) )
-        {
-            $msg .= ' (' . $this->attributes[ 'name' ] . ')';
-        }
-        else
-        {
-            $msg .= ' (name is unset)';
-        }
-        \Wkwgs_Logger::log_function( $msg );
-    }
-    public function log_var( $var_name, $var )
-    {
-        \Wkwgs_Logger::log_var( $var_name, $var );    
-    }
-    public function log_msg( $msg )
-    {
-        \Wkwgs_Logger::log_msg( $msg );    
+        $html = $this->get_html();
+        echo $html;
     }
 }

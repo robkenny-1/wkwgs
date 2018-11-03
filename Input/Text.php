@@ -17,7 +17,7 @@
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-namespace Input;
+namespace Input\HtmlHelper;
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
@@ -25,98 +25,60 @@ defined( 'ABSPATH' ) || exit;
 include_once('Constants.php');
 include_once('Field.php');
 
-/**
- * The text input Class
- *
- * @since 1.0.0
- */
-class Text extends Field
+class Text extends InputElement
 {
     const Input_Type            = 'text';
-    const Default_Attributes    = array(
-            'type'              => self::Input_Type,
-        );
+    const Default_Attributes    = [
+        'type'      => 'text',
+    ];
 
-    public function __construct( $attributes )
+    public function __construct( $desc )
     {
-        parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Default_Attributes );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        if ( gettype( $desc ) !== 'array' )
+        {
+            $logger->log_var( '$desc is not an array', $desc );
+            return;
+        }
+
+        $desc[ 'tag' ] = self::Input_Type;
+        parent::__construct( $desc );
+
+        $this->get_attributes()->set_attributes_default( self::Default_Attributes );
     }
 
-    /**
-     * Verify status of input data
-     *
-     * @return null if no error or Field_Error
-     */
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlForm routines */
+    /*-------------------------------------------------------------------------*/
+
     public function validate( $post )
     {
-        $name = $this->get_name();
+        $this->validation_errors = [];
 
-        if ( ! isset( $post[ $name ] ) )
+        if ( empty( $post ) )
         {
-            return new Field_Error( $this, 'Value not in POST' );
+            $this->validation_errors[ $this->get_attributes()->get_name() ] =
+            [
+                'field'         => $this,
+                'error'         => '$post is empty',
+            ];
+        }
+        else
+        {
         }
 
-        $raw = $post[ $name ];
-
-        if ( empty( $raw ) )
-        {
-            if ( $this->is_required() )
-            {
-                return new Field_Error( $this, 'Value is required', $raw );
-            }
-            return null;
-        }
-
-        return null;
+        return empty( $this->validation_errors );
     }
 
-    /**
-     * Extract object's value from post data
-     *
-     * @return input value
-     */
     public function get_value( $post )
     {
-        $name = $this->get_name();
+        $values = [];
 
-        if ( $this->validate( $post ) != null )
+        if ( ! empty( $post ) )
         {
-            return '';
         }
-        $raw = $post[ $name ];
 
-        // No cleansing necessary
-        $cleansed = $raw;
-
-        return $cleansed;
-    }
-
-    /**
-     * Render the <input> element
-     *
-     */
-    public function render_input( $exclude )
-    {
-        $this->log_function( __FUNCTION__ );
-
-        echo '<input ';
-        parent::render_input_attributes( $exclude );
-        echo '/>';
-    }
-
-    /**
-     * Render the field in the frontend, this spits out the necessary HTML
-     * Expected output
-     * <label>Label Text<input type='text' /></label>
-     *
-     * @return void
-     */
-    public function render( )
-    {
-        $this->log_function( __FUNCTION__ );
-
-        $exclude = [];
-        $this->render_label( [$this, 'render_input' ], [ $exclude ] );
+        return $values;
     }
 }

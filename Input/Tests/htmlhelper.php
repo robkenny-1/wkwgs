@@ -5,11 +5,20 @@
 <html>
 <head>
 <style>
+
+.color-steelblue {
+  background-color : steelblue;
+}
+
+.color-red {
+  background-color : red;
+}
+
 </style>
 </head>
 <body>
 <h1 id="logo">
-Text Unit Tests
+HtmlHelper basic Unit Tests
 </h1>
 
 <?php
@@ -22,124 +31,239 @@ session_start();
 include_once( '..\Factory.php' );
 include_once( '..\HtmlHelper2.php' );
 
+use Input\HtmlHelper as hh;
+
 \Wkwgs_Logger::clear();
+$test = 0;
 
-\Wkwgs_Logger::log( '#### Test 01 ####' );
-\HtmlHelper\HtmlHelper::render( null );
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
 
-\Wkwgs_Logger::log( '#### Test 02 ####' );
-\HtmlHelper\HtmlHelper::render( [] );
+$e1 = new hh\Element( [ 'tag' => 'h1' ] );
+$e1->render();
 
-\Wkwgs_Logger::log( '#### Test 03 ####' );
-\Input\HtmlHelper::render(
-    new \HtmlHelper\Element( 'h1' )
-);
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
 
-/*
-\Wkwgs_Logger::log( '#### Test 01 ####' );
-\Input\HtmlHelper::render2( null );
+$e1 = new hh\Element( [
+        'tag'           => 'h1',
+        'attributes'    => [ 'class' => 'color-steelblue' ],
+        'contents'      => "should be steelblue"
+    ]);
+$e1->render();
 
-\Wkwgs_Logger::log( '#### Test 02 ####' );
-\Input\HtmlHelper::render2( [] );
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
 
-\Wkwgs_Logger::log( '#### Test 03 ####' );
-\Input\HtmlHelper::render2(
-    [
-        'element'               => 'h1',
+$e1 = new hh\Element( [
+        'tag'           => 'h2',
+        'attributes'    => [ 'class' => 'color-red' ],
+        'contents'      => "should be red"
+    ]);
+$e1->render();
+
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
+
+$e1 = new hh\Element( [
+        'tag'           => 'h2',
+        'attributes'    => [ 'class' => 'color-red' ],
+        'contents'      => "override default class, should be red"
+    ]);
+$e1->get_attributes()->set_attributes_default( [ 'class' => 'color-steelblue' ] );
+$e1->render();
+
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
+
+$e1 = new hh\Element( [
+        'tag'           => 'h2',
+        'contents'      => "using default class, should be steel-blue"
+    ]);
+$e1->get_attributes()->set_attributes_default( [ 'class' => 'color-steelblue' ] );
+$e1->render();
+
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
+
+$e3 = new hh\Element([
+    'tag'           => 'p',
+    'contents'      => [
+        new hh\HtmlText('line 1'),
+        new hh\Element('br'),
+        new hh\HtmlText('line 2'),
+        new hh\Element('br'),
+        new hh\HtmlText('line 3'),
     ]
-);
+]);
+$e2 = new hh\Element([
+    'tag'           => 'p',
+    'contents'      => [ 'text before', $e3, 'text after' ]
+]);
+$e1 = new hh\Element([
+    'tag'               => 'p',
+    'contents'          => [ $e2 ]
+]);
+$e1->render();
 
-\Wkwgs_Logger::log( '#### Test 04 ####' );
-\Input\HtmlHelper::render2(
-    [
-        'element'               => 'h2',
-        'attributes'            => [
-            'class'             => 'type, attributes, no content',
-        ],
-    ]
-);
-
-\Wkwgs_Logger::log( '#### Test 05 ####' );
-\Input\HtmlHelper::render2(
-    [
-        'element'               => 'h2',
-        'contents'              => [ 'text' => 'type, contents, no attributes' ]
-    ]
-);
-
-\Wkwgs_Logger::log( '#### Test 06 ####' );
-\Input\HtmlHelper::render2(
-    [
-        'element'               => 'h3',
-        'attributes'            => [
-            'class'             => 'test with a paragraph child',
-        ],
-        'contents'              => [
-            [
-                'element'       => 'p',
-                'contents'      => [[ 'text' => 'text in paragraph' ]]
-            ],
-        ],
-    ]
-);
+/* -------------------------------------------------------------------------------- */
+\Wkwgs_Logger::log( '#### Callback ####' );
 
 function callback_test1()
 {
-    echo 'this is text from callback_test1';
+    return 'this is text from callback_test1';
 }
 class callback_test_class
 {
     public static function callback_static()
     {
-        echo 'callback_static';
+        return 'callback_static';
     }
     public function callback_noparam()
     {
-        echo 'callback_noparam';
+        return 'callback_noparam';
     }
     public function callback_param( $param1, $param2 )
     {
-        echo "callback_param( '$param1', '$param2' )";
+        return "callback_param( '$param1', '$param2' )";
     }
 }
 
 $cb = new callback_test_class();
 
-\Wkwgs_Logger::log( '#### Test 07 ####' );
-\Input\HtmlHelper::render2(
-[
-    [
-        'element'               => 'p',
-        'contents'              => 'callback tests',
-    ],
-    [
-        'callback'              => 'callback_test1' // INVALID
-    ],
-    [
-        'callback'              => [ $cb, 'callback_static' ],
-        'params'                => [ 'param1', 'param2' ]
-    ],
-    [
-        'element'               => 'p',
-        'contents'          => [
-            [
-                'callback'      => [ $cb, 'callback_noparam' ],
-            ]
-        ],
-    ],
-    [
-        'element'               => 'p',
-        'contents'          => [
-            [
-                'callback'      => [ $cb, 'callback_param' ],
-                'params'        => [ 'param1', 'param2' ]
-            ]
-        ],
-    ],
-]
-);
-*/
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
 
+$e1 = new hh\Element([
+    'tag'       => 'p',
+    'contents'  => [
+        new hh\Callback( 'callback_test1' ),
+    ]
+]);
+$e1->render();
+
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
+
+$e1 = new hh\Element([
+    'tag'       => 'p',
+    'contents'  => [
+        new hh\HtmlText('Calling static method on class'),
+        new hh\Element( 'br' ),
+        new hh\Callback( [ $cb, 'callback_static' ] ),
+    ]
+]);
+$e1->render();
+
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
+
+$e1 = new hh\Element([
+    'tag'       => 'p',
+    'contents'  => [
+        new hh\HtmlText('Calling static method on class'),
+        new hh\Element( 'br' ),
+        new hh\Callback( [ $cb, 'callback_noparam' ] ),
+    ]
+]);
+$e1->render();
+
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
+
+$e1 = new hh\Element([
+    'tag'       => 'p',
+    'contents'  => [
+        new hh\HtmlText('Calling static method on class'),
+        new hh\Element( 'br' ),
+        new hh\Callback( [ $cb, 'callback_param' ], [  'param value 1', 'param value 2' ] ),
+    ]
+]);
+$e1->render();
+
+/* -------------------------------------------------------------------------------- */
+$test       = $test + 1;
+$test_msg   = "#### Test $test, verify array_extract ####";
+\Wkwgs_Logger::log( $test_msg );
+echo "<h3>{$test_msg}</h3>";
+
+$attributes = [
+    'abc'   => 1,
+    'def'   => 2,
+    'ghi'   => 3,
+];
+$extract = [ 'def' ];
+
+$extracted = hh\Helper::array_extract($attributes, $extract);
+
+$e1 = new hh\Element([
+    'tag'       => 'p',
+    'contents'  => [
+        new hh\HtmlText('Array Values'),
+    ]
+]);
+foreach ( $attributes[0] as $e => $v)
+{
+    $e1->get_children()->add_child( new hh\Element('br') );
+    $e1->get_children()->add_child( new hh\HtmlText( "$e => $v" ) );
+}
+$e1->render();
+
+$e1 = new hh\Element([
+    'tag'       => 'p',
+    'contents'  => [
+        new hh\HtmlText('Values Extracted'),
+    ]
+]);
+foreach ( $extracted[0] as $e => $v)
+{
+    $e1->get_children()->add_child( new hh\Element('br') );
+    $e1->get_children()->add_child( new hh\HtmlText( "$e => $v" ) );
+}
+$e1->render();
+
+$e1 = new hh\Element([
+    'tag'       => 'p',
+    'contents'  => [
+        new hh\HtmlText('Values Remaining'),
+    ]
+]);
+foreach ( $extracted[1] as $e => $v)
+{
+    $e1->get_children()->add_child( new hh\Element('br') );
+    $e1->get_children()->add_child( new hh\HtmlText( "$e => $v" ) );
+}
+$e1->render();
 
 ?>
 

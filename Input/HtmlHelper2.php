@@ -691,6 +691,84 @@ class Helper
         ];
         return in_array( strtolower( $tag ), $empty_tags );
     }
+
+    /**
+     * Get the html for the specific attribute
+     *
+     * @return string
+     */
+    public static function get_html_attribute( $attr, $value )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        /*
+         * Boolean attributes, when set, are specified in only 1 of 3 ways
+         * When unset the attribute *must not* be present
+         * We use the first style
+         *
+         * <input type=checkbox  name=cheese checked />
+         * <input type=checkbox  name=cheese checked='' />
+         * <input type=checkbox  name=cheese checked='checked' />
+         */
+
+        $html = '';
+
+        $attr_is_boolean = in_array( $attr, Helper::get_boolean_attributes() );
+        if ( $attr_is_boolean && self::is_true( $value ) )
+        {
+            $html = $attr;
+        }
+        else if ( ! empty( $value ) )
+        {
+            $html = $attr . '="' . $value . '"';
+        }
+
+        $logger->log_return( $html );
+        return $html;
+    }
+    
+    /**
+     * Does the content of the string equate to a True value
+     * Does not rely on type conversion,
+     * it uses a whitelist of acceptable values for True,
+     * all other values are False
+     *
+     * @return True if $val is a true value
+     */
+    public static function is_true( $val )
+    {
+        if ( gettype( $val ) === 'boolean' )
+        {
+            return $val;
+        }
+
+        if ( gettype( $val ) === 'string' )
+        {
+            $val = strtolower( $val );
+
+            return in_array( $val, [ 'yes', '1', 'true' ] );
+        }
+
+        return False;
+    }
+
+    public static function array_extract( $array, $extract )
+    {
+        $found      = [];
+        $remaining  = $array;
+
+        foreach ( $extract as $needle )
+        {
+            if ( isset( $remaining[ $needle ] ) )
+            {
+                // copy entry to $found, and remove from $remaining
+                $found[ $needle ] = $remaining[ $needle ];
+                unset( $remaining[ $needle ] );
+            }
+        }
+
+        return [ $found, $remaining ];
+    }
 }
 
 /*-------------------------------------------------------------------------*/
@@ -699,6 +777,11 @@ class Helper
 
 interface IHtmlPrinter
 {
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     * @return string
+     */
     public function get_html();
 }
 
@@ -720,20 +803,18 @@ interface IAttributes
     public function set_attributes( $attributes );
 
     /**
-     * Get the default values for this input object
-     * it recursively calls and merges all the parent's defaults as well
+     * Get the default attributes for this input object
      *
      * @return array|fully merged list of default values
      */
     public function get_attributes_default();
 
     /**
-     * Set the default attributes for this input object,
-     * this overrides any previous defaults
+     * Set the default attributes for this object
      *
-     * @return void
+     * @return null
      */
-    public function merge_attributes_default( $attributes );
+    public function set_attributes_default( $defaults );
 
     /**
      * Get the value of a single attribute of the field
@@ -748,11 +829,20 @@ interface IAttributes
      * @return void
      */
     public function set_attribute( $name, $value );
+
+    /**
+     * Extract specified attributes from current List
+     *
+     * @return [ [specified], [remaining] ]
+     */
+    public function extract_attributes( $specified );
 }
 
-interface IHtmlInput
+interface IHtmlForm
 {
     public function validate( $post );
+
+    public function get_validate_errors();
     
     public function get_value( $post );
 
@@ -771,8 +861,16 @@ interface IHtmlInput
     public function set_form_id( $form_id );
 }
 
+interface IHtmlPrinterList
+{
+    public function add_child( $child );
+    public function get_child( $child );
+    public function set_children( $children );
+    public function get_children();
+}
+
 /*-------------------------------------------------------------------------*/
-/* Manage a set of key/value pairs (aka HTML attributes) */
+/* Manage a collection of key/value pairs (aka HTML attributes) */
 /*-------------------------------------------------------------------------*/
 
 class Attributes implements IHtmlPrinter, IAttributes
@@ -793,11 +891,15 @@ class Attributes implements IHtmlPrinter, IAttributes
     /**
      * Get the HTML that represents the current Attributes
      *
+     * @return string
      */
     public function get_html()
     {
-        $html = self::get_html_attributes( $this->attributes );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
+        $html = self::get_html_attributes( $this->get_attributes() );
+
+        $logger->log_return( $html );
         return $html;
     }
 
@@ -810,13 +912,35 @@ class Attributes implements IHtmlPrinter, IAttributes
      */
     protected $attributes = [];
 
+    /**
+     * Attributes common to all elements
+     *
+     */
+    const Global_Attributes = [
+        'accesskey'             => '',
+        'aria-hidden'           => False,
+        'class'                 => '',
+        'contenteditable'       => '',
+        'dir'                   => '',
+        'draggable'             => '',
+        'dropzone'              => '',
+        'hidden'                => False,
+        'id'                    => '',
+        'lang'                  => '',
+        'spellcheck'            => '',
+        'style'                 => '',
+        'tabindex'              => '',
+        'title'                 => '',
+        'translate'             => '',
+    ];
+
     /*
      * Default attributes
      */
     private $attributes_default;
 
     /*
-     * Attributes + defaults, used to improve perf of get_attribute
+     * Attributes + defaults, used to improve perf of get_attributes
      */
     private $attributes_combined_cached;
 
@@ -863,30 +987,18 @@ class Attributes implements IHtmlPrinter, IAttributes
      *
      * @return array|fully merged list of default values
      */
+    public function set_attributes_default( $defaults )
+    {
+        $this->attributes_default = $defaults;
+    }
+    
     public function get_attributes_default()
     {
-        if ( get_parent_class( $this ) !== False )
+        if ( isset( $this->attributes_default ) )
         {
-            return $this->attributes_default;
+            return array_merge( self::Global_Attributes, $this->attributes_default);
         }
-        return array_merge( parent::get_attributes_default(), $this->attributes_default);
-    }
-    /**
-     * Set the default attributes for this input object,
-     * this overrides any previous defaults
-     *
-     * @return void
-     */
-    public function merge_attributes_default( $attributes )
-    {
-        // Clear the cached value
-        $this->attributes_combined_cached = null;
-
-        if ( is_null( $this->attributes_default ) )
-        {
-            $this->attributes_default = $attributes;
-        }
-        $this->attributes_default = array_merge( $this->attributes_default, $attributes );
+        return self::Global_Attributes;
     }
 
     /**
@@ -926,65 +1038,19 @@ class Attributes implements IHtmlPrinter, IAttributes
         $this->attributes[ $name ] = $value;
     }
 
-    /*-------------------------------------------------------------------------*/
-    /* Helper routines */
-    /*-------------------------------------------------------------------------*/
     /**
-     * Does the content of the string equate to a True value
-     * Does not rely on type conversion,
-     * it uses a whitelist of acceptable values for True,
-     * all other values are False
+     * Extract specified attributes from current List
      *
-     * @return True if $val is a true value
+     * @return [ [found], [remaining] ]
      */
-    public static function is_true( $val )
+    public function extract_attributes( $specified )
     {
-        if ( gettype( $val ) === 'boolean' )
-        {
-            return $val;
-        }
-
-        if ( gettype( $val ) === 'string' )
-        {
-            $val = strtolower( $val );
-
-            return in_array( $val, [ 'yes', '1', 'true' ] );
-        }
-
-        return False;
+        return Helper::array_extract( $this->attributes, $specified );
     }
 
-    /**
-     * Get the html for the specific attribute
-     *
-     * @return string
-     */
-    public static function get_html_attribute( $attr, $value )
-    {
-        /*
-         * Boolean attributes, when set, are specified in only 1 of 3 ways
-         * When unset the attribute *must not* be present
-         * We use the first style
-         *
-         * <input type=checkbox  name=cheese checked />
-         * <input type=checkbox  name=cheese checked='' />
-         * <input type=checkbox  name=cheese checked='checked' />
-         */
-
-        $html = '';
-
-        $attr_is_boolean = in_array( $attr, Helper::get_boolean_attributes() );
-        if ( $attr_is_boolean && self::is_true( $value ) )
-        {
-            $html = $attr;
-        }
-        else if ( ! empty( $value ) )
-        {
-            $html = $attr . '="' . $value . '"';
-        }
-
-        return $html;
-    }
+    /*-------------------------------------------------------------------------*/
+    /* Html Helper routines */
+    /*-------------------------------------------------------------------------*/
 
     /**
      * Get the html for the specific attributes
@@ -993,24 +1059,209 @@ class Attributes implements IHtmlPrinter, IAttributes
      */
     public static function get_html_attributes( $attributes )
     {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         $html = '';
 
         if ( ! empty( $attributes ) )
         {
             foreach ( $attributes as $attribute => $value )
             {
-                $html .= ' ';
-                $html .= self::get_html_attribute( $attribute, $value );
+                $attribute_html = Helper::get_html_attribute( $attribute, $value );
+                if ( ! empty( $attribute_html ) )
+                {
+                    $html .= ' ';
+                    $html .= $attribute_html;
+                }
             }
         }
 
+        $logger->log_return( $html );
         return $html;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Data Access Helper routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get the name of the field
+     *
+     * @return string
+     */
+    public function get_name()
+    {
+        return $this->get_attribute( 'name' );
+    }
+
+    /**
+     * Check if a field is required
+     *
+     * @param  array  $attributes
+     *
+     * @return boolean
+     */
+    public function is_required()
+    {
+        $required = $this->get_attribute( 'required' );
+
+        return self::is_true( $required );
     }
 }
 
+class ElementList implements IHtmlPrinter, IHtmlPrinterList
+{
+    public function __construct( $children )
+    {
+        $this->set_children( $children );
+    }
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     * @return string
+     */
+    public function get_html()
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( '$this', $this );
+
+        $html = '';
+
+        foreach ( $this->children as $child )
+        {
+            $logger->log_var( '$child', $child );
+
+            $child_html = $child->get_html();
+            $logger->log_var( '$child_html', $child_html );
+
+            $html .= $child_html;
+        }
+
+        $logger->log_return( $html );
+        return $html;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinterList routines */
+    /*-------------------------------------------------------------------------*/
+
+    protected $children = [];
+
+    /**
+     * Append a single content item
+     *
+     * @return null
+     */
+    public function add_child( $child )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        if ( ! is_null( $child ) )
+        {
+            // Automatically convert strings to a HtmlText()
+            if ( gettype( $child ) === 'string' )
+            {
+                $logger->log_msg( 'Converting to HtmlText()' );
+                $child = new HtmlText( $child );
+            }
+
+            // Only allow IHtmlPrinter as children
+            if ( $child instanceof IHtmlPrinter )
+            {
+                $logger->log_msg( 'adding $child' );
+                array_push( $this->children, $child );
+            }
+            else
+            {
+                $logger->log_msg( '$child is not IHtmlPrinter' );
+            }
+        }
+        else
+        {
+            $logger->log_msg( '$child is null' );
+        }
+    }
+
+    /**
+     * Get the childe element matching the name
+     *
+     * @param string $name, name of element to find
+     * @return field
+     */
+    public function get_child( $name )
+    {
+        foreach ( $this->get_fields() as $field )
+        {
+            if ( $field->get_name() === $name )
+            {
+                return $field;
+            }
+        }
+    }
+
+    /**
+     * Replace all content with the new values
+     *
+     * @return null
+     */
+    public function set_children( $children )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $this->children = [];
+
+        if ( $children instanceof IHtmlPrinterList )
+        {
+            $children = $children->get_children();
+        }
+
+        if ( gettype( $children ) === 'array' )
+        {
+            foreach ( $children as $child )
+            {
+                $this->add_child( $child );
+            }
+        }
+        else
+        {
+            $this->add_child( $children );
+        }
+
+        $logger->log_return( $this->children );
+    }
+
+    /**
+     * Access all defined content
+     *
+     * @return array of content types (HtmlText, Callback, or Element)
+     */
+    public function get_children()
+    {
+        return $this->children;
+    }
+
+}
 /*-------------------------------------------------------------------------*/
-/* Special types of Content */
+/* Special types of $children */
 /*-------------------------------------------------------------------------*/
+
+class HtmlText implements IHtmlPrinter
+{
+    protected $text;
+
+    public function __construct( $text )
+    {
+        $this->text = $text;
+    }
+    public function get_html()
+    {
+        return $this->text;
+    }
+}
 
 class Callback implements IHtmlPrinter
 {
@@ -1027,6 +1278,11 @@ class Callback implements IHtmlPrinter
     /* IHtmlPrinter routines */
     /*-------------------------------------------------------------------------*/
 
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     * @return string
+     */
     public function get_html()
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
@@ -1047,80 +1303,71 @@ class Callback implements IHtmlPrinter
     }
 }
 
-class Text implements IHtmlPrinter
-{
-    protected $text = '';
-
-    public function __construct( $text )
-    {
-        $this->text = $text;
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* IHtmlPrinter routines */
-    /*-------------------------------------------------------------------------*/
-
-    public function get_html()
-    {
-        return $this->text;
-    }
-}
-
 /*-------------------------------------------------------------------------*/
 /* HTML Element */
 /*-------------------------------------------------------------------------*/
 
 class Element implements IHtmlPrinter
 {
-    protected $html_name;           // string
-    protected $html_attributes;     // IHtmlPrinter, IAttributes
-    protected $html_content;        // [ IHtmlPrinter ]
+    protected $tag;                 // string
+    protected $attributes;          // Attribute
+    protected $children;            // ElementList
 
     public function __construct( $desc )
     {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         if ( gettype( $desc ) === 'string' )
         {
-            $this->html_name = $desc;
+            $tag  = $desc;
+            $attr = [];
+            $chld = [];
+        }
+        else
+        {
+            $tag  = $desc[ 'tag'        ] ?? '';
+            $attr = $desc[ 'attributes' ] ?? [];
+            $chld = $desc[ 'contents'   ] ?? [];
+        }
+        if ( empty( $tag ) )
+        {
+            $logger->log_msg( '$tag is empty');
             return;
         }
 
-        if ( ! isset(  $desc[ 'type' ] ) )
-        {
-            return;
-        }
-
-        $this->html_name = $desc[ 'type' ];
-
-        if ( isset( $desc[ 'attributes' ] ) )
-        {
-            $this->set_attribute( $desc[ 'attributes' ] );
-        }
-
-        if ( isset( $desc[ 'contents' ] ) )
-        {
-            $this->set_content( $desc[ 'contents' ] );
-        }
+        $this->tag = $tag;
+        $this->set_attributes( $attr );
+        $this->set_children( $chld );
     }
 
     /*-------------------------------------------------------------------------*/
     /* IHtmlPrinter routines */
     /*-------------------------------------------------------------------------*/
 
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     * @return string
+     */
     public function get_html()
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( '$this->tag', $this->tag );
 
         $html = '';
 
-        if ( isset( $this->html_name ) )
+        if ( ! empty( $this->tag ) )
         {
-            $html .= "<{$this->html_name}";
-            $html .= $this->get_html_attributes();
+            $attributes     = $this->get_attributes();
+            $children       = $this->get_children();
+
+            $html .= "<{$this->tag}";
+            $html .= $attributes->get_html();
             $html .= '>';
-            if ( ! Helper::is_void_element( $this->html_name ) )
+            if ( ! Helper::is_void_element( $this->tag ) )
             {
-                $html .= $this->get_html_content();
-                $html .= "</{$this->html_name}>";
+                $html .= $children->get_html();
+                $html .= "</{$this->tag}>";
             }
         }
 
@@ -1132,131 +1379,43 @@ class Element implements IHtmlPrinter
     /* Data Manipulation routines */
     /*-------------------------------------------------------------------------*/
 
-    public function set_attribute( $attributes )
+    protected function set_attributes( $attributes )
     {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         if ( gettype( $attributes ) === 'array' )
         {
-            $this->html_attributes =  new Attributes( $attributes );
+            $this->attributes =  new Attributes( $attributes );
         }
         else if ( $attributes instanceof IHtmlPrinter && $attributes instanceof IAttributes )
         {
-            $this->html_attributes = $attributes;
+            $this->attributes = $attributes;
         }
         else
         {
-            $this->html_attributes = new Attributes( [] );
+            $this->attributes = new Attributes( [] );
         }
+    }
+
+    protected function set_children( $children )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        $this->children = new ElementList( $children );
     }
 
     public function get_attributes()
     {
-        return $this->$html_attributes;
+        return $this->attributes;
     }
-
-    /**
-     * Append a single content item
-     *
-     * @return null
-     */
-    public function add_content( $content )
+    public function get_children()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        if ( is_null( $content ) )
-        {
-            $logger->log_msg( 'Ignored' );
-            return;
-        }
-        if ( gettype( $content ) === 'string' )
-        {
-            $logger->log_msg( 'Converting to Text()' );
-            $content = new Text( $content );
-        }
-        array_push( $this->html_content, $content );
+        return $this->children;
     }
 
-    /**
-     * Replace all content with the new values
-     *
-     * @return null
-     */
-    public function set_content( $contents )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        $this->html_content = [];
-
-        if ( gettype( $contents ) === 'string' )
-        {
-            $this->add_content( $contents );
-        }
-        else if ( gettype( $contents ) === 'array' )
-        {
-            foreach ( $contents as $content )
-            {
-                $this->add_content( $content );
-            }
-        }
-        else
-        {
-            $this->add_content( $contents );
-        }
-
-        $logger->log_return( $this->html_content );
-    }
-
-    /**
-     * Access all defined content
-     *
-     * @return array of content types (Text, Callback, or Element)
-     */
-    public function get_content()
-    {
-        return $this->html_content;
-    }
     /*-------------------------------------------------------------------------*/
     /* Helper routines for HTML */
     /*-------------------------------------------------------------------------*/
-
-    /**
-     * Get a string containing the attribute declarations, suitable for HTML
-     *
-     * @return string of attribte values
-     */
-    protected function get_html_attributes()
-    {
-        $html = '';
-
-        if ( ! is_null( $this->html_attributes ) )
-        {
-            $html .= $this->html_attributes->get_html();
-        }
-
-        return $html;
-    }
-
-    /**
-     * Get a string containing the contents of this element ( aka children )
-     *
-     * @return HTML string containing all children declarations
-     */
-    protected function get_html_content()
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        $html = '';
-
-        if ( ! empty( $this->html_content ) )
-        {
-            foreach ( $this->html_content as $content )
-            {
-                $html .= $content->get_html();
-            }
-        }
-
-        $logger->log_return( $html );
-        return $html;
-    }
 
     /**
      * Echo this objects HTML string to output
@@ -1267,5 +1426,132 @@ class Element implements IHtmlPrinter
     {
         $html = $this->get_html();
         echo $html;
+    }
+}
+
+abstract class InputElement extends Element implements IHtmlForm
+{
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     * Layout of the output field
+     *  <div class="css-container">
+     *     <label class="css-label">
+     *       Label Text
+     *       <input class="css-input" />
+     *     </label>
+     *  </div>
+     *
+     * @return string
+     */
+    public function get_html()
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( '$this->tag', $this->tag );
+
+        $html = '';
+
+        if ( isset( $this->tag ) )
+        {
+            $children       = $this->get_children();
+            $extract_result = $this->get_attributes()->extract_attributes(
+                [
+                    'label'        ,
+                    'required'     ,
+                    'data-tooltip' ,
+                    'css-container',
+                    'css-label'    ,
+                    'css-input'    ,
+                ]
+            );
+            $extracted      = $extract_result[0];
+            $attributes     = $extract_result[1];
+
+            $logger->log_var( '$extracted', $extracted );
+            $logger->log_var( '$attributes', $attributes );
+
+            $label          = $extracted[ 'label'         ] ?? '';
+            $required       = $extracted[ 'required'      ] ?? '';
+            $tooltip        = $extracted[ 'data-tooltip'  ] ?? '';
+            $css_container  = $extracted[ 'css-container' ] ?? '';
+            $css_label      = $extracted[ 'css-label'     ] ?? '';
+            
+            if ( Helper::is_true( $required ) )
+            {
+                // Add required attribute back into input element's attributes
+                $attributes[ 'required' ] = True;
+
+                if ( !empty( $label ) )
+                {
+                    $label .= '<abbr class="required" title="required">&nbsp;*</abbr>';
+                }
+            }
+
+            $input              = new Element([
+                'tag'           =>  'input',
+                'attributes'    => $attributes,
+             ]);
+
+            $label                  = new Element([
+                'tag'               =>  'label',
+                'attributes'        => [
+                    'class'         => $css_label,
+                    'data-tooltip'  => $tooltip,
+                ],
+                'contents'          => [
+                    $label,
+                    $input,
+                ]
+            ]);
+
+            $div                    = new Element([
+                'tag'               =>  'div',
+                'attributes'        => [ 'class' => $css_container ],
+                'contents'          => [ $label ]
+             ]);
+
+             $html = $div->get_html();
+        }
+
+        $logger->log_return( $html );
+        return $html;
+    }
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlForm routines */
+    /*-------------------------------------------------------------------------*/
+
+    abstract public function validate( $post );
+    abstract public function get_value( $post );
+
+    protected $validation_errors;
+
+    public function get_validate_errors()
+    {
+        return $this->validation_errors;
+    }
+
+    /**
+     * Get the assigned form identity
+     *
+     * @return string
+     */
+    public function get_form_id()
+    {
+        return $this->get_attributes()->get_attribute( 'form' );
+    }
+
+    /**
+     * Set the identity of the owning form
+     *
+     * @return string
+     */
+    public function set_form_id( $form_id )
+    {
+        $this->get_attributes()->set_attribute( 'form', $form_id );
     }
 }

@@ -23,15 +23,14 @@ namespace Input;
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
-include_once('HtmlHelper.php');
 include_once('Form.php');
-include_once('Checkbox.php');
-include_once('RadioButton.php');
-include_once('Text.php');
-include_once('Email.php');
-include_once('Telephone.php');
-include_once('Button.php');
-include_once('Label.php');
+//include_once('Checkbox.php');
+//include_once('RadioButton.php');
+//include_once('Text.php');
+//include_once('Email.php');
+//include_once('Telephone.php');
+//include_once('Button.php');
+//include_once('Label.php');
 
 class Factory
 {
@@ -41,18 +40,18 @@ class Factory
     private const FactoryMachines = array(
         // Name of input object     // Input object class name
         Form        ::Input_Type        => 'Input\Form',
-        Checkbox    ::Input_Type        => 'Input\Checkbox',
-        RadioButton ::Input_Type        => 'Input\RadioButton',
-        Button      ::Input_Type        => 'Input\Button',
-        Text        ::Input_Type        => 'Input\Text',
-        Email       ::Input_Type        => 'Input\Email',
-        Telephone   ::Input_Type        => 'Input\Telephone',
-        Label       ::Input_Type        => 'Input\Label',
+//        Checkbox    ::Input_Type        => 'Input\Checkbox',
+//        RadioButton ::Input_Type        => 'Input\RadioButton',
+//        Button      ::Input_Type        => 'Input\Button',
+//        Text        ::Input_Type        => 'Input\Text',
+//        Email       ::Input_Type        => 'Input\Email',
+//        Telephone   ::Input_Type        => 'Input\Telephone',
+//        Label       ::Input_Type        => 'Input\Label',
     );
 
     public static function Get( $field_attrs )
     {
-        \Wkwgs_Logger::log_function( __FUNCTION__ );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         if ( isset( $field_attrs[ 'name' ] ) && isset( $field_attrs[ 'type' ] ) )
         {
@@ -66,8 +65,8 @@ class Factory
             }
         }
 
-        \Wkwgs_Logger::log_msg( "Unable to create type" );
-        \Wkwgs_Logger::log_var( "$field_attrs", $field_attrs );
+        $logger->log_msg( "Unable to create type" );
+        $logger->log_var( '$field_attrs', $field_attrs );
         return null;
     }
 }

@@ -17,7 +17,7 @@
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-namespace Input;
+namespace Input\HtmlHelper;
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
@@ -32,7 +32,7 @@ include_once(__DIR__ . '/../Wkwgs_Logger.php' );
  * @since 1.0.0
  */
 
-class HtmlHelper
+class Helper
 {
     // https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#Attribute_list
     private static $Attribute_List = [
@@ -727,4 +727,51 @@ class HtmlHelper
         return False;
     }
 
+    public static function render_attributes( $attributes )
+    {
+        if ( is_null( $attributes ) )
+        {
+            return;
+        }
+        foreach ( $attributes as $attribute => $value )
+        {
+            self::print_attribute( $attribute, $value );
+        }
+    }
+    
+    public static function render_callback( $callback )
+    {
+        if ( isset( $callback['callback'] ) )
+        {
+            if  ( isset( $callback['params'] ) )
+            {
+                 call_user_func_array( $callback['callback'], $callback['params'] );
+            }
+            else
+            {
+                 call_user_func( $callback['callback'] );
+            }
+        }
+    }
+    
+    public static function render_element( $element, $attributes, $contents )
+    {
+        echo "<$element ";
+        self::render_attributes( $attributes );
+        echo '>';
+        foreach ( $contents as $content_type => $content )
+        {
+            switch ( $content_type )
+            {
+                case 'text':
+                    echo $content;
+                    break;
+
+                case 'child':
+                    self::render_callback( $content );
+                    break;
+            }
+        }
+        echo "</$element>";
+    }
 }

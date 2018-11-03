@@ -17,7 +17,7 @@
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-namespace Input;
+namespace Input\HtmlHelper;
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
@@ -25,67 +25,43 @@ defined( 'ABSPATH' ) || exit;
 include_once('Constants.php');
 include_once('Field.php');
 
-/**
- * The Form Class
- *
- * @since 1.0.0
- */
-class Form extends Field
+class Form extends Element  implements IHtmlForm
 {
-    const Input_Type            = 'form';
+    const Input_Type            = 'Form';
     const Default_Attributes    = array(
-            'type'              => self::Input_Type,
             'name'              => 'form0',
             'action'            => '#', // submit data to same page
             'method'            => 'post',
             'enctype'           => 'multipart/form-data',
         );
 
-    public function __construct( $attributes )
+    public function __construct( $desc )
     {
-        parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Default_Attributes );
-    }
-
-    private $validation_errors = [];
-
-    /**
-     * Extract object's value from post data
-     *
-     * @return input value
-     */
-    public function get_value( $post )
-    {
-        $values = array();
-
-        if ( empty( $post ) )
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        if ( gettype( $desc ) !== 'array' )
         {
-            return '';
+            $logger->log_var( '$desc is not an array', $desc );
+            return;
         }
 
-        foreach ( $this->get_fields() as $field )
-        {
-            $name = $field->get_name();
-            $value = $field->get_value( $post );
+        $desc[ 'tag' ] = self::Input_Type;
+        parent::__construct( $desc );
 
-            $values[ $name ] = $value;
-        }
-
-        return $values;
+        $this->get_attributes()->set_attributes_default( self::Default_Attributes );
     }
 
-    /**
-     * Verify status of input data
-     *
-     * @return True if value meets criteria
-     */
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlForm routines */
+    /*-------------------------------------------------------------------------*/
+
     public function validate( $post )
     {
         $this->validation_errors = [];
 
         if ( empty( $post ) )
         {
-            $this->validation_errors[ $this->get_name() ] =
+            $this->validation_errors[ $this->get_attributes()->get_name() ] =
             [
                 'field'         => $this,
                 'error'         => '$post is empty',
@@ -93,13 +69,16 @@ class Form extends Field
         }
         else
         {
-            foreach ( $this->get_fields() as $field )
+            foreach ( $this->get_children() as $field )
             {
-                $error = $field->validate( $post );
-
-                if ( ! is_null( $error ) )
+                if ( $field instanceof IHtmlForm )
                 {
-                    $this->validation_errors[ $error->get_error_object_name() ] = $error;
+                    $error = $field->validate( $post );
+
+                    if ( ! is_null( $error ) )
+                    {
+                        $this->validation_errors[ $error->get_error_object_name() ] = $error;
+                    }
                 }
             }
         }
@@ -107,221 +86,52 @@ class Form extends Field
         return empty( $this->validation_errors );
     }
 
-    /**
-     * Get all errors detected from last call to validate()
-     *
-     * @return array
-     */
+    public function get_value( $post )
+    {
+        $values = array();
+
+        if ( ! empty( $post ) )
+        {
+            foreach ( $this->get_children() as $field )
+            {
+                if ( $field instanceof IHtmlForm )
+                {
+                    $name  = $field->get_attributes()->get_name();
+                    $value = $field->get_value( $post );
+
+                    $values[ $name ] = $value;
+                }
+            }
+        }
+
+        return $values;
+    }
+
+    protected $validation_errors;
+
     public function get_validate_errors()
     {
         return $this->validation_errors;
     }
 
-    public function render_fields( )
-    {
-        $this->log_function( __FUNCTION__ );
-
-        $id             = $this->get_attribute( 'id' );
-        $css_panel      = $this->get_attribute( 'class_panel' );
-
-        ?>	
-        <div
-            <?php HtmlHelper::print_attribute('id',     $id . '_panel') ?>
-            <?php HtmlHelper::print_attribute('class',  $css_panel) ?>
-        >
-            <?php
-            foreach ( $this->get_fields() as $field)
-            {
-                $this->log_var( '$field', $field );
-                $field->html_print();
-            }
-            ?>
-        </div>
-
-        <?php
-    }
-
-    public function render( )
-    {
-        $this->log_function( __FUNCTION__ );
-
-        $name           = $this->get_attribute( 'name' );
-        $id             = $this->get_attribute( 'id' );
-        $action         = $this->get_attribute( 'action' );
-        $method         = $this->get_attribute( 'method' );
-        $enctype        = $this->get_attribute( 'enctype' );
-        $css            = $this->get_attribute( 'css-input' );
-        $css_panel      = $this->get_attribute( 'class_panel' );
-
-        ?>	
-        <form 
-            <?php HtmlHelper::print_attribute('name',       $name) ?>
-            <?php HtmlHelper::print_attribute('id',         $id) ?>
-            <?php HtmlHelper::print_attribute('action',     $action) ?>
-            <?php HtmlHelper::print_attribute('method',     $method) ?>
-            <?php HtmlHelper::print_attribute('enctype',    $enctype) ?>
-        >
-        <?php $this->render_fields(); ?>
-        </form>
-        <?php
-    }
-
-    /*-------------------------------------------------------------------------*/
-    
     /**
-     * Form fields
+     * Get the assigned form identity
      *
-     * @var array
+     * @return string
      */
-    protected $form_fields = array();
-
-    /**
-     * Get all form fields of this form
-     *
-     * @return array
-     */
-    public function get_fields()
+    public function get_form_id()
     {
-        return $this->form_fields;
+        return $this->get_attributes()->get_attribute( 'form' );
     }
 
     /**
-     * Add a Field to this form
+     * Set the identity of the owning form
      *
-     * @return array
+     * @return string
      */
-    public function add_field( $field )
+    public function set_form_id( $form_id )
     {
-        $this->log_function( __FUNCTION__ );
-        $this->log_var( '$field ', $field );
-        if ( ! is_null( $field ) )
-        {
-            $form_name  = $this->get_name();
-            $field_name = $field->get_name();
-            $this->log_var( '$form_name ', $form_name );
-            $this->log_var( '$field_name', $field_name );
-
-            $field->set_form_id( $form_name );
-            $this->form_fields[ $field_name ] = $field;
-
-            $this->log_var( '$this->form_fields', $this->form_fields );
-        }
-    }
-
-    /**
-     * Get the input field matching the name
-     *
-     * @param string $name, name of field to find
-     * @return field
-     */
-    public function get_field( $name )
-    {
-        foreach ( $this->get_fields() as $field )
-        {
-            if ( $field->get_name() === $name )
-            {
-                return $field;
-            }
-        }
-    }
-
-    /**
-     * Set the values of the named input fields
-     *
-     * @return void
-     */
-    public function set_field_values( $field_values )
-    {
-        if ( ! empty( $field_values ) )
-        {
-            foreach ($field_values as $field_name => $value )
-            {
-                $field = $this->get_field( $field_name );
-                if ( isset( $field ) )
-                {
-                    $field->set_attribute( 'value', $value );
-                }
-            }
-        }
-    }
-
-    /**
-     * Get the submit button associated with this form
-     *
-     * @return submit button object
-     */
-    public function get_submit_button( )
-    {
-        foreach ( $this->get_fields() as $field )
-        {
-            // May need to expand if we support > 1 button type
-            if ( $field->get_type() === 'button'
-                 &&
-                 $field->get_attribute( 'button-type' ) === 'submit'
-               )
-            {
-                return $field;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Return either the GET or POST data, depending on the form submission
-     *
-     * @return array of posted data
-     */
-    public function get_submit_data( )
-    {
-        $this->log_function( __FUNCTION__ );
-
-        $button = $this->get_submit_button();
-        if ( ! isset( $button ) )
-        {
-            $this->log_msg( 'No submit button found' );
-            return;
-        }
-
-        if ( $this->get_attribute( 'method' ) === 'post'
-             &&
-             isset( $_POST[ $button->get_name() ] )
-            )
-        {
-            return $_POST;
-        }
-        else if ( $this->get_attribute( 'method' ) === 'get'
-             &&
-             isset( $_GET[ $button->get_name() ] )
-            )
-        {
-            return $_GET;
-        }
-        return;
-    }
-    /*-----------------------------------------------------------------------*/
-
-    public function html_print( )
-    {
-        $this->log_function( __FUNCTION__ );
-        return $this->render();
-    }
-
-    /*-----------------------------------------------------------------------*/
-
-    public function get_form_values( $post = null )
-    {
-        if ( is_null( $post ) )
-        {
-            $post = $this->get_submit_data( );
-        }
-        $values = $this->get_value( $post );  
-
-        $this->log_function( __FUNCTION__ );
-        $this->log_var( '$this->get_attribute( "method" )', $this->get_attribute( 'method' ) );
-        $this->log_var( '$post', $post );
-        $this->log_var( '$values', $values );
-
-        return $values;
+        $this->get_attributes()->set_attribute( 'form', $form_id );
     }
 }
 ?>

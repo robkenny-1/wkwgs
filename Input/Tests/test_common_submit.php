@@ -21,7 +21,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // -------------------------------------------------------------------------------
-
+/*
 $form->add_field(
     \Input\Factory::Get(
         array(
@@ -62,6 +62,7 @@ $form->add_field(
         )
     )
 );
+*/
 
 // -------------------------------------------------------------------------------
 
@@ -73,7 +74,7 @@ $form->add_field(
 // and uses it to display the test results
 
 // get the POST/GET data
-$post = $form->get_submit_data();
+//$post = $form->get_submit_data();
 
 if ( isset( $post ) )
 {
@@ -109,7 +110,7 @@ if ( isset( $post ) )
 }
 
 // Display the form and all input objects
-$form->html_print();
+$form->render();
 
 /*
 if ( isset( $_SESSION['post_orig'] ) )

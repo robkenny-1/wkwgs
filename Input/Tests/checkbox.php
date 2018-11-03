@@ -19,7 +19,7 @@ define( 'ABSPATH', '1');
 session_start();
 include_once( '..\Factory.php' );
 
-//Wkwgs_Logger::clear();
+Wkwgs_Logger::clear();
 
 $form = \Input\Factory::Get(
         array(
