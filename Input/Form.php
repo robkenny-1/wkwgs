@@ -17,17 +17,16 @@
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-namespace Input\HtmlHelper;
+namespace Input;
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once('Field.php');
+include_once('Input.php');
 
-class Form extends Element  implements IHtmlForm
+class Form extends Element implements IHtmlForm, IAttributeProvider
 {
-    const Input_Type            = 'Form';
+    const Tag_Type              = 'form';
     const Default_Attributes    = array(
             'name'              => 'form0',
             'action'            => '#', // submit data to same page
@@ -45,25 +44,42 @@ class Form extends Element  implements IHtmlForm
             return;
         }
 
-        $desc[ 'tag' ] = self::Input_Type;
+        $desc[ 'tag' ] = self::Tag_Type;
         parent::__construct( $desc );
+    }
 
-        $this->get_attributes()->set_attributes_default( self::Default_Attributes );
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeProvider routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_attributes_defaults() : array
+    {
+        return self::Default_Attributes;
+    }
+
+    public function get_attributes_alternate() : array
+    {
+        return [];
     }
 
     /*-------------------------------------------------------------------------*/
     /* IHtmlForm routines */
     /*-------------------------------------------------------------------------*/
 
+    protected $validation_errors;
+
     public function validate( $post )
     {
         $this->validation_errors = [];
 
+        $name = $this->get_attributes()->get_name();
+
         if ( empty( $post ) )
         {
-            $this->validation_errors[ $this->get_attributes()->get_name() ] =
+            $this->validation_errors[] =
             [
-                'field'         => $this,
+                'name'          => $name,
+                'object'        => $object,
                 'error'         => '$post is empty',
             ];
         }
@@ -77,7 +93,7 @@ class Form extends Element  implements IHtmlForm
 
                     if ( ! is_null( $error ) )
                     {
-                        $this->validation_errors[ $error->get_error_object_name() ] = $error;
+                        $this->validation_errors = array_merge( $this->validation_errors, $error );
                     }
                 }
             }
@@ -107,8 +123,6 @@ class Form extends Element  implements IHtmlForm
         return $values;
     }
 
-    protected $validation_errors;
-
     public function get_validate_errors()
     {
         return $this->validation_errors;
@@ -132,6 +146,34 @@ class Form extends Element  implements IHtmlForm
     public function set_form_id( $form_id )
     {
         $this->get_attributes()->set_attribute( 'form', $form_id );
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* InputElement routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function validate_post( $name, $post )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $validation_errors = [];
+
+        // Perform data validation
+
+        return $validation_errors;
+    }
+
+    public function cleanse_data( $raw )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( '$post', $post );
+
+        $cleansed = null;
+
+        // No cleansing necessary?
+        $cleansed = $raw;
+
+        $logger->log_return( $cleansed );
+        return $cleansed;
     }
 }
 ?>

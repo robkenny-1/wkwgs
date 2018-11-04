@@ -28,12 +28,12 @@ error_reporting(E_ALL|E_STRICT);
 define( 'ABSPATH', '1');
 
 session_start();
-include_once( '..\Factory.php' );
-include_once( '..\HtmlHelper2.php' );
+include_once( '..\Input.php' );
 
-use Input\HtmlHelper as hh;
+use Input as hh;
 
 \Wkwgs_Logger::clear();
+
 $test = 0;
 
 /* -------------------------------------------------------------------------------- */
@@ -232,7 +232,7 @@ $e1 = new hh\Element([
         new hh\HtmlText('Array Values'),
     ]
 ]);
-foreach ( $attributes[0] as $e => $v)
+foreach ( $attributes as $e => $v)
 {
     $e1->get_children()->add_child( new hh\Element('br') );
     $e1->get_children()->add_child( new hh\HtmlText( "$e => $v" ) );
@@ -242,7 +242,7 @@ $e1->render();
 $e1 = new hh\Element([
     'tag'       => 'p',
     'contents'  => [
-        new hh\HtmlText('Values Extracted'),
+        new hh\HtmlText('Values Extracted, should be def'),
     ]
 ]);
 foreach ( $extracted[0] as $e => $v)
@@ -255,7 +255,7 @@ $e1->render();
 $e1 = new hh\Element([
     'tag'       => 'p',
     'contents'  => [
-        new hh\HtmlText('Values Remaining'),
+        new hh\HtmlText('Values Remaining, should be abc and ghi'),
     ]
 ]);
 foreach ( $extracted[1] as $e => $v)

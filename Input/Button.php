@@ -22,86 +22,145 @@ namespace Input;
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once('Field.php');
+include_once('Input.php');
 
 /**
  * The text input Class
  *
  * @since 1.0.0
  */
-class Button extends Field
+class Button extends Element
 {
-    const Input_Type = 'button';
+    const Tag_Type = 'button';
     const Default_Attributes    = array(
-            'type'              => self::Input_Type,
-            'button-type'       => 'submit',
+            'type'          => 'submit',
         );
+    const Alternate_Attributes = [
+        'label'        ,
+        'required'     ,
+        'data-tooltip' ,
+        'css-container',
+        'css-label'    ,
+        'css-input'    ,
+    ];
 
-    public function __construct( $attributes )
+    public function __construct( $desc )
     {
-        parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Default_Attributes );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        if ( gettype( $desc ) !== 'array' )
+        {
+            $logger->log_var( '$desc is not an array', $desc );
+            return;
+        }
+
+        $desc[ 'tag' ] = self::Tag_Type;
+        parent::__construct( $desc );
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeProvider routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_attributes_defaults() : array
+    {
+        return self::Default_Attributes;
+    }
+
+    public function get_attributes_alternate() : array
+    {
+        return self::Alternate_Attributes;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     * Layout of the output field
+     *  <div class="css-container">
+     *     <label class="css-label">
+     *       Label Text
+     *       <input class="css-input" />
+     *     </label>
+     *  </div>
+     *
+     * @return string
+     */
+    public function get_html()
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( 'tag', $this->tag );
+
+        $html = '';
+
+        if ( ! empty( $this->tag ) )
+        {
+            $children       = $this->get_children();
+            $alternate      = $this->get_attributes()->get_attributes_alternate();
+            $remaining      = $this->get_attributes()->get_attributes();
+            $logger->log_var( '$alternate', $alternate );
+            $logger->log_var( '$remaining', $remaining );
+
+            $label          = $alternate[ 'label' ] ?? '';
+
+            $button = new Element([
+                'tag'               => 'button',
+                'attributes'        => $remaining,
+                'contents'          => [ $label ]
+            ]);
+
+             $html = $button->get_html();
+        }
+
+        $logger->log_return( $html );
+        return $html;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlForm routines */
+    /*-------------------------------------------------------------------------*/
+
+    protected $validation_errors = [];
+
+    /*-------------------------------------------------------------------------*/
+    /* InputElement routines */
+    /*-------------------------------------------------------------------------*/
 
     /**
      * Verify status of input data
      *
      * @return True if value meets criteria
      */
-    public function validate( $post )
+    public function validate_post( $name, $post )
     {
-        return null;
-    }
-
-    /**
-     * Extract object's value from post data
-     *
-     * @return input value
-     */
-    public function get_value( $post )
-    {
-        $name = $this->get_name();
-
-        if ( ! isset( $post[ $name ] ) || $this->validate( $post ) != null )
-        {
-            return '';
-        }
-        $raw = $post[ $name ];
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $validation_errors = [];
 
         // The button should only return 'value'
-        if ( $raw === $this->get_attribute( 'value' ) )
+        if ( $post[ $name ] !== $this->get_attributes()->get_attribute( 'value' ) )
         {
-            return $raw;
+            $validation_errors[] =
+            [
+                'name'          => $name,
+                'object'        => $this,
+                'error'         => '$post is empty',
+            ];
         }
-        return '';
+
+        return $validation_errors;
     }
 
     /**
-     * Render the field in the frontend, this spits out the necessary HTML
+     * Get this object's data in $post
      *
-     * @return void
+     * @return string | string contents of the input object
      */
-    public function render( )
+    public function cleanse_data( $raw )
     {
-        $type           = $this->get_attribute( 'button-type' );
-        $name           = $this->get_attribute( 'name' );
-        $id             = $this->get_attribute( 'id' );
-        $value          = $this->get_attribute( 'value' );
-        $css_input      = $this->get_attribute( 'css-input' );
-
-        //$this->log_function( 'Button->render');
-        //$this->log_var( '$type', $type );
-        //$this->log_var( '$name', $name );
-        //$this->log_var( '$value', $value );
-
-        ?>
-        <button
-            <?php HtmlHelper::print_attribute('type',       $type) ?>
-            <?php HtmlHelper::print_attribute('class',      $css_input) ?>
-            <?php HtmlHelper::print_attribute('name',       $name) ?>
-            <?php HtmlHelper::print_attribute('id',         $id) ?>
-        ><?php echo $value ?></button>
-        <?php    
+        // no cleansing necessary
+        return $raw;
     }
 }

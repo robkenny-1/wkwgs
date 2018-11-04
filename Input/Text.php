@@ -17,19 +17,21 @@
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-namespace Input\HtmlHelper;
+namespace Input;
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once('Field.php');
+include_once('Input.php');
 
 class Text extends InputElement
 {
-    const Input_Type            = 'text';
+    const Tag_Type              = 'input';
     const Default_Attributes    = [
         'type'      => 'text',
+    ];
+    const Alternate_Attributes  = [
+        'label',
     ];
 
     public function __construct( $desc )
@@ -42,43 +44,49 @@ class Text extends InputElement
             return;
         }
 
-        $desc[ 'tag' ] = self::Input_Type;
+        $desc[ 'tag' ] = self::Tag_Type;
         parent::__construct( $desc );
-
-        $this->get_attributes()->set_attributes_default( self::Default_Attributes );
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IHtmlForm routines */
+    /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function validate( $post )
+    public function get_attributes_defaults() : array
     {
-        $this->validation_errors = [];
-
-        if ( empty( $post ) )
-        {
-            $this->validation_errors[ $this->get_attributes()->get_name() ] =
-            [
-                'field'         => $this,
-                'error'         => '$post is empty',
-            ];
-        }
-        else
-        {
-        }
-
-        return empty( $this->validation_errors );
+        return self::Default_Attributes;
     }
 
-    public function get_value( $post )
+    public function get_attributes_alternate() : array
     {
-        $values = [];
+        return self::Alternate_Attributes;
+    }
 
-        if ( ! empty( $post ) )
-        {
-        }
+    /*-------------------------------------------------------------------------*/
+    /* InputElement routines */
+    /*-------------------------------------------------------------------------*/
 
-        return $values;
+    public function validate_post( $name, $post )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $validation_errors = [];
+
+        // Perform data validation
+
+        return $validation_errors;
+    }
+
+    public function cleanse_data( $raw )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( '$post', $post );
+
+        $cleansed = null;
+
+        // No cleansing necessary?
+        $cleansed = $raw;
+
+        $logger->log_return( $cleansed );
+        return $cleansed;
     }
 }

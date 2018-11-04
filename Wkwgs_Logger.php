@@ -36,6 +36,37 @@ class Wkwgs_Logger
         return substr( $text, -1 ) === PHP_EOL;
     }
     
+    protected static function get_param_names( $func, $class = '' ) : array
+    {
+        $paramNames = [];
+
+        try
+        {
+            if ( ! empty( $class ) )
+            {
+                $reflection =  new \ReflectionMethod($class, $func);
+            }
+            else
+            {
+                $reflection =  new \ReflectionFunction($func);
+            }
+
+            $params = $reflection->getParameters();
+            $paramNames = array_map(
+                function( $item )
+                {
+                    return $item->getName();
+                },
+                $params
+            );
+        }
+        catch (Exception $e)
+        {
+        }
+
+        return $paramNames;
+    }
+
     public static function clear()
     {
         $previous_error_handler = set_error_handler( "self::ignore_file_not_exist_error" );
@@ -44,18 +75,22 @@ class Wkwgs_Logger
 
         set_error_handler( $previous_error_handler );
     }
-    public static function log_function( $func, $params = null )
+    public static function log_function( $func, $params = null, $class = '' )
     {
-        $message = "===== Enter $func";
+        $message = '===== Enter ' . ( empty( $class ) ? $func : "$class::$func" );
         self::log_internal( $message );
 
         if ( ! empty( $params ) )
         {
+            $param_names = self::get_param_names( $func, $class );
+
             $i = 0;
             foreach ( $params as $param )
             {
+                $param_name = $param_names[ $i ] ?? $i;
+
                 $i = $i + 1;
-                self::log_param( $i, $param );
+                self::log_param( $param_name, $param );
             }
         }
     }
@@ -99,7 +134,8 @@ class Wkwgs_Logger
     }
     public static function log_var( $var_name, $var )
     {
-        self::log_value( $var_name, $var, 'Variable' );
+        //self::log_value( $var_name, $var, 'Variable' );
+        self::log_value( $var_name, $var, '' );
     }
     public static function log_param( $var_name, $var )
     {
@@ -167,16 +203,13 @@ class Wkwgs_Function_Logger
     private $function_name = '';
     private $function_return;
 
-    public function __construct( $func, $params = null, $object_type = '' )
+    public function __construct( $func, $params = null, $class = '' )
     {
-        if ( ! empty( $object_type ) )
-        {
-            $func = "$object_type::$func";
-        }
-        $this->function_name = $func;
-
         Wkwgs_Logger::$Indent += 2;
-        Wkwgs_Logger::log_function( $this->function_name, $params );
+        
+        $this->function_name = empty( $class ) ? $func : "$class::$func";
+
+        Wkwgs_Logger::log_function( $func, $params, $class );
     }
 
     public function __destruct()

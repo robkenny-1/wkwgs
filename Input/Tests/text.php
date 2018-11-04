@@ -83,12 +83,9 @@ error_reporting(E_ALL|E_STRICT);
 define( 'ABSPATH', '1');
 
 session_start();
-include_once( '..\Factory.php' );
-include_once('..\HtmlHelper2.php');
-include_once('..\Form.php');
-include_once('..\Text.php');
+include_once( '..\Input.php' );
 
-use Input\HtmlHelper as hh;
+use Input as hh;
 
 Wkwgs_Logger::clear();
 

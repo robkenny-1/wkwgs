@@ -46,16 +46,6 @@ $form->add_field(
     \Input\Factory::Get(
         array(
         'type'          => 'button',
-        'name'          => 'submit',
-        'value'         => 'Submit',
-        )
-    )
-);
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'button',
         'name'          => 'reset',
         'value'         => 'Reset',
         'button-type'   => 'reset',
@@ -63,6 +53,15 @@ $form->add_field(
     )
 );
 */
+
+$text = new Input\Button( [
+        'attributes'    => [
+        'name'          => 'submit',
+        'value'         => 'Submit',
+        'label'         => 'Submit',
+        ],
+    ]);
+$form->get_children()->add_child( $text );
 
 // -------------------------------------------------------------------------------
 
@@ -78,6 +77,8 @@ $form->add_field(
 
 if ( isset( $post ) )
 {
+    Wkwgs_Logger::log_msg( '$post is set ' );
+
     // Clear session values
     unset( $_SESSION['post'] );
     unset( $_SESSION['post_orig'] );
@@ -112,7 +113,7 @@ if ( isset( $post ) )
 // Display the form and all input objects
 $form->render();
 
-/*
+
 if ( isset( $_SESSION['post_orig'] ) )
 {
     echo '<h2>$_POST (Original)</h2>';
@@ -124,11 +125,13 @@ if ( isset( $_SESSION['post'] ) )
     echo '<h2>$_POST (After mock data)</h2>';
     print_r( $_SESSION['post'] );
 }
-*/
+
 
 // Print out any validation errors stored in the session 
 if ( isset( $_SESSION['form_errors'] ) )
 {
+    Wkwgs_Logger::log_msg( '$_SESSION["form_errors"] is set ' );
+
     echo '<div>';
     echo '<h1>Errors from last SUBMIT</h1>';
 
@@ -145,13 +148,15 @@ if ( isset( $_SESSION['form_errors'] ) )
 // Print out any results stored in the session
 if ( isset( $_SESSION['form_values'] ) )
 {
+    Wkwgs_Logger::log_msg( '$_SESSION["form_values"] is set ' );
+
     echo '<div>';
     echo '<h1>Values from last SUBMIT</h1>';
 
     $errors = $_SESSION['form_values'];
     foreach ( $errors as $name => $value)
     {
-        echo "$name = $value</br>";
+        echo "$name = $value<br>";
     }
     echo '</div>';
 }

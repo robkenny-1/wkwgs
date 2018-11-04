@@ -17,13 +17,12 @@
     If not, see http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-namespace Input\HtmlHelper;
+namespace Input;
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
 include_once('Constants.php');
-include_once('Field.php');
 include_once(__DIR__ . '/../Wkwgs_Logger.php' );
 
 /**
@@ -62,7 +61,7 @@ class Helper
         ),
         'align' => array(
             'string',
-            "<applet>, <caption>, <col>, <colgroup>, <hr>, <iframe>, <img>, <table>, <tbody>, <td>, <tfoot> , <th>, <thead>, <tr>",
+            "<applet>, <caption>, <col>, <colgroup>, <hr>, <iframe>, <img>, <table>, <tbody>, <td>, <tfoot>, <th>, <thead>, <tr>",
             "Specifies the horizontal alignment of the element."
         ),
         'allow' => array(
@@ -648,7 +647,7 @@ class Helper
         'wrap' => array(
             'string',
             "<textarea>",
-            "Indicates whether the text should be wrapped." 
+            "Indicates whether the text should be wrapped."
         ),
     ];
 
@@ -671,37 +670,62 @@ class Helper
         return self::$Attribute_boolean;
     }
 
-    public static function print_attribute( $attr, $value, $exclude = null )
+    public static function is_void_element( $tag )
     {
-        // Since attributes and values are not user-generated
-        // we should not need to cleanse their values
+        static $empty_tags = [
+            'area',
+            'base',
+            'br',
+            'col',
+            'embed',
+            'hr',
+            'img',
+            'input',
+            'link',
+            'meta',
+            'param',
+            'source',
+            'track',
+            'wbr',
+        ];
+        return in_array( strtolower( $tag ), $empty_tags );
+    }
 
-        if ( gettype( $exclude ) === 'array' && in_array( $attr, $exclude ) )
-        {
-            return;
-        }
+    /**
+     * Get the html for the specific attribute
+     *
+     * @return string
+     */
+    public static function get_html_attribute( $attr, $value )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         /*
          * Boolean attributes, when set, are specified in only 1 of 3 ways
          * When unset the attribute *must not* be present
+         * We use the first style
+         *
          * <input type=checkbox  name=cheese checked />
          * <input type=checkbox  name=cheese checked='' />
          * <input type=checkbox  name=cheese checked='checked' />
          */
-        $attr_is_boolean = in_array( $attr, HtmlHelper::get_boolean_attributes() );
+
+        $html = '';
+
+        $attr_is_boolean = in_array( $attr, Helper::get_boolean_attributes() );
         if ( $attr_is_boolean && self::is_true( $value ) )
         {
-            echo $attr . PHP_EOL;
-            return;
+            $html = $attr;
         }
-
-        if ( ! empty( $value ) )
+        else if ( ! empty( $value ) )
         {
-            echo $attr . '="' . $value . '"' . PHP_EOL;
-            return;
+            $html = $attr . '="' . $value . '"';
         }
-    }
 
+        $logger->log_return( $html );
+        return $html;
+    }
+    
     /**
      * Does the content of the string equate to a True value
      * Does not rely on type conversion,
@@ -725,53 +749,5 @@ class Helper
         }
 
         return False;
-    }
-
-    public static function render_attributes( $attributes )
-    {
-        if ( is_null( $attributes ) )
-        {
-            return;
-        }
-        foreach ( $attributes as $attribute => $value )
-        {
-            self::print_attribute( $attribute, $value );
-        }
-    }
-    
-    public static function render_callback( $callback )
-    {
-        if ( isset( $callback['callback'] ) )
-        {
-            if  ( isset( $callback['params'] ) )
-            {
-                 call_user_func_array( $callback['callback'], $callback['params'] );
-            }
-            else
-            {
-                 call_user_func( $callback['callback'] );
-            }
-        }
-    }
-    
-    public static function render_element( $element, $attributes, $contents )
-    {
-        echo "<$element ";
-        self::render_attributes( $attributes );
-        echo '>';
-        foreach ( $contents as $content_type => $content )
-        {
-            switch ( $content_type )
-            {
-                case 'text':
-                    echo $content;
-                    break;
-
-                case 'child':
-                    self::render_callback( $content );
-                    break;
-            }
-        }
-        echo "</$element>";
     }
 }
