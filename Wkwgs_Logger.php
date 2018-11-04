@@ -22,10 +22,13 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+Wkwgs_Logger::$Wkwgs_Logger_Disable = True;
+
 class Wkwgs_Logger 
 {
     const log_file_name = __DIR__ . '/../../../wkwgs.log';
-    static $Indent = 0;
+    public static $Indent = 0;
+    public static $Wkwgs_Logger_Disable;
 
     public static function indent()
     {
@@ -152,7 +155,7 @@ class Wkwgs_Logger
     }
 	protected static function log_internal( $message )
     {
-        if ( is_null( $message ) )
+        if ( is_null( $message ) || Wkwgs_Logger::$Wkwgs_Logger_Disable == True )
         {
             return;
         }

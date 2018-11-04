@@ -41,59 +41,6 @@ interface IHtmlPrinter
     public function get_html();
 }
 
-interface IAttributes
-{
-    /**
-     * Get all the attributes of the field
-     *
-     * @return string, empty string if unset
-     */
-    public function get_attributes();
-
-    /**
-     * Set the attributes for this input object,
-     * this overrides any previous attributes
-     *
-     * @return void
-     */
-    public function set_attributes( $attributes );
-
-    /**
-     * Get the default attributes for this input object
-     *
-     * @return array|fully merged list of default values
-     */
-    public function get_attributes_default();
-
-    /**
-     * Set the default attributes for this object
-     *
-     * @return null
-     */
-    public function set_attributes_default( $defaults );
-
-    /**
-     * Get the value of a single attribute of the field
-     *
-     * @return string
-     */
-    public function get_attribute( $name );
-
-    /**
-     * Set the specified attribute
-     *
-     * @return void
-     */
-    public function set_attribute( $name, $value );
-
-    /**
-     * Extract specified attributes from current List
-     *
-     * @return [ [specified], [remaining] ]
-     */
-    public function split_attributes( $specified );
-}
-
 interface IHtmlForm
 {
     /**
@@ -145,272 +92,6 @@ interface IHtmlPrinterList
 /*-------------------------------------------------------------------------*/
 /* Manage a collection of key/value pairs (aka HTML attributes) */
 /*-------------------------------------------------------------------------*/
-
-class Attributes implements IHtmlPrinter, IAttributes
-{
-    static private $Unique_Identifier = 0;
-    private $identity;
-
-    public function __construct( $attributes )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        self::$Unique_Identifier += 1;
-        $this->identity = self::$Unique_Identifier;
-        $logger->log_var( 'Identity', $this->identity );
-
-        if ( is_null( $attributes ) )
-        {
-            $attributes = [];
-        }
-        $this->attributes = $attributes;
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* IHtmlPrinter routines */
-    /*-------------------------------------------------------------------------*/
-    
-    /**
-     * Get the HTML that represents the current Attributes
-     *
-     * @return string
-     */
-    public function get_html()
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'Identity', $this->identity );
-
-        $html = self::get_html_attributes( $this->get_attributes() );
-
-        $logger->log_return( $html );
-        return $html;
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* IAttributes routines */
-    /*-------------------------------------------------------------------------*/
-    
-    /*
-     * Current attributes
-     */
-    protected $attributes = [];
-
-    /**
-     * Attributes common to all elements
-     *
-     */
-    const Global_Attributes = [
-        'accesskey'             => '',
-        'aria-hidden'           => False,
-        'class'                 => '',
-        'contenteditable'       => '',
-        'dir'                   => '',
-        'draggable'             => '',
-        'dropzone'              => '',
-        'hidden'                => False,
-        'id'                    => '',
-        'lang'                  => '',
-        'spellcheck'            => '',
-        'style'                 => '',
-        'tabindex'              => '',
-        'title'                 => '',
-        'translate'             => '',
-    ];
-
-    /*
-     * Default attributes
-     */
-    private $attributes_default;
-
-    /*
-     * Attributes + defaults, used to improve perf of get_attributes
-     */
-    private $attributes_combined_cached;
-
-    /**
-     * Get all the attributes of the field
-     *
-     * @return string, empty string if unset
-     */
-    public function get_attributes()
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'Identity', $this->identity );
-
-        // If no cached value, calculate now
-        if ( is_null( $this->attributes_combined_cached ) )
-        {
-            $combine_defaults = $this->get_attributes_default();
-            $logger->log_var( '$combine_defaults', $combine_defaults );
-
-            $this->attributes_combined_cached = array_merge( $combine_defaults, $this->attributes );
-        }
-
-        $logger->log_return( $this->attributes_combined_cached );
-        return $this->attributes_combined_cached;
-    }
-
-    /**
-     * Set the attributes for this input object,
-     * this overrides any previous attributes
-     *
-     * @return void
-     */
-    public function set_attributes( $attributes )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'Identity', $this->identity );
-
-        // Clear the cached value
-        $this->attributes_combined_cached = null;
-
-        $this->attributes = $attributes;
-    }
-
-    /**
-     * Get the default values for this input object
-     * it recursively calls and merges all the parent's defaults as well
-     *
-     * @return array|fully merged list of default values
-     */
-    public function set_attributes_default( $defaults )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'Identity', $this->identity );
-        $logger->log_var( '$defaults', $defaults );
-
-        // Clear the cached value
-        $this->attributes_combined_cached = null;
-
-        $this->attributes_default = $defaults;
-    }
-    
-    public function get_attributes_default()
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'Identity', $this->identity );
-
-        if ( isset( $this->attributes_default ) )
-        {
-            $default = array_merge( self::Global_Attributes, $this->attributes_default);
-        }
-        else
-        {
-            $default = self::Global_Attributes;
-        }
-
-        $logger->log_return( $default );
-        return $default;
-    }
-
-    /**
-     * Get the value of a single attribute of the field
-     *
-     * @return string
-     */
-    public function get_attribute( $name )
-    {
-        $attributes = $this->get_attributes();
-
-        $attr = '';
-        if ( isset( $attributes[ $name ] ) )
-        {
-            $attr = $attributes[ $name ];
-        }
-
-        return $attr;
-    }
-
-    /**
-     * Set the specified attribute
-     *
-     * @return void
-     */
-    public function set_attribute( $name, $value )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'Identity', $this->identity );
-
-        // Clear the cached value
-        $this->attributes_combined_cached = null;
-
-        if ( is_null( $this->attributes ) )
-        {
-            $this->attributes = [];
-        }
-        $this->attributes[ $name ] = $value;
-    }
-
-    /**
-     * Extract specified attributes from current List
-     *
-     * @return [ [found], [remaining] ]
-     */
-    public function split_attributes( $specified )
-    {
-        return Helper::array_extract( $this->attributes, $specified );
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* Html Helper routines */
-    /*-------------------------------------------------------------------------*/
-
-    /**
-     * Get the html for the specific attributes
-     *
-     * @return string
-     */
-    public static function get_html_attributes( $attributes )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        $html = '';
-
-        if ( ! empty( $attributes ) )
-        {
-            foreach ( $attributes as $attribute => $value )
-            {
-                $attribute_html = Helper::get_html_attribute( $attribute, $value );
-                if ( ! empty( $attribute_html ) )
-                {
-                    $html .= ' ';
-                    $html .= $attribute_html;
-                }
-            }
-        }
-
-        $logger->log_return( $html );
-        return $html;
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* Data Access Helper routines */
-    /*-------------------------------------------------------------------------*/
-
-    /**
-     * Get the name of the field
-     *
-     * @return string
-     */
-    public function get_name()
-    {
-        return $this->get_attribute( 'name' );
-    }
-
-    /**
-     * Check if a field is required
-     *
-     * @param  array  $attributes
-     *
-     * @return boolean
-     */
-    public function is_required()
-    {
-        $required = $this->get_attribute( 'required' );
-
-        return self::is_true( $required );
-    }
-}
 
 class ElementList implements IHtmlPrinter, IHtmlPrinterList
 {
@@ -733,11 +414,36 @@ class Element implements IHtmlPrinter, IAttributeProvider
     }
 }
 
-abstract class InputElement extends Element implements IHtmlForm
+/**
+ * The InputElement Class
+ *
+ * Layout of the input element
+ *  <div class="css-container">
+ *     <label class="css-label">
+ *       Label Text
+ *       <input class="css-input" />
+ *     </label>
+ *  </div>
+ *
+ * You don't need all three class definitions to style the elements
+ * CSS Example:
+ *
+ * .css-container {
+ *   background-color: Blue;
+ * }
+ * .css-container label {
+ *   background-color: LightYellow;
+ * }
+ * 
+ * .css-container input {
+ *   background-color: SeaGreen;
+ * }
+ * 
+ */
+ abstract class InputElement extends Element implements IHtmlForm
 {
     const Alternate_Attributes = [
         'label'        ,
-        'required'     ,
         'data-tooltip' ,
         'css-container',
         'css-label'    ,
@@ -791,14 +497,13 @@ abstract class InputElement extends Element implements IHtmlForm
 
         if ( ! empty( $this->tag ) )
         {
-            $children       = $this->get_children();
             $alternate      = $this->get_attributes()->get_attributes_alternate();
             $remaining      = $this->get_attributes()->get_attributes();
             $logger->log_var( '$alternate', $alternate );
             $logger->log_var( '$remaining', $remaining );
 
             $label          = $alternate[ 'label'         ] ?? '';
-            $required       = $alternate[ 'required'      ] ?? '';
+            $required       = $remaining[ 'required'      ] ?? '';
             $tooltip        = $alternate[ 'data-tooltip'  ] ?? '';
             $css_container  = $alternate[ 'css-container' ] ?? '';
             $css_label      = $alternate[ 'css-label'     ] ?? '';
@@ -814,7 +519,9 @@ abstract class InputElement extends Element implements IHtmlForm
                 }
             }
 
-            $div                            = new Element([
+            $logger->log_msg( 'Creating Element for output' );
+
+            $div = new Element([
                 'tag'                       => 'div',
                 'attributes'                => [ 'class' => $css_container ],
                 'contents'                  => [

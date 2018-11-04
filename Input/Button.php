@@ -32,9 +32,9 @@ include_once('Input.php');
 class Button extends Element
 {
     const Tag_Type = 'button';
-    const Default_Attributes    = array(
-            'type'          => 'submit',
-        );
+    const Default_Attributes    = [
+        'type'          => 'submit',
+    ];
     const Alternate_Attributes = [
         'label'        ,
         'required'     ,
@@ -64,12 +64,14 @@ class Button extends Element
 
     public function get_attributes_defaults() : array
     {
-        return self::Default_Attributes;
+        $parent = parent::get_attributes_defaults();
+        return array_merge( $parent, self::Default_Attributes );
     }
 
     public function get_attributes_alternate() : array
     {
-        return self::Alternate_Attributes;
+        $parent = parent::get_attributes_alternate();
+        return array_merge( $parent, self::Alternate_Attributes );
     }
 
     /*-------------------------------------------------------------------------*/

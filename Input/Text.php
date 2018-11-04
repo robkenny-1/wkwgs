@@ -54,12 +54,14 @@ class Text extends InputElement
 
     public function get_attributes_defaults() : array
     {
-        return self::Default_Attributes;
+        $parent = parent::get_attributes_defaults();
+        return array_merge( $parent, self::Default_Attributes );
     }
 
     public function get_attributes_alternate() : array
     {
-        return self::Alternate_Attributes;
+        $parent = parent::get_attributes_alternate();
+        return array_merge( $parent, self::Alternate_Attributes );
     }
 
     /*-------------------------------------------------------------------------*/

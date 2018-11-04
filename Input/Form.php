@@ -27,12 +27,14 @@ include_once('Input.php');
 class Form extends Element implements IHtmlForm, IAttributeProvider
 {
     const Tag_Type              = 'form';
-    const Default_Attributes    = array(
-            'name'              => 'form0',
-            'action'            => '#', // submit data to same page
-            'method'            => 'post',
-            'enctype'           => 'multipart/form-data',
-        );
+    const Default_Attributes    = [
+        'name'              => 'form0',
+        'action'            => '#', // submit data to same page
+        'method'            => 'post',
+        'enctype'           => 'multipart/form-data',
+    ];
+    const Alternate_Attributes = [
+    ];
 
     public function __construct( $desc )
     {
@@ -54,12 +56,14 @@ class Form extends Element implements IHtmlForm, IAttributeProvider
 
     public function get_attributes_defaults() : array
     {
-        return self::Default_Attributes;
+        $parent = parent::get_attributes_defaults();
+        return array_merge( $parent, self::Default_Attributes );
     }
 
     public function get_attributes_alternate() : array
     {
-        return [];
+        $parent = parent::get_attributes_alternate();
+        return array_merge( $parent, self::Alternate_Attributes );
     }
 
     /*-------------------------------------------------------------------------*/
