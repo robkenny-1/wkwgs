@@ -41,6 +41,20 @@ interface IHtmlPrinter
     public function get_html();
 }
 
+interface IHtmlPrinterList
+{
+    public function add_child( $child );
+    public function get_child( $child ) : IHtmlElement;
+    public function set_children( array $children );
+    public function get_children() : array;
+}
+
+interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList
+{
+    public function get_tag() : string;
+    public function get_name() : string;
+}
+
 interface IHtmlForm
 {
     /**
@@ -50,43 +64,42 @@ interface IHtmlForm
      *
      * @return array | list of validation errors or null if good
      */
-    public function validate( $post );
+    public function validate( array $post ) : array;
     
     /**
      * Get the errors from the most recent call to validate()
      *
      * @return array | array of errors [[ name, object, error ]] or empty
      */
-    public function get_validate_errors();
+    public function get_validate_errors() : array;
 
     /**
      * Get this object's data in $post
      *
-     * @return string | string contents of the input object
+     * @return array,string | string contents of the input object
      */
-    public function get_value( $post );
+    public function get_value( array $post );
 
     /**
      * Get the assigned form identity
      *
      * @return string
      */
-    public function get_form_id();
+    public function get_form_id() : string;
 
     /**
      * Set the identity of the owning form
      *
      * @return string
      */
-    public function set_form_id( $form_id );
+    public function set_form_id( string $form_id );
 }
 
-interface IHtmlPrinterList
+interface IHtmlValidateError
 {
-    public function add_child( $child );
-    public function get_child( $child );
-    public function set_children( $children );
-    public function get_children();
+    public function get_error() : string;
+    public function get_object() : ?IHtmlElement;
+    public function get_name() : string;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -97,6 +110,10 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
 {
     public function __construct( $children )
     {
+        if ( gettype( $children ) === 'string' )
+        {
+            $children = [ new HtmlText( $children ) ];
+        }
         $this->set_children( $children );
     }
     /*-------------------------------------------------------------------------*/
@@ -176,7 +193,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      * @param string $name, name of element to find
      * @return field
      */
-    public function get_child( $name )
+    public function get_child( $name ) : IHtmlElement
     {
         foreach ( $this->get_fields() as $field )
         {
@@ -192,7 +209,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      *
      * @return null
      */
-    public function set_children( $children )
+    public function set_children( array $children )
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
@@ -223,14 +240,39 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      *
      * @return array of content types (HtmlText, Callback, or Element)
      */
-    public function get_children()
+    public function get_children() : array
     {
         return $this->children;
     }
+}
 
+class HtmlValidateError implements IHtmlValidateError
+{
+    protected $error;
+    protected $name;
+    protected $object;
+
+    public function __construct( string $error, string $name, IHtmlElement $object )
+    {
+        $this->error  = $error      ?? '';
+        $this->name   = $name       ?? '';
+        $this->object = $object;
+    }
+    public function get_error() : string
+    {
+        return $this->error;
+    }
+    public function get_object() : ?IHtmlElement
+    {
+        return $this->object;
+    }
+    public function get_name() : string
+    {
+        return $this->name;
+    }
 }
 /*-------------------------------------------------------------------------*/
-/* Special types of $children */
+/* Special types of children */
 /*-------------------------------------------------------------------------*/
 
 class HtmlText implements IHtmlPrinter
@@ -291,7 +333,18 @@ class Callback implements IHtmlPrinter
 /* HTML Element */
 /*-------------------------------------------------------------------------*/
 
-class Element implements IHtmlPrinter, IAttributeProvider
+
+/*
+* class should implement IAttributes,
+* current get_attributes() should be renamed get_attributes_handler()
+* similar for IHtmlPrinterList
+*/
+
+
+
+
+
+class Element implements IHtmlElement, IAttributeProvider
 {
     protected $tag;                 // string
     protected $attributes;          // Attribute
@@ -303,9 +356,9 @@ class Element implements IHtmlPrinter, IAttributeProvider
 
         if ( gettype( $desc ) === 'string' )
         {
-            $tag  = $desc;
-            $attr = [];
-            $chld = [];
+            $tag        = $desc;
+            $attributes = [];
+            $children   = [];
         }
         else
         {
@@ -317,7 +370,6 @@ class Element implements IHtmlPrinter, IAttributeProvider
         if ( empty( $tag ) )
         {
             $logger->log_msg( '$tag is empty');
-            return;
         }
 
         $this->tag = $tag;
@@ -325,14 +377,7 @@ class Element implements IHtmlPrinter, IAttributeProvider
 
         $default    = $this->get_attributes_defaults();
         $alternate  = $this->get_attributes_alternate();
-        $this->attributes = new Attributes2( $attributes, $default , $alternate );
-    }
-
-    protected function set_children( $children )
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        
-        $this->children = new ElementList( $children );
+        $this->attributes = new Attributes( $attributes, $default , $alternate );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -367,12 +412,12 @@ class Element implements IHtmlPrinter, IAttributeProvider
 
         if ( ! empty( $this->tag ) )
         {
-            $children       = $this->get_children();
-            $alternate      = $this->get_attributes()->get_attributes_alternate();
+            $children       = $this->children;
+            $alternate      = $this->attributes->get_attributes_alternate();
             $logger->log_var( '$alternate', $alternate );
 
             $html .= "<{$this->tag}";
-            $html .= $this->get_attributes()->get_html();
+            $html .= $this->attributes->get_html();
             $html .= '>';
             if ( ! Helper::is_void_element( $this->tag ) )
             {
@@ -386,17 +431,50 @@ class Element implements IHtmlPrinter, IAttributeProvider
     }
 
     /*-------------------------------------------------------------------------*/
-    /* Data Manipulation routines */
+    /* IHtmlElement routines */
     /*-------------------------------------------------------------------------*/
-
-    public function get_attributes()
+    
+    public function get_tag() : string
     {
+        return $this->tag;
+    }
+    
+    public function get_name() : string
+    {
+        return $this->attributes->get_attribute( 'name' );
+    }
+
+    public function add_child( $child )
+    {
+        $this->children->add_child( $child );
+    }
+
+    public function get_child( $child ) : IHtmlElement
+    {
+        return $this->children->get_child( $child );
+    }
+
+    public function set_children( array $children )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        $this->children = new ElementList( $children );
+    }
+
+    public function get_children() : array
+    {
+        return $this->children->get_children();    
+    }
+
+    public function get_attributes() : IAttributes
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( '$this->tag', $this->tag );
+        $logger->log_var( '$this->attributes', $this->attributes );
+
         return $this->attributes;
     }
-    public function get_children()
-    {
-        return $this->children;
-    }
+
 
     /*-------------------------------------------------------------------------*/
     /* Helper routines for HTML */
@@ -414,7 +492,7 @@ class Element implements IHtmlPrinter, IAttributeProvider
     }
 }
 
-/**
+/*
  * The InputElement Class
  *
  * Layout of the input element
@@ -440,6 +518,7 @@ class Element implements IHtmlPrinter, IAttributeProvider
  * }
  * 
  */
+
  abstract class InputElement extends Element implements IHtmlForm
 {
     const Alternate_Attributes = [
@@ -452,7 +531,7 @@ class Element implements IHtmlPrinter, IAttributeProvider
 
     public function get_type()
     {
-        return $this->get_attributes()->get_attribute( 'type' );
+        return $this->attributes->get_attribute( 'type' );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -468,7 +547,6 @@ class Element implements IHtmlPrinter, IAttributeProvider
     {
         return self::Alternate_Attributes;
     }
-
 
     /*-------------------------------------------------------------------------*/
     /* IHtmlPrinter routines */
@@ -497,8 +575,8 @@ class Element implements IHtmlPrinter, IAttributeProvider
 
         if ( ! empty( $this->tag ) )
         {
-            $alternate      = $this->get_attributes()->get_attributes_alternate();
-            $remaining      = $this->get_attributes()->get_attributes();
+            $alternate      = $this->attributes->get_attributes_alternate();
+            $remaining      = $this->attributes->get_attributes();
             $logger->log_var( '$alternate', $alternate );
             $logger->log_var( '$remaining', $remaining );
 
@@ -554,6 +632,8 @@ class Element implements IHtmlPrinter, IAttributeProvider
     /*-------------------------------------------------------------------------*/
     /* IHtmlForm routines */
     /*-------------------------------------------------------------------------*/
+
+    protected $validation_errors = [];
     
     /**
      * Verify that this object's data in $post is valid
@@ -562,72 +642,64 @@ class Element implements IHtmlPrinter, IAttributeProvider
      *
      * @return array | list of validation errors or null if good
      */
-    public function validate( $post )
+    public function validate( array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        $name       = $this->get_attributes()->get_name();
-        $required   = $this->get_attributes()->is_required();
+        $name       = $this->get_name();
+        $required   = Helper::is_true( $this->attributes->get_attribute( 'required' ) );
 
-        $this->validation_errors = [];
+        $validation_errors = [];
 
         if ( empty( $post ) )
         {
-            $this->validation_errors[] =
-            [
-                'name'          => $name,
-                'object'        => $this,
-                'error'         => '$post is empty',
-            ];
+            $validation_errors[] = new HtmlValidateError(
+                '$post is empty', $name, $this                
+            );
         }
         else if ( empty( $name ) )
         {
-            $this->validation_errors[] =
-            [
-                'name'          => $name,
-                'object'        => $this,
-                'error'         => '$name is empty',
-            ];
+            $validation_errors[] = new HtmlValidateError(
+                '$name is empty', $name, $this                
+            );
         }
         else if ( $required && ! isset( $post[ $name ] ) )
         {
-            $this->validation_errors[] =
-            [
-                'name'          => $name,
-                'object'        => $this,
-                'error'         => '$post missing required data',
-            ];
+            $validation_errors[] = new HtmlValidateError(
+                '$post missing required data', $name, $this                
+            );
         }
         else
         {
-            $this->validation_errors = $this->validate_post(  $name, $post );
+            $validation_errors = $this->validate_post( $name, $post );
         }
 
-        return empty( $this->validation_errors );
+        $logger->log_return( $validation_errors );
+        return $validation_errors;
     }
 
-    public function get_validate_errors()
+    public function get_validate_errors() : array
     {
-        // Will fail if derived class does not implement 
-        return $this->validation_errors;
+        return $this->validation_errors ?? [];
     }
+
     /**
      * Get this object's data in $post
      *
      * @return string | string contents of the input object
      */
-    public function get_value( $post )
+    public function get_value( array $post )
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $cleansed = null;
-        $name = $this->get_attributes()->get_name();
+        $name = $this->get_name();
 
         if ( isset( $post[ $name ] )
              &&
-             $this->validate( $post ) == null )
+             empty( $this->validate( $post )) )
         {
-            $cleansed = $this->cleanse( $post[ $name ] );
+            $cleansed = $this->cleanse_data( $post[ $name ] );
         }
 
         return $cleansed;
@@ -638,9 +710,9 @@ class Element implements IHtmlPrinter, IAttributeProvider
      *
      * @return string
      */
-    public function get_form_id()
+    public function get_form_id() : string
     {
-        return $this->get_attributes()->get_attribute( 'form' );
+        return $this->attributes->get_attribute( 'form' );
     }
 
     /**
@@ -648,9 +720,9 @@ class Element implements IHtmlPrinter, IAttributeProvider
      *
      * @return string
      */
-    public function set_form_id( $form_id )
+    public function set_form_id( string $form_id )
     {
-        $this->get_attributes()->set_attribute( 'form', $form_id );
+        $this->attributes->set_attribute( 'form', $form_id );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -671,5 +743,5 @@ class Element implements IHtmlPrinter, IAttributeProvider
      *
      * @return array | list of validation errors or null if good
      */
-    abstract public function validate_post( $name, $post );
+    abstract public function validate_post( string $name, array $post ) : array;
 }

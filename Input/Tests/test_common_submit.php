@@ -56,12 +56,13 @@ $form->add_field(
 
 $text = new Input\Button( [
         'attributes'    => [
+        'type'          => 'submit',
         'name'          => 'submit',
         'value'         => 'Submit',
         'label'         => 'Submit',
         ],
     ]);
-$form->get_children()->add_child( $text );
+$form->add_child( $text );
 
 // -------------------------------------------------------------------------------
 
@@ -73,11 +74,12 @@ $form->get_children()->add_child( $text );
 // and uses it to display the test results
 
 // get the POST/GET data
-//$post = $form->get_submit_data();
+$post = $form->get_submit_data();
 
-if ( isset( $post ) )
+if ( ! empty( $post ) )
 {
-    Wkwgs_Logger::log_msg( '$post is set ' );
+    Wkwgs_Logger::log_msg( '$post is set' );
+    Wkwgs_Logger::log_var( '$post', $post );
 
     // Clear session values
     unset( $_SESSION['post'] );
@@ -95,14 +97,14 @@ if ( isset( $post ) )
     $_SESSION['post'] = $post;
 
     // Validate data and store results
-    if ( ! $form->validate( $post ) )
+    $errors = $form->validate( $post );
+    if ( ! empty( $errors ) )
     {
-        $errors = $form->get_validate_errors();
         $_SESSION['form_errors'] = serialize( $errors );
     }
 
     // Extract data and store results
-    $form_values = $form->get_form_values( $post );
+    $form_values = $form->get_value( $post );
     $_SESSION['form_values'] = $form_values;
 
     // Redirect
@@ -112,7 +114,6 @@ if ( isset( $post ) )
 
 // Display the form and all input objects
 $form->render();
-
 
 if ( isset( $_SESSION['post_orig'] ) )
 {
@@ -126,7 +127,6 @@ if ( isset( $_SESSION['post'] ) )
     print_r( $_SESSION['post'] );
 }
 
-
 // Print out any validation errors stored in the session 
 if ( isset( $_SESSION['form_errors'] ) )
 {
@@ -136,11 +136,25 @@ if ( isset( $_SESSION['form_errors'] ) )
     echo '<h1>Errors from last SUBMIT</h1>';
 
     $errors = unserialize( $_SESSION['form_errors'] );
-    foreach ( $errors as $name => $error)
+    foreach ( array_values( $errors) as $error)
     {
-        $error_html = htmlspecialchars( $error->get_error() );
-        $name_html  = htmlspecialchars( $name );
-        echo "<b>Error Object:</b> $name_html => $error_html</br>";
+        if ( $error instanceof IHtmlValidateError)
+        {
+            $error_html = htmlspecialchars( $error->get_error() );
+            $name_html  = htmlspecialchars( $error->get_name() );
+            echo "<b>Error Object:</b> $name_html => $error_html</br>";
+
+            if ( $error->get_name() == '$name is empty')
+            {
+                print_r( $error->get_object() );
+            }
+        }
+        else
+        {
+            echo '<p>Ignore error<br>';
+            print_r( $error );
+            echo '<br></p>';
+        }
     }
     echo '</div>';
 }
@@ -153,8 +167,8 @@ if ( isset( $_SESSION['form_values'] ) )
     echo '<div>';
     echo '<h1>Values from last SUBMIT</h1>';
 
-    $errors = $_SESSION['form_values'];
-    foreach ( $errors as $name => $value)
+    $values = $_SESSION['form_values'];
+    foreach ( $values as $name => $value)
     {
         echo "$name = $value<br>";
     }

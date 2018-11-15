@@ -94,11 +94,11 @@ $form = new hh\Form( [] );
 $text = new hh\Text( [
         'attributes'    => [
             'class' => 'color-steelblue',
-            'label' => 'test1'
+            'label' => 'I do not have a name, therefore no input results'
         ],
         'contents'      => [   ],
     ]);
-$form->get_children()->add_child( $text );
+$form->add_child( $text );
 
 /* ------------------------------------------------------------------------------------ */
 
@@ -113,18 +113,19 @@ $text = new hh\Text( [
             'I have a tooltip!',
         ]
     ]);
-$form->get_children()->add_child( $text );
+$form->add_child( $text );
 
 /* ------------------------------------------------------------------------------------ */
 
 $text = new hh\Text( [
         'attributes'    => [
-        'name'          => 'tooltip',
+            'name'          => 'tooltip',
+        'name'          => 'text_on_right',
         'label'         => "I'm on the right",
         'css-container' => 'text-input-label-right'
         ],
     ]);
-$form->get_children()->add_child( $text );
+$form->add_child( $text );
 
 /* ------------------------------------------------------------------------------------ */
 
@@ -136,7 +137,7 @@ $text = new hh\Text( [
         'value'             => 'abc@xyz.com',
         ],
     ]);
-$form->get_children()->add_child( $text );
+$form->add_child( $text );
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation

@@ -68,20 +68,20 @@ class Text extends InputElement
     /* InputElement routines */
     /*-------------------------------------------------------------------------*/
 
-    public function validate_post( $name, $post )
+    public function validate_post( string $name, array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         $validation_errors = [];
 
         // Perform data validation
 
+        $logger->log_return( $validation_errors );
         return $validation_errors;
     }
 
     public function cleanse_data( $raw )
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( '$post', $post );
 
         $cleansed = null;
 

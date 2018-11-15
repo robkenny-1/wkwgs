@@ -125,7 +125,7 @@ class Button extends Element
     /* IHtmlForm routines */
     /*-------------------------------------------------------------------------*/
 
-    protected $validation_errors = [];
+    /* all handled by InputElement */
 
     /*-------------------------------------------------------------------------*/
     /* InputElement routines */
@@ -136,7 +136,7 @@ class Button extends Element
      *
      * @return True if value meets criteria
      */
-    public function validate_post( $name, $post )
+    public function validate_post( string $name, array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         $validation_errors = [];
@@ -144,14 +144,12 @@ class Button extends Element
         // The button should only return 'value'
         if ( $post[ $name ] !== $this->get_attributes()->get_attribute( 'value' ) )
         {
-            $validation_errors[] =
-            [
-                'name'          => $name,
-                'object'        => $this,
-                'error'         => '$post is empty',
-            ];
+            $validation_errors[] = new HtmlValidateError(
+                '$post post data does not match expected', $name, $this
+            );
         }
 
+        $logger->log_return( $validation_errors );
         return $validation_errors;
     }
 

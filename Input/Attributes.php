@@ -38,7 +38,7 @@ include_once('Base.php');
  * split into two: values used for the HTML element and the others.
  *
  */
-interface IAttributes2
+interface IAttributes
 {
     /**
      * Set the attributes of both types
@@ -88,12 +88,10 @@ interface IAttributeProvider
 /* Manage a collection of key/value pairs (aka HTML attributes) */
 /*-------------------------------------------------------------------------*/
 
-class Attributes2 implements IAttributes2, IHtmlPrinter
+class Attributes implements IAttributes, IHtmlPrinter
 {
     public function __construct( array $attributes, array $default = [], array $alternate = [] )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
         $this->set_attributes($attributes, $default, $alternate);
     }
 
@@ -113,9 +111,9 @@ class Attributes2 implements IAttributes2, IHtmlPrinter
 
         $this->invalidate_cache();
 
-        $this->attributes   = $attributes;
-        $this->default      = $default;
-        $this->alternate    = $alternate;
+        $this->attributes   = $attributes   ?? [];
+        $this->default      = $default      ?? [];
+        $this->alternate    = $alternate    ?? [];
 
         $logger->log_var( '$this->attributes', $this->attributes );
         $logger->log_var( '$this->default',    $this->default );
@@ -127,14 +125,14 @@ class Attributes2 implements IAttributes2, IHtmlPrinter
      *
      * @return array, current attributes
      */
-    public function get_attributes() :array
+    public function get_attributes() : array
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->update_cache();
         $attributes = $this->cached_remaining;
 
-        $logger->log_return( $attributes );
+        //$logger->log_return( $attributes );
         return $attributes;
     }
 
@@ -244,9 +242,9 @@ class Attributes2 implements IAttributes2, IHtmlPrinter
     }
     protected function update_cache()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( '$this->attributes', $this->attributes );
-        $logger->log_var( '$this->alternate',  $this->alternate );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger->log_var( '$this->attributes', $this->attributes );
+        //$logger->log_var( '$this->alternate',  $this->alternate );
 
         if ( is_null( $this->cached_remaining) || is_null( $this->cached_alternate) )
         {
@@ -266,8 +264,8 @@ class Attributes2 implements IAttributes2, IHtmlPrinter
                     }
                 }
             }
-            $logger->log_var( '$remaining',  $remaining );
-            $logger->log_var( '$alternate', $alternate );
+            //$logger->log_var( '$remaining',  $remaining );
+            //$logger->log_var( '$alternate', $alternate );
 
             $this->cached_remaining = $remaining;
             $this->cached_alternate = $alternate;

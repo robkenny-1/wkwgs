@@ -37,7 +37,7 @@ use Input as hh;
 $test = 0;
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "h1 element";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -46,7 +46,7 @@ $e1 = new hh\Element( [ 'tag' => 'h1' ] );
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "h1 with contents";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -59,7 +59,7 @@ $e1 = new hh\Element( [
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "Red h2";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -72,7 +72,7 @@ $e1 = new hh\Element( [
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "Default override 1";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -82,11 +82,12 @@ $e1 = new hh\Element( [
         'attributes'    => [ 'class' => 'color-red' ],
         'contents'      => "override default class, should be red"
     ]);
-$e1->get_attributes()->set_attributes_default( [ 'class' => 'color-steelblue' ] );
+$existing_attr = $e1->get_attributes()->get_attributes();
+$e1->get_attributes()->set_attributes( $existing_attr, [ 'class' => 'color-steelblue' ] );
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "default override 2";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -95,11 +96,12 @@ $e1 = new hh\Element( [
         'tag'           => 'h2',
         'contents'      => "using default class, should be steel-blue"
     ]);
-$e1->get_attributes()->set_attributes_default( [ 'class' => 'color-steelblue' ] );
+$existing_attr = $e1->get_attributes()->get_attributes();
+$e1->get_attributes()->set_attributes( $existing_attr, [ 'class' => 'color-steelblue' ] );
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "multiple children";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -150,7 +152,7 @@ class callback_test_class
 $cb = new callback_test_class();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "callback function";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -164,7 +166,7 @@ $e1 = new hh\Element([
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "callback static class";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -180,7 +182,7 @@ $e1 = new hh\Element([
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "callback ojbect method, no params";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -196,7 +198,7 @@ $e1 = new hh\Element([
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
+$test       = "callback ojbect method, with params";
 $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
@@ -209,60 +211,6 @@ $e1 = new hh\Element([
         new hh\Callback( [ $cb, 'callback_param' ], [  'param value 1', 'param value 2' ] ),
     ]
 ]);
-$e1->render();
-
-/* -------------------------------------------------------------------------------- */
-$test       = $test + 1;
-$test_msg   = "#### Test $test, verify array_extract ####";
-\Wkwgs_Logger::log( $test_msg );
-echo "<h3>{$test_msg}</h3>";
-
-$attributes = [
-    'abc'   => 1,
-    'def'   => 2,
-    'ghi'   => 3,
-];
-$extract = [ 'def' ];
-
-$extracted = hh\Helper::array_extract($attributes, $extract);
-
-$e1 = new hh\Element([
-    'tag'       => 'p',
-    'contents'  => [
-        new hh\HtmlText('Array Values'),
-    ]
-]);
-foreach ( $attributes as $e => $v)
-{
-    $e1->get_children()->add_child( new hh\Element('br') );
-    $e1->get_children()->add_child( new hh\HtmlText( "$e => $v" ) );
-}
-$e1->render();
-
-$e1 = new hh\Element([
-    'tag'       => 'p',
-    'contents'  => [
-        new hh\HtmlText('Values Extracted, should be def'),
-    ]
-]);
-foreach ( $extracted[0] as $e => $v)
-{
-    $e1->get_children()->add_child( new hh\Element('br') );
-    $e1->get_children()->add_child( new hh\HtmlText( "$e => $v" ) );
-}
-$e1->render();
-
-$e1 = new hh\Element([
-    'tag'       => 'p',
-    'contents'  => [
-        new hh\HtmlText('Values Remaining, should be abc and ghi'),
-    ]
-]);
-foreach ( $extracted[1] as $e => $v)
-{
-    $e1->get_children()->add_child( new hh\Element('br') );
-    $e1->get_children()->add_child( new hh\HtmlText( "$e => $v" ) );
-}
 $e1->render();
 
 ?>

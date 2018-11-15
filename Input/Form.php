@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Input.php');
 
-class Form extends Element implements IHtmlForm, IAttributeProvider
+class Form extends Element implements IHtmlForm
 {
     const Tag_Type              = 'form';
     const Default_Attributes    = [
@@ -50,6 +50,103 @@ class Form extends Element implements IHtmlForm, IAttributeProvider
         parent::__construct( $desc );
     }
 
+    /**
+     * Return either the GET or POST data, depending on the form submission
+     *
+     * @return array of posted data
+     */
+    public function get_submit_data( ) : array
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $submit = [];
+
+        $button = $this->get_submit_button();
+        if ( ! isset( $button ) )
+        {
+            \Wkwgs_Logger::log_msg( 'No submit button found' );
+        }
+        else
+        {
+            $submit_type = $this->get_attributes()->get_attribute( 'method' );
+            $button_name = $button->get_name();
+
+            if ( $submit_type === 'post' && isset( $_POST[ $button_name ] ) )
+            {
+                $submit =  $_POST;
+            }
+            else if ( $submit_type === 'get' && isset( $_GET[ $button_name ] ) )
+            {
+                $submit =  $_GET;
+            }
+        }
+
+        $logger->log_return( $submit );
+        return $submit;
+    }
+
+    /**
+     * Get the submit button associated with this form
+     *
+     * @return submit button object
+     */
+    public function get_submit_button( ) : ?IHtmlElement
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        foreach ( $this->get_children() as $field )
+        {
+            $tag  = $field->get_tag();
+            $type = $field->get_attributes()->get_attribute( 'type' );
+            $logger->log_var( '$tag', $tag );
+            $logger->log_var( '$type', $type );
+
+            // May need to expand if we support > 1 button type
+            if ( $field->get_tag() === 'button'
+                 &&
+                 $field->get_attributes()->get_attribute( 'type' ) === 'submit'
+               )
+            {
+                return $field;
+            }
+        }
+        return null;
+    }
+
+    public function has_duplicate_names() : bool
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $is_duplicate = False;
+
+        $existing_names = [];
+
+        foreach ( $this->get_children() as $field )
+        {
+            $logger->log_var( '$field instanceof IHtmlForm', ($field instanceof IHtmlForm) ? 'True' : 'False' );
+            $logger->log_var( '$field instanceof IHtmlElement', ($field instanceof IHtmlElement) ? 'True' : 'False' );
+
+            // Need IHtmlElement for get_name()
+            // Only IHtmlForm need to have unique names
+            if ( $field instanceof IHtmlForm && $field instanceof IHtmlElement )
+            {
+                $name = $field->get_name();
+                $logger->log_var( '$name', $name );
+
+                if ( isset( $existing_names[ $name ] ) )
+                {
+                    $is_duplicate = True;
+                    break;
+                }
+
+                $existing_names[ $name ] = True;
+            }
+        }
+
+        $logger->log_return( $is_duplicate );
+        return $is_duplicate;
+    }
+
     /*-------------------------------------------------------------------------*/
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
@@ -70,43 +167,60 @@ class Form extends Element implements IHtmlForm, IAttributeProvider
     /* IHtmlForm routines */
     /*-------------------------------------------------------------------------*/
 
-    protected $validation_errors;
-
-    public function validate( $post )
+    public function validate( array $post ) : array
     {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         $this->validation_errors = [];
 
-        $name = $this->get_attributes()->get_name();
+        $name = $this->get_name();
 
         if ( empty( $post ) )
         {
-            $this->validation_errors[] =
-            [
-                'name'          => $name,
-                'object'        => $object,
-                'error'         => '$post is empty',
-            ];
+            $this->validation_errors[] = new HtmlValidateError(
+                '$post is empty', $name, $this                
+            );
+        }
+        else if ( $this->has_duplicate_names() )
+        {
+            $this->validation_errors[] = new HtmlValidateError(
+                'input objects do not all have unique names', $name, $this                
+            );        
         }
         else
         {
+            $save = [];
+
             foreach ( $this->get_children() as $field )
             {
                 if ( $field instanceof IHtmlForm )
                 {
-                    $error = $field->validate( $post );
+                    $errors = $field->validate( $post );
+                    $save[] = $errors;
 
-                    if ( ! is_null( $error ) )
+                    if ( ! empty( $errors ) )
                     {
-                        $this->validation_errors = array_merge( $this->validation_errors, $error );
+                        $this->validation_errors = array_merge( $this->validation_errors, $errors );
                     }
                 }
             }
+            $logger->log_msg( 'Saved validation errors');
+            foreach ( $save as $ss )
+            {
+                $logger->log_var( '$ss', $ss );
+            }
         }
 
-        return empty( $this->validation_errors );
+        $logger->log_return( $this->validation_errors );
+        return $this->validation_errors;
     }
 
-    public function get_value( $post )
+    public function get_validate_errors() : array
+    {
+        return $this->validation_errors ?? [];
+    }
+
+    public function get_value( array $post )
     {
         $values = array();
 
@@ -116,10 +230,12 @@ class Form extends Element implements IHtmlForm, IAttributeProvider
             {
                 if ( $field instanceof IHtmlForm )
                 {
-                    $name  = $field->get_attributes()->get_name();
-                    $value = $field->get_value( $post );
-
-                    $values[ $name ] = $value;
+                    $name  = $field->get_attributes()->get_attribute( 'name' );
+                    if ( ! empty( $name ) )
+                    {
+                        $value = $field->get_value( $post );
+                        $values[ $name ] = $value;
+                    }
                 }
             }
         }
@@ -127,17 +243,12 @@ class Form extends Element implements IHtmlForm, IAttributeProvider
         return $values;
     }
 
-    public function get_validate_errors()
-    {
-        return $this->validation_errors;
-    }
-
     /**
      * Get the assigned form identity
      *
      * @return string
      */
-    public function get_form_id()
+    public function get_form_id() : string
     {
         return $this->get_attributes()->get_attribute( 'form' );
     }
@@ -147,7 +258,7 @@ class Form extends Element implements IHtmlForm, IAttributeProvider
      *
      * @return string
      */
-    public function set_form_id( $form_id )
+    public function set_form_id( string $form_id )
     {
         $this->get_attributes()->set_attribute( 'form', $form_id );
     }
@@ -156,20 +267,20 @@ class Form extends Element implements IHtmlForm, IAttributeProvider
     /* InputElement routines */
     /*-------------------------------------------------------------------------*/
 
-    public function validate_post( $name, $post )
+    public function validate_post( string $name, array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         $validation_errors = [];
 
         // Perform data validation
 
+        $logger->log_return( $validation_errors );
         return $validation_errors;
     }
 
     public function cleanse_data( $raw )
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( '$post', $post );
 
         $cleansed = null;
 
