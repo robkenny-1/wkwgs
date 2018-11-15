@@ -127,22 +127,22 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      */
     public function get_html()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( '$this', $this );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger->log_var( '$this', $this );
 
         $html = '';
 
         foreach ( $this->children as $child )
         {
-            $logger->log_var( '$child', $child );
+            //$logger->log_var( '$child', $child );
 
             $child_html = $child->get_html();
-            $logger->log_var( '$child_html', $child_html );
+            //$logger->log_var( '$child_html', $child_html );
 
             $html .= $child_html;
         }
 
-        $logger->log_return( $html );
+        //$logger->log_return( $html );
         return $html;
     }
 
@@ -159,31 +159,31 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      */
     public function add_child( $child )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         if ( ! is_null( $child ) )
         {
             // Automatically convert strings to a HtmlText()
             if ( gettype( $child ) === 'string' )
             {
-                $logger->log_msg( 'Converting to HtmlText()' );
+                //$logger->log_msg( 'Converting to HtmlText()' );
                 $child = new HtmlText( $child );
             }
 
             // Only allow IHtmlPrinter as children
             if ( $child instanceof IHtmlPrinter )
             {
-                $logger->log_msg( 'adding $child' );
+                //$logger->log_msg( 'adding $child' );
                 array_push( $this->children, $child );
             }
             else
             {
-                $logger->log_msg( '$child is not IHtmlPrinter' );
+                //$logger->log_msg( '$child is not IHtmlPrinter' );
             }
         }
         else
         {
-            $logger->log_msg( '$child is null' );
+            //$logger->log_msg( '$child is null' );
         }
     }
 
@@ -211,7 +211,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      */
     public function set_children( array $children )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->children = [];
 
@@ -232,7 +232,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
             $this->add_child( $children );
         }
 
-        $logger->log_return( $this->children );
+        //$logger->log_return( $this->children );
     }
 
     /**
@@ -311,7 +311,7 @@ class Callback implements IHtmlPrinter
      */
     public function get_html()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $html = '';
 
@@ -324,7 +324,7 @@ class Callback implements IHtmlPrinter
             $html .= call_user_func( $this->callback );
         }
 
-        $logger->log_return( $html );
+        //$logger->log_return( $html );
         return $html;
     }
 }
@@ -377,12 +377,8 @@ class Element implements IHtmlElement, IAttributeProvider
 
         $default    = $this->get_attributes_defaults();
         $alternate  = $this->get_attributes_alternate();
-        $this->attributes = new Attributes( $attributes, $default , $alternate );
+        $this-> attributes = new Attributes( $attributes, $default , $alternate );
     }
-
-    /*-------------------------------------------------------------------------*/
-    /* IHtmlForm routines */
-    /*-------------------------------------------------------------------------*/
 
     public function get_attributes_defaults() : array
     {
@@ -413,8 +409,6 @@ class Element implements IHtmlElement, IAttributeProvider
         if ( ! empty( $this->tag ) )
         {
             $children       = $this->children;
-            $alternate      = $this->attributes->get_attributes_alternate();
-            $logger->log_var( '$alternate', $alternate );
 
             $html .= "<{$this->tag}";
             $html .= $this->attributes->get_html();
@@ -456,7 +450,7 @@ class Element implements IHtmlElement, IAttributeProvider
 
     public function set_children( array $children )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         
         $this->children = new ElementList( $children );
     }
@@ -468,9 +462,9 @@ class Element implements IHtmlElement, IAttributeProvider
 
     public function get_attributes() : IAttributes
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( '$this->tag', $this->tag );
-        $logger->log_var( '$this->attributes', $this->attributes );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger->log_var( '$this->tag', $this->tag );
+        //$logger->log_var( '$this->attributes', $this->attributes );
 
         return $this->attributes;
     }
@@ -576,7 +570,7 @@ class Element implements IHtmlElement, IAttributeProvider
         if ( ! empty( $this->tag ) )
         {
             $alternate      = $this->attributes->get_attributes_alternate();
-            $attributes      = $this->attributes->get_attributes();
+            $attributes     = $this->attributes->get_attributes();
             $logger->log_var( '$alternate', $alternate );
             $logger->log_var( '$attributes', $attributes );
 
@@ -644,7 +638,7 @@ class Element implements IHtmlElement, IAttributeProvider
      */
     public function validate( array $post ) : array
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $name       = $this->get_name();
         $required   = Helper::is_true( $this->attributes->get_attribute( 'required' ) );
@@ -674,7 +668,7 @@ class Element implements IHtmlElement, IAttributeProvider
             $validation_errors = $this->validate_post( $name, $post );
         }
 
-        $logger->log_return( $validation_errors );
+        //$logger->log_return( $validation_errors );
         return $validation_errors;
     }
 
@@ -690,7 +684,7 @@ class Element implements IHtmlElement, IAttributeProvider
      */
     public function get_value( array $post )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $cleansed = null;
         $name = $this->get_name();
