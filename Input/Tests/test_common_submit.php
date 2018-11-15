@@ -136,7 +136,7 @@ if ( isset( $_SESSION['form_errors'] ) )
     echo '<h1>Errors from last SUBMIT</h1>';
 
     $errors = unserialize( $_SESSION['form_errors'] );
-    foreach ( array_values( $errors) as $error)
+    foreach ( $errors as $error)
     {
         if ( $error instanceof IHtmlValidateError)
         {

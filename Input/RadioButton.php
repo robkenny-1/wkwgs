@@ -22,136 +22,159 @@ namespace Input;
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once('Field.php');
+include_once('Input.php');
 
 /**
  * The checkbox input class
  *
  * @since 1.0.0
  */
-class RadioButton extends Field
+class RadioButton extends InputElement
 {
-    const Input_Type            = 'radio';
-    const Default_Attributes    = array(
-            'type'              => self::Input_Type,
+    const Tag_Type              = 'input';
+    const Default_Attributes    = [
+        'type'                  => 'radio',
+    ];
+    const Alternate_Attributes  = [
+        'label',
+        'choices',
+        'selected',
+    ];
+
+    public function __construct( $desc )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         
-            // Unique to this class
-            'choices'           => [ 'unset' => 'unset' ],
-    );
-
-    public function __construct( $attributes )
-    {
-        parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Default_Attributes );
-    }
-
-    /**
-     * Verify data is conforms to an email address
-     *
-     * @return null if no error or Field_Error
-     */
-    public function validate( $post )
-    {
-        $name = $this->get_name();
-
-        if ( ! isset( $post[ $name ] ) )
+        if ( gettype( $desc ) !== 'array' )
         {
-            return null;
-        }
-        $raw = $post[ $name ];
-
-        if ( empty( $raw ) )
-        {
-            if ( $this->is_required() )
-            {
-                return new Field_Error( $this, 'Value is required', $raw );
-            }
-            else
-            {
-                return null;
-            }
-        }
-        
-        $values = array_keys( $this->get_attribute( 'choices' ) );
-        if ( in_array( $raw, $values, True ) )
-        {
-            return null;
-        }
-
-        $acceptable = implode("', '", $values);
-        $error = "Selected value not valid ( '$raw' is not in '$acceptable' )";
-        return new Field_Error( $this, $error, $value );
-    }
-
-    /**
-     * Extract object's value from post data
-     *
-     * @return input value
-     */
-    public function get_value( $post )
-    {
-        $name = $this->get_name();
-
-        if ( ! isset( $post[ $name ] ) || $this->validate( $post ) != null )
-        {
-            return '';
-        }
-        $raw = $post[ $name ];
-
-        // No cleansing necessary
-        $cleansed = $raw;
-
-        return $cleansed;
-    }
-
-    /**
-     * Render the <input> element
-     *
-     */
-    public function render_input( $exclude, $radio, $checked )
-    {
-        echo '<input ';
-        parent::render_input_attributes( $exclude );
-        HtmlHelper::print_attribute('value',   $radio );
-        HtmlHelper::print_attribute('checked', $checked );
-        echo '/>';
-    }
-
-    /**
-     * Render the field in the frontend, this spits out the necessary HTML
-     * Expected output
-     * <label>Label Text<input type='text' /></label>
-     *
-     * @return void
-     */
-    public function render( )
-    {
-        $value          = $this->get_attribute( 'value' );
-        $choices        = $this->get_attribute( 'choices' );
-        $label          = $this->get_attribute( 'label'        );
-        $tooltip        = $this->get_attribute( 'data-tooltip' );
-        $css_label      = $this->get_attribute( 'css-label'    );
-        $exclude        = [ 'value' ];
-
-        if ( empty( $choices ) || ! is_array( $choices ))
-        {
+            $logger->log_var( '$desc is not an array', $desc );
             return;
         }
 
-        foreach ( $choices as $radio => $label )
-        {
-            $checked = $radio === $value;
-
-            $params = [ $exclude, $radio, $checked ];
-            $this->render_label_explicit(
-                [$this, 'render_input'],
-                $params,
-                $label,
-                $tooltip,
-                $css_label,
-                False // Don't annotate radio button's label with * (required)
-            );
-        }
+        $desc[ 'tag' ] = self::Tag_Type;
+        parent::__construct( $desc );
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeProvider routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_attributes_defaults() : array
+    {
+        $parent = parent::get_attributes_defaults();
+        return array_merge( $parent, self::Default_Attributes );
+    }
+
+    public function get_attributes_alternate() : array
+    {
+        $parent = parent::get_attributes_alternate();
+        return array_merge( $parent, self::Alternate_Attributes );
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_html_just_me()
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $html = '';
+
+        $attributes     = $this->get_attributes()->get_attributes();
+        $alternates     = $this->get_attributes()->get_attributes_alternate();
+        $logger->log_var( '$attributes',    $attributes );
+        $logger->log_var( '$alternates',    $alternates );
+
+        if ( ! isset( $alternates[ 'choices' ] ) || empty( $alternates[ 'choices' ] ) )
+        {
+            $html .= parent::get_html_just_me();
+        }
+        else
+        {
+            $selected_value = $alternates[ 'selected' ];
+            $logger->log_var( '$selected_value', $selected_value );
+
+            foreach ( $alternates[ 'choices' ] as $value => $label  )
+            {
+                $logger->log_var( '$label', $label );
+                $logger->log_var( '$value', $value );
+
+                $attributes[ 'value' ]      = $value;
+                $attributes[ 'label' ]      = $label;
+                $attributes[ 'checked' ]    = $value === $selected_value;
+
+                $rb = new RadioButton([
+                    'attributes'                => $attributes,
+                    'contents'                  => [],
+                ]);
+
+                $html .= $rb->get_html();
+            }
+        }
+
+        $logger->log_return( $html );
+        return $html;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* InputElement routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function validate_post( string $name, array $post ) : array
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $this->validation_errors = [];
+
+        // Perform data validation
+
+        $raw        = $post[ $name ] ?? '';
+        $required   = $this->get_attributes()->get_attribute( 'required' );
+        $choices     = $this->get_choices();
+        $logger->log_var( '$raw',           $raw );
+        $logger->log_var( '$required',      $required );
+        $logger->log_var( '$choices',       $choices );
+
+        if ( empty( $choices ) )
+        {
+            $this->validation_errors[] = new HtmlValidateError(
+                'RadioButton definition error: choices must not be empty', $name, $this                
+            );         
+        }
+        else
+        {
+            if ( empty( $raw ) )
+            {
+                if ( Helper::is_true( $required ) )
+                {
+                    $this->validation_errors[] = new HtmlValidateError(
+                        'required value missing', $name, $this                
+                    );
+                }
+            }
+            else if ( ! in_array( $raw, $choices, True ) )
+            {
+                $this->validation_errors[] = new HtmlValidateError(
+                    '$post value does not match expected', $name, $this                
+                );         
+            }
+        }
+
+        $logger->log_return( $this->validation_errors );
+        return $this->validation_errors;
+    }
+
+    public function cleanse_data( $raw )
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $cleansed = null;
+
+        // No cleansing necessary?
+        $cleansed = $raw;
+
+        $logger->log_return( $cleansed );
+        return $cleansed;
+    }
+
 }

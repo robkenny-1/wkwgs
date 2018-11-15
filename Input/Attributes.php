@@ -107,7 +107,7 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     public function set_attributes( array $attributes, array $default = null, array $alternate = null )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->invalidate_cache();
 
@@ -115,9 +115,9 @@ class Attributes implements IAttributes, IHtmlPrinter
         $this->default      = $default      ?? [];
         $this->alternate    = $alternate    ?? [];
 
-        $logger->log_var( '$this->attributes', $this->attributes );
-        $logger->log_var( '$this->default',    $this->default );
-        $logger->log_var( '$this->alternate',  $this->alternate );
+        //$logger->log_var( '$this->attributes', $this->attributes );
+        //$logger->log_var( '$this->default',    $this->default );
+        //$logger->log_var( '$this->alternate',  $this->alternate );
     }
 
     /**
@@ -143,12 +143,12 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     public function get_attributes_alternate() : array
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->update_cache();
         $attributes = $this->cached_alternate;
 
-        $logger->log_return( $attributes );
+        //$logger->log_return( $attributes );
         return $attributes;
     }
 
@@ -159,15 +159,7 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     public function get_attribute( string $name )
     {
-        $attributes = $this->get_attributes();
-
-        $attr = '';
-        if ( isset( $attributes[ $name ] ) )
-        {
-            $attr = $attributes[ $name ];
-        }
-
-        return $attr;
+        return $this->attributes[ $name ] ?? '';
     }
 
     /**
@@ -177,15 +169,10 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     public function set_attribute( string $name, $value )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        // Clear the cached value
-        $this->attributes_combined_cached = null;
+        $this->invalidate_cache();
 
-        if ( is_null( $this->attributes ) )
-        {
-            $this->attributes = [];
-        }
         $this->attributes[ $name ] = $value;
     }
 
@@ -206,16 +193,13 @@ class Attributes implements IAttributes, IHtmlPrinter
 
         $html = '';
 
-        if ( ! empty( $attributes ) )
+        foreach ( $attributes as $attribute => $value )
         {
-            foreach ( $attributes as $attribute => $value )
+            $attribute_html = Helper::get_html_attribute( $attribute, $value );
+            if ( ! empty( $attribute_html ) )
             {
-                $attribute_html = Helper::get_html_attribute( $attribute, $value );
-                if ( ! empty( $attribute_html ) )
-                {
-                    $html .= ' ';
-                    $html .= $attribute_html;
-                }
+                $html .= ' ';
+                $html .= $attribute_html;
             }
         }
 
@@ -240,6 +224,7 @@ class Attributes implements IAttributes, IHtmlPrinter
         $this->cached_remaining = null;
         $this->cached_alternate = null;
     }
+    
     protected function update_cache()
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
@@ -254,13 +239,15 @@ class Attributes implements IAttributes, IHtmlPrinter
             // If we have alternate attributes, split them out
             if ( ! is_null( $this->alternate ) )
             {
-                foreach ( array_values( $this->alternate ) as $needle )
+                foreach ( $this->alternate as $alt )
                 {
-                    if ( isset( $remaining[ $needle ] ) )
+                    //$logger->log_var( '$alt', $alt );
+                    if ( isset( $remaining[ $alt ] ) )
                     {
-                        // copy entry to $alternate, and remove from $remaining
-                        $alternate[ $needle ] = $remaining[ $needle ];
-                        unset( $remaining[ $needle ] );
+                        //$logger->log_msg( 'Moving from $remaining to $alternate' );
+                        // move $alt from $remaining to $alternate
+                        $alternate[ $alt ] = $remaining[ $alt ];
+                        unset( $remaining[ $alt ] );
                     }
                 }
             }

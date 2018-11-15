@@ -32,3 +32,4 @@ include_once('Form.php');
 include_once('Text.php');
 include_once('Button.php');
 include_once('Checkbox.php');
+include_once('RadioButton.php');
