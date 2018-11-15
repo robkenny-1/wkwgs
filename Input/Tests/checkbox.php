@@ -25,7 +25,7 @@ $form = new Input\Form([
         'attributes'        => [
             'name'          => 'checkbox_test_form',
         ],
-        'contents'          => [   ],
+        'contents'          => [],
 ]);
 
 $form->add_child(
@@ -33,7 +33,7 @@ $form->add_child(
         'attributes'        => [
             'name'          => 'name_only',
         ],
-        'contents'          => [   ],
+        'contents'          => [],
     ])
 );
 
@@ -43,7 +43,7 @@ $form->add_child(
             'name'          => 'checkbox_with_label',
             'label'         => 'checkbox with label',
         ],
-        'contents'          => [   ],
+        'contents'          => [],
     ])
 );
 
@@ -54,7 +54,7 @@ $form->add_child(
             'label'         => 'Value Required',
             'required'      => 'True',
         ],
-        'contents'          => [   ],
+        'contents'          => [],
     ])
 );
 
@@ -66,7 +66,7 @@ $form->add_child(
             'checked'       => True,
             'value'         => 'Has Been Checked',
         ],
-        'contents'          => [   ],
+        'contents'          => [],
     ])
 );
 
@@ -77,7 +77,7 @@ $form->add_child(
             'label'         => '< html & special chars >',
             'help'          => 'This checkbox contains special HTML chars like <, >, &',
         ],
-        'contents'          => [   ],
+        'contents'          => [],
     ])
 );
 
