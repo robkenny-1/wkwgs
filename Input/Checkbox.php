@@ -22,115 +22,112 @@ namespace Input;
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once('Field.php');
+include_once('Input.php');
 
 /**
  * The checkbox input class
  *
  * @since 1.0.0
  */
-class Checkbox extends Field
+class Checkbox extends InputElement
 {
-    const Input_Type = 'checkbox';
-    const Default_Attributes    = array(
-            'type'              => self::Input_Type,
-            'value'             => 'yes',
+    const Tag_Type              = 'input';
+    const Default_Attributes    = [
+        'type'                  => 'checkbox',
+        'checked'               => False,
+        'value'                 => 'True',
+    ];
+    const Alternate_Attributes  = [
+        'label',
+    ];
 
-            // Unique to this class
-            'checked'           => 'no',
-        );
-
-    public function __construct( $attributes )
+    public function __construct( $desc )
     {
-        parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Default_Attributes );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        if ( gettype( $desc ) !== 'array' )
+        {
+            $logger->log_var( '$desc is not an array', $desc );
+            return;
+        }
+
+        $desc[ 'tag' ] = self::Tag_Type;
+        parent::__construct( $desc );
     }
 
-    /**
-     * Verify data is conforms to an email address
-     *
-     * @return null if no error or Field_Error
-     */
-    public function validate( $post )
-    {
-        $name = $this->get_name();
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeProvider routines */
+    /*-------------------------------------------------------------------------*/
 
-        // Unselected checkbox are not present in POST
-        if ( ! isset( $post[ $name ] ) )
+    public function get_attributes_defaults() : array
+    {
+        $parent = parent::get_attributes_defaults();
+        return array_merge( $parent, self::Default_Attributes );
+    }
+
+    public function get_attributes_alternate() : array
+    {
+        $parent = parent::get_attributes_alternate();
+        return array_merge( $parent, self::Alternate_Attributes );
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* InputElement routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function validate_post( string $name, array $post ) : array
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $this->validation_errors = [];
+
+        // Perform data validation
+
+        $raw        = $post[ $name ] ?? '';
+        $required   = $this->get_attributes()->get_attribute( 'required' );
+        $value      = $this->get_attributes()->get_attribute( 'value' );
+        $logger->log_var( '$raw',           $raw );
+        $logger->log_var( '$required',      $required );
+        $logger->log_var( '$value',         $value );
+
+        if ( empty( $value ) )
         {
-            $raw = '';
+            $this->validation_errors[] = new HtmlValidateError(
+                'checkbox definition error: value must not be empty', $name, $this                
+            );         
         }
         else
         {
-            $raw = $post[ $name ];
-        }
-
-        if ( empty( $raw ) )
-        {
-            if ( $this->is_required() )
+            if ( empty( $raw ) )
             {
-                return new Field_Error( $this, 'Value is required', $raw );
+                if ( Helper::is_true( $required ) )
+                {
+                    $this->validation_errors[] = new HtmlValidateError(
+                        'required value missing', $name, $this                
+                    );
+                }
             }
-            return null;
+            else if ( $value !== $raw )
+            {
+                $this->validation_errors[] = new HtmlValidateError(
+                    '$post value does not match expected', $name, $this                
+                );         
+            }
         }
 
-        $value = $this->get_attribute( 'value' );
-        if ( $raw === $value)
-        {
-            return null;
-        }
-
-        $error = "Selected value not valid ( '$raw', expected '$value' )";
-        return new Field_Error( $this, $error, $value );
+        $logger->log_return( $this->validation_errors );
+        return $this->validation_errors;
     }
 
-
-    /**
-     * Extract object's value from post data
-     *
-     * @return input value
-     */
-    public function get_value( $post )
+    public function cleanse_data( $raw )
     {
-        $name = $this->get_name();
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        if ( ! isset( $post[ $name ] ) || $this->validate( $post ) != null )
-        {
-            return '';
-        }
-        $raw = $post[ $name ];
+        $cleansed = null;
 
-        // No cleansing necessary
+        // No cleansing necessary?
         $cleansed = $raw;
 
+        $logger->log_return( $cleansed );
         return $cleansed;
-    }
-
-    /**
-     * Render the <input> element
-     *
-     */
-    public function render_input( $exclude, $checked )
-    {
-        echo '<input ';
-        parent::render_input_attributes( $exclude );
-        HtmlHelper::print_attribute('checked', $checked );
-        echo '/>';
-    }
-
-    /**
-     * Render the field in the frontend, this spits out the necessary HTML
-     * Expected output
-     * <label>Label Text<input type='text' /></label>
-     *
-     * @return void
-     */
-    public function render( )
-    {
-        $checked        = HtmlHelper::is_true( $this->get_attribute( 'checked' ) );
-        $exclude = [];
-
-        $this->render_label( [$this, 'render_input' ], [ $exclude, $checked ] );
     }
 }

@@ -17,68 +17,68 @@ error_reporting(E_ALL|E_STRICT);
 define( 'ABSPATH', '1');
 
 session_start();
-include_once( '..\Factory.php' );
+include_once( '..\Input.php' );
 
 Wkwgs_Logger::clear();
 
-$form = \Input\Factory::Get(
-        array(
-        'type'              => 'form',
-        'name'              => 'checkbox_test_form',
-    )
+$form = new Input\Form([
+        'attributes'        => [
+            'name'          => 'checkbox_test_form',
+        ],
+        'contents'          => [   ],
+]);
+
+$form->add_child(
+    new Input\Checkbox([
+        'attributes'        => [
+            'name'          => 'name_only',
+        ],
+        'contents'          => [   ],
+    ])
 );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'checkbox',
-        'name'              => 'name_only'
-        )
-    )
+$form->add_child(
+    new Input\Checkbox([
+        'attributes'        => [
+            'name'          => 'checkbox_with_label',
+            'label'         => 'checkbox with label',
+        ],
+        'contents'          => [   ],
+    ])
 );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'checkbox',
-        'name'              => 'checkbox_with_label',
-        'label'             => 'checkbox_with_label',
-        )
-    )
+$form->add_child(
+    new Input\Checkbox([
+        'attributes'        => [
+            'name'          => 'checkbox_required',
+            'label'         => 'Value Required',
+            'required'      => 'True',
+        ],
+        'contents'          => [   ],
+    ])
 );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'checkbox',
-        'name'              => 'checkbox_required',
-        'label'             => 'Value Required',
-        'required'          => 'True',
-        )
-    )
+$form->add_child(
+    new Input\Checkbox([
+        'attributes'        => [
+            'name'          => 'checkbox_enabled',
+            'label'         => 'checkbox_enabled',
+            'checked'       => True,
+            'value'         => 'Has Been Checked',
+        ],
+        'contents'          => [   ],
+    ])
 );
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'checkbox',
-        'name'              => 'checkbox_enabled',
-        'label'             => 'checkbox_enabled',
-        'checked'           => 'yes',
-        'value'             => 'Has Been Checked',
-        )
-    )
-);
-
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'checkbox',
-        'name'              => 'html_and_special_chars',
-        'label'             => '< html & special chars >',
-        'help'              => 'This checkbox contains special HTML chars like <, >, &',
-        )
-    )
+$form->add_child(
+    new Input\Checkbox([
+        'attributes'        => [
+            'name'          => 'html_and_special_chars',
+            'label'         => '< html & special chars >',
+            'help'          => 'This checkbox contains special HTML chars like <, >, &',
+        ],
+        'contents'          => [   ],
+    ])
 );
 
 // -------------------------------------------------------------------------------

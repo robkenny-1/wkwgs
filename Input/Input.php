@@ -31,3 +31,4 @@ include_once('Attributes.php');
 include_once('Form.php');
 include_once('Text.php');
 include_once('Button.php');
+include_once('Checkbox.php');

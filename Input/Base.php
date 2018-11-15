@@ -576,15 +576,15 @@ class Element implements IHtmlElement, IAttributeProvider
         if ( ! empty( $this->tag ) )
         {
             $alternate      = $this->attributes->get_attributes_alternate();
-            $remaining      = $this->attributes->get_attributes();
+            $attributes      = $this->attributes->get_attributes();
             $logger->log_var( '$alternate', $alternate );
-            $logger->log_var( '$remaining', $remaining );
+            $logger->log_var( '$attributes', $attributes );
 
-            $label          = $alternate[ 'label'         ] ?? '';
-            $required       = $remaining[ 'required'      ] ?? '';
-            $tooltip        = $alternate[ 'data-tooltip'  ] ?? '';
-            $css_container  = $alternate[ 'css-container' ] ?? '';
-            $css_label      = $alternate[ 'css-label'     ] ?? '';
+            $required       = $attributes[ 'required'      ] ?? '';
+            $label          = $alternate [ 'label'         ] ?? '';
+            $tooltip        = $alternate [ 'data-tooltip'  ] ?? '';
+            $css_container  = $alternate [ 'css-container' ] ?? '';
+            $css_label      = $alternate [ 'css-label'     ] ?? '';
             
             if ( Helper::is_true( $required ) )
             {
@@ -615,7 +615,7 @@ class Element implements IHtmlElement, IAttributeProvider
                         ]
                     ])
                 ]
-             ]);
+            ]);
 
              $html = $div->get_html();
         }
