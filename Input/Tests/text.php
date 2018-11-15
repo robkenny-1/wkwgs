@@ -85,24 +85,22 @@ define( 'ABSPATH', '1');
 session_start();
 include_once( '..\Input.php' );
 
-use Input as hh;
-
 Wkwgs_Logger::clear();
 
-$form = new hh\Form( [] );
+$form = new Input\Form( [] );
 
-$text = new hh\Text( [
+$text = new Input\Text( [
         'attributes'    => [
             'class' => 'color-steelblue',
             'label' => 'I do not have a name, therefore no input results'
         ],
-        'contents'      => [   ],
+        'contents'      => [],
     ]);
 $form->add_child( $text );
 
 /* ------------------------------------------------------------------------------------ */
 
-$text = new hh\Text( [
+$text = new Input\Text( [
         'attributes'    => [
             'name'          => 'tooltip',
             'label'         => 'input with tooltip',
@@ -117,24 +115,24 @@ $form->add_child( $text );
 
 /* ------------------------------------------------------------------------------------ */
 
-$text = new hh\Text( [
+$text = new Input\Text( [
         'attributes'    => [
             'name'          => 'tooltip',
-        'name'          => 'text_on_right',
-        'label'         => "I'm on the right",
-        'css-container' => 'text-input-label-right'
+            'name'          => 'text_on_right',
+            'label'         => "I'm on the right",
+            'css-container' => 'text-input-label-right'
         ],
     ]);
 $form->add_child( $text );
 
 /* ------------------------------------------------------------------------------------ */
 
-$text = new hh\Text( [
+$text = new Input\Text( [
         'attributes'    => [
-        'name'              => 'email',
-        'label'             => 'email address',
-        'required'          => 'yes',
-        'value'             => 'abc@xyz.com',
+            'name'              => 'email',
+            'label'             => 'email address',
+            'required'          => 'yes',
+            'value'             => 'abc@xyz.com',
         ],
     ]);
 $form->add_child( $text );
