@@ -70,6 +70,13 @@ interface IAttributes
     public function get_attribute( string $name );
 
     /**
+     * Get the value of a single alternate attribute
+     *
+     * @return mixed, value of $name. Empty string if unset
+     */
+    public function get_attribute_alternate( string $name );
+
+    /**
      * Set the specified attribute
      *
      * @return void
@@ -127,12 +134,12 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     public function get_attributes() : array
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->update_cache();
         $attributes = $this->cached_remaining;
 
-        //$logger->log_return( $attributes );
+        //->log_return( $attributes );
         return $attributes;
     }
 
@@ -143,12 +150,12 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     public function get_attributes_alternate() : array
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->update_cache();
         $attributes = $this->cached_alternate;
 
-        //$logger->log_return( $attributes );
+        //->log_return( $attributes );
         return $attributes;
     }
 
@@ -159,7 +166,27 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     public function get_attribute( string $name )
     {
-        return $this->attributes[ $name ] ?? '';
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        $attribute = $this->get_attributes()[ $name ] ?? '';
+
+        //$logger->log_return( $attribute );
+        return $attribute;
+    }
+
+    /**
+     * Get the value of a single alternate attribute
+     *
+     * @return mixed, value of $name. Empty string if unset
+     */
+    public function get_attribute_alternate( string $name )
+    {
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        
+        $attribute = $this->get_attributes_alternate()[ $name ] ?? '';
+
+        //$logger->log_return( $attribute );
+        return $attribute;
     }
 
     /**

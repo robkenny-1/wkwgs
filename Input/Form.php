@@ -61,25 +61,42 @@ class Form extends Element implements IHtmlForm
 
         $submit = [];
 
-        $button = $this->get_submit_button();
-        if ( ! isset( $button ) )
-        {
-            \Wkwgs_Logger::log_msg( 'No submit button found' );
-        }
-        else
-        {
-            $submit_type = $this->get_attributes()->get_attribute( 'method' );
-            $button_name = $button->get_name();
-
-            if ( $submit_type === 'post' && isset( $_POST[ $button_name ] ) )
+        $form_name = $this->get_name();
+    //    $button    = self::get_submit_element( $this );
+    //    if ( ! isset( $button ) )
+    //    {
+    //        $msg = "Form '$form_name': No submit element found";
+    //        $logger->log_msg( $msg );
+    //        throw new \Exception( $msg );
+    //    }
+    //    else
+    //    {
+            $submit_method = $this->get_attributes()->get_attribute( 'method' );
+    //        $button_name = $button->get_name();
+    //
+            switch ( $submit_method )
             {
-                $submit =  $_POST;
+                case 'post':
+    //                if ( isset( $_POST[ $button_name ] ) )
+    //                {
+                        $submit =  $_POST;
+    //                }
+                    break;
+    //
+                case 'get':
+    //                if ( isset( $_GET[ $button_name ] ) )
+    //                {
+                        $submit =  $_GET;
+    //                }
+                    break;
+    //
+                default:
+                    $msg = "Form '$form_name': Unknown submit method: '$submit_method'";
+                    $logger->log_msg( $msg );
+                    throw new \Exception( $msg );
+                    break;
             }
-            else if ( $submit_type === 'get' && isset( $_GET[ $button_name ] ) )
-            {
-                $submit =  $_GET;
-            }
-        }
+    //    }
 
         $logger->log_return( $submit );
         return $submit;
@@ -90,48 +107,64 @@ class Form extends Element implements IHtmlForm
      *
      * @return submit button object
      */
-    public function get_submit_button( ) : ?IHtmlElement
+    public static function get_submit_element( object $element ) : ?IHtmlElement
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, null, get_class() );
 
-        foreach ( $this->get_children() as $field )
+        $submit = null;
+
+        if ( $element instanceof IHtmlElement )
         {
-            $tag  = $field->get_tag();
-            $type = $field->get_attributes()->get_attribute( 'type' );
-            $logger->log_var( '$tag', $tag );
-            $logger->log_var( '$type', $type );
+            $tag  = $element->get_tag();
+            $type = $element->get_attributes()->get_attribute( 'type' );
 
-            // May need to expand if we support > 1 button type
-            if ( $field->get_tag() === 'button'
-                 &&
-                 $field->get_attributes()->get_attribute( 'type' ) === 'submit'
-               )
+            if (
+                ( $tag === 'button' || $tag === 'input' )
+                &&
+                $type === 'submit'
+            )
             {
-                return $field;
+                $submit = $element;
+            }
+
+            if ( is_null( $submit) )
+            {
+                // Search child elements for the submit button
+                foreach ( $element->get_children() as $child )
+                {
+                    $submit = self::get_submit_element( $child );
+                    if ( ! is_null( $submit) )
+                    {
+                        break;
+                    }
+                }
             }
         }
-        return null;
+
+        //$logger->log_return( $submit );
+        return $submit;
     }
 
     public function has_duplicate_names() : bool
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $is_duplicate = False;
 
         $existing_names = [];
 
-        foreach ( $this->get_children() as $field )
+        foreach ( $this->get_children() as $child )
         {
-            $logger->log_var( '$field instanceof IHtmlForm', ($field instanceof IHtmlForm) ? 'True' : 'False' );
-            $logger->log_var( '$field instanceof IHtmlElement', ($field instanceof IHtmlElement) ? 'True' : 'False' );
+            //$logger->log_var( '$child instanceof IHtmlForm', ($child instanceof IHtmlForm) ? 'True' : 'False' );
+            //$logger->log_var( '$child instanceof IHtmlElement', ($child instanceof IHtmlElement) ? 'True' : 'False' );
 
             // Need IHtmlElement for get_name()
             // Only IHtmlForm need to have unique names
-            if ( $field instanceof IHtmlForm && $field instanceof IHtmlElement )
+            if ( $child instanceof IHtmlForm && $child instanceof IHtmlElement )
             {
-                $name = $field->get_name();
-                $logger->log_var( '$name', $name );
+                $name = $child->get_name();
+                //$logger->log_var( '$name', $name );
 
                 if ( isset( $existing_names[ $name ] ) )
                 {
@@ -143,7 +176,7 @@ class Form extends Element implements IHtmlForm
             }
         }
 
-        $logger->log_return( $is_duplicate );
+        //$logger->log_return( $is_duplicate );
         return $is_duplicate;
     }
 
@@ -191,11 +224,11 @@ class Form extends Element implements IHtmlForm
         {
             $save = [];
 
-            foreach ( $this->get_children() as $field )
+            foreach ( $this->get_children() as $child )
             {
-                if ( $field instanceof IHtmlForm )
+                if ( $child instanceof IHtmlForm )
                 {
-                    $errors = $field->validate( $post );
+                    $errors = $child->validate( $post );
                     $save[] = $errors;
 
                     if ( ! empty( $errors ) )
@@ -226,14 +259,14 @@ class Form extends Element implements IHtmlForm
 
         if ( ! empty( $post ) )
         {
-            foreach ( $this->get_children() as $field )
+            foreach ( $this->get_children() as $child )
             {
-                if ( $field instanceof IHtmlForm )
+                if ( $child instanceof IHtmlForm )
                 {
-                    $name  = $field->get_attributes()->get_attribute( 'name' );
+                    $name  = $child->get_attributes()->get_attribute( 'name' );
                     if ( ! empty( $name ) )
                     {
-                        $value = $field->get_value( $post );
+                        $value = $child->get_value( $post );
                         $values[ $name ] = $value;
                     }
                 }
