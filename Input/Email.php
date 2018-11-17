@@ -48,26 +48,24 @@ class Email extends Text
      *
      * @return null if no error or Field_Error
      */
-    public function validate( $post )
+    public function validate_post( string $name, array $post ) : array
     {
-        $name = $this->get_name();
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $this->validation_errors = [];
 
-        if ( ! isset( $post[ $name ] ) )
-        {
-            return new Field_Error( $this, 'Value not in post' );
-        }
+        // Perform data validation
 
-        $raw = $post[ $name ];
-        if ( ! $this->is_required() && empty( $raw ) )
-        {
-            return null;
-        }
+        $raw        = $post[ $name ] ?? '';
+        $logger->log_var( '$raw', $raw );
         
         if ( ! filter_var($raw, FILTER_VALIDATE_EMAIL) )
         {
-            $error = "'$raw' is not a valid email";
-            return new Field_Error( $this, $error, $value );
+            $this->validation_errors[] = new HtmlValidateError(
+                'not a valid email address', $name, $this                
+            );         
         }
-        return null;
+
+        $logger->log_return( $this->validation_errors );
+        return $this->validation_errors;
     }
 }

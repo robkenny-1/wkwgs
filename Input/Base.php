@@ -640,8 +640,10 @@ class Element implements IHtmlElement, IAttributeProvider
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
+        $raw        = $post[ $name ] ?? '';
         $name       = $this->get_name();
         $required   = Helper::is_true( $this->get_attributes()->get_attribute( 'required' ) );
+        $pattern    = Helper::is_true( $this->get_attributes()->get_attribute( 'pattern' ) );
 
         $validation_errors = [];
 
@@ -651,22 +653,29 @@ class Element implements IHtmlElement, IAttributeProvider
                 '$post is empty', $name, $this                
             );
         }
-        else if ( empty( $name ) )
+        
+        if ( empty( $name ) )
         {
             $validation_errors[] = new HtmlValidateError(
                 '$name is empty', $name, $this                
             );
         }
-        else if ( $required && ! isset( $post[ $name ] ) )
+        
+        if ( $required && empty( $raw ) )
         {
             $validation_errors[] = new HtmlValidateError(
                 '$post missing required data', $name, $this                
             );
         }
-        else
+
+        if ( !empty($pattern) && ! filter_var( $raw, FILTER_VALIDATE_REGEXP, $pattern )
         {
-            $validation_errors = $this->validate_post( $name, $post );
+            $validation_errors[] = new HtmlValidateError(
+                'value does not match defined pattern', $name, $this                
+            );
         }
+
+        $validation_errors = $this->validate_post( $name, $post );
 
         //$logger->log_return( $validation_errors );
         return $validation_errors;

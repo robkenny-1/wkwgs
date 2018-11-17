@@ -35,6 +35,7 @@ class Telephone extends Text
     const Input_Type            = 'tel';
     const Default_Attributes    = array(
             'type'              => self::Input_Type,
+            'pattern'           => '^(?:(?:(\s*\(?([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\)?\s*(?:[.-]\s*)?)([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})$',
         );
 
     public function __construct( $attributes )
@@ -44,25 +45,29 @@ class Telephone extends Text
     }
 
     /**
-     * Verify data is conforms to an email address
+     * Verify data conforms to an telephone address
      *
      * @return null if no error or Field_Error
      */
-    public function validate( $post )
+    public function validate_post( string $name, array $post ) : array
     {
-        $name = $this->get_name();
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $this->validation_errors = [];
 
-        if ( ! isset( $post[ $name ] ) )
+        // Perform data validation
+
+        $raw        = $post[ $name ] ?? '';
+        $required   = $this->get_attributes()->get_attribute( 'required' );
+        $logger->log_var( '$raw', $raw );
+
+        if ( empty( $value ) )
         {
-            return new Field_Error( $this, 'Value not in post' );
+            $this->validation_errors[] = new HtmlValidateError(
+                'checkbox definition error: value must not be empty', $name, $this                
+            );         
         }
 
-        $raw = $post[ $name ];
-        if ( ! $this->is_required() && empty( $raw ) )
-        {
-            return null;
-        }
-        
-        return null;
+        $logger->log_return( $this->validation_errors );
+        return $this->validation_errors;
     }
 }
