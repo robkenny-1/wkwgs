@@ -53,7 +53,7 @@ $clear = new Input\Button( [
 $form->add_child(
     new Input\Element( [
         'tag'           => 'span',
-        'contents'      => [ 'Form Buttons', $submit, $mock, $clear ]
+        'contents'      => [ new Input\HtmlText('Form Buttons'), $submit, $mock, $clear ]
     ])
 );
 

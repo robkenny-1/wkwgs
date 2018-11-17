@@ -105,12 +105,12 @@ class Button extends Element
             $logger->log_var( '$alternate', $alternate );
             $logger->log_var( '$remaining', $remaining );
 
-            $label          = $alternate[ 'label' ] ?? '';
+            $label = $alternate[ 'label' ] ?? '';
 
             $button = new Element([
                 'tag'               => 'button',
                 'attributes'        => $remaining,
-                'contents'          => [ $label ]
+                'contents'          => [ new HtmlText($label) ]
             ]);
 
              $html = $button->get_html();
@@ -121,7 +121,7 @@ class Button extends Element
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IHtmlForm routines */
+    /* IHtmlFormElement routines */
     /*-------------------------------------------------------------------------*/
 
     /* all handled by InputElement */

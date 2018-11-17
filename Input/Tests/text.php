@@ -110,9 +110,6 @@ $form->add_child(
             'data-tooltip'  => 'This is a tooltip message',
             'css-container' => 'tooltip-special'
         ],
-        'contents'      => [
-            'I have a tooltip!',
-        ]
     ])
 );
 
@@ -134,7 +131,7 @@ $form->add_child(
 $form->add_child(
     new Input\Element( [
         'tag'           => 'h3',
-        'contents'      => 'Email input',
+        'contents'      => [ new Input\HtmlText('Email input') ]
     ])
 );
 
@@ -155,7 +152,7 @@ $form->add_child(
 $form->add_child(
     new Input\Element( [
         'tag'           => 'h3',
-        'contents'      => 'Telephone input',
+        'contents'      => [ new Input\HtmlText('Telephone input') ],
     ])
 );
 

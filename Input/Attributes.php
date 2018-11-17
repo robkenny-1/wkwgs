@@ -22,11 +22,7 @@ namespace Input;
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once(__DIR__ . '/../Wkwgs_Logger.php' );
-
-include_once('HtmlHelper.php');
-include_once('Base.php');
+include_once('Input.php');
 
 /*-------------------------------------------------------------------------*/
 /* Interfaces */
