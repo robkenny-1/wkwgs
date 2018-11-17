@@ -44,9 +44,9 @@ class Email extends Text
     }
 
     /**
-     * Verify data is conforms to an email address
+     * Validate data for an email address
      *
-     * @return null if no error or Field_Error
+     * @return array of HtmlValidateError, empty if no errors
      */
     public function validate_post( string $name, array $post ) : array
     {

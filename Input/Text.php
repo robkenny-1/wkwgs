@@ -68,6 +68,11 @@ class Text extends InputElement
     /* InputElement routines */
     /*-------------------------------------------------------------------------*/
 
+    /**
+     * Validate data for text input
+     *
+     * @return array of HtmlValidateError, empty if no errors
+     */
     public function validate_post( string $name, array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );

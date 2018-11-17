@@ -132,9 +132,9 @@ class Button extends Element
     /*-------------------------------------------------------------------------*/
 
     /**
-     * Verify status of input data
+     * Validate data for a button
      *
-     * @return True if value meets criteria
+     * @return array of HtmlValidateError, empty if no errors
      */
     public function validate_post( string $name, array $post ) : array
     {

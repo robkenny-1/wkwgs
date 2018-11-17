@@ -45,9 +45,9 @@ class Telephone extends Text
     }
 
     /**
-     * Verify data conforms to an telephone address
+     * Validate data for a telephone number
      *
-     * @return null if no error or Field_Error
+     * @return array of HtmlValidateError, empty if no errors
      */
     public function validate_post( string $name, array $post ) : array
     {
