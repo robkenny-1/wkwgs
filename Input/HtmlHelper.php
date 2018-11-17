@@ -743,7 +743,7 @@ class Helper
 
         if ( gettype( $val ) === 'string' )
         {
-            return filter_var($raw, FILTER_VALIDATE_BOOLEAN);
+            return filter_var($val, FILTER_VALIDATE_BOOLEAN);
         }
 
         return False;
