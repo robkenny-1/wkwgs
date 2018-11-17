@@ -28,7 +28,7 @@ include_once('Input.php');
 /* Classes */
 /*-------------------------------------------------------------------------*/
 
-class Form extends Element implements IHtmlFormElementElement
+class Form extends Element implements IHtmlFormElement
 {
     const Tag_Type              = 'form';
     const Default_Attributes    = [
@@ -193,7 +193,7 @@ class Form extends Element implements IHtmlFormElementElement
             {
                 $logger->log_var( '$child', $child );
 
-                if ( $child instanceof IHtmlFormElementElement )
+                if ( $child instanceof IHtmlFormElement )
                 {
                     $name  = $child->get_attributes()->get_attribute( 'name' );
                     if ( ! empty( $name ) )
