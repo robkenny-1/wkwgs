@@ -76,7 +76,7 @@ class Text extends InputElement
         // Perform data validation
 
         $raw        = $post[ $name ] ?? '';
-        $required   = $this->attributes->get_attributes()->get_attribute( 'required' );
+        $required   = $this->get_attributes()->get_attribute( 'required' );
         $logger->log_var( '$raw',           $raw );
         $logger->log_var( '$required',      $required );
 

@@ -411,7 +411,7 @@ class Element implements IHtmlElement, IAttributeProvider
             $children       = $this->children;
 
             $html .= "<{$this->tag}";
-            $html .= $this->attributes->get_html();
+            $html .= $this->get_attributes()->get_html();
             $html .= '>';
             if ( ! Helper::is_void_element( $this->tag ) )
             {
@@ -435,7 +435,7 @@ class Element implements IHtmlElement, IAttributeProvider
     
     public function get_name() : string
     {
-        return $this->attributes->get_attribute( 'name' );
+        return $this->get_attributes()->get_attribute( 'name' );
     }
 
     public function add_child( $child )
@@ -525,7 +525,7 @@ class Element implements IHtmlElement, IAttributeProvider
 
     public function get_type()
     {
-        return $this->attributes->get_attribute( 'type' );
+        return $this->get_attributes()->get_attribute( 'type' );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -569,8 +569,8 @@ class Element implements IHtmlElement, IAttributeProvider
 
         if ( ! empty( $this->tag ) )
         {
-            $alternate      = $this->attributes->get_attributes_alternate();
-            $attributes     = $this->attributes->get_attributes();
+            $alternate      = $this->get_attributes()->get_attributes_alternate();
+            $attributes     = $this->get_attributes()->get_attributes();
             $logger->log_var( '$alternate', $alternate );
             $logger->log_var( '$attributes', $attributes );
 
@@ -641,7 +641,7 @@ class Element implements IHtmlElement, IAttributeProvider
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $name       = $this->get_name();
-        $required   = Helper::is_true( $this->attributes->get_attribute( 'required' ) );
+        $required   = Helper::is_true( $this->get_attributes()->get_attribute( 'required' ) );
 
         $validation_errors = [];
 
@@ -706,7 +706,7 @@ class Element implements IHtmlElement, IAttributeProvider
      */
     public function get_form_id() : string
     {
-        return $this->attributes->get_attribute( 'form' );
+        return $this->get_attributes()->get_attribute( 'form' );
     }
 
     /**
