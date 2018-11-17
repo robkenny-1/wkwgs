@@ -74,18 +74,7 @@ class Text extends InputElement
         $this->validation_errors = [];
 
         // Perform data validation
-
-        $raw        = $post[ $name ] ?? '';
-        $required   = $this->get_attributes()->get_attribute( 'required' );
-        $logger->log_var( '$raw',           $raw );
-        $logger->log_var( '$required',      $required );
-
-        if ( Helper::is_true( $required ) && ! empty( $raw ) )
-        {
-            $this->validation_errors[] = new HtmlValidateError(
-                'required value missing', $name, $this                
-            );
-        }
+        // None
 
         $logger->log_return( $this->validation_errors );
         return $this->validation_errors;

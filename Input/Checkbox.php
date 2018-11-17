@@ -95,23 +95,11 @@ class Checkbox extends InputElement
                 'checkbox definition error: value must not be empty', $name, $this                
             );         
         }
-        else
+        else if ( $value !== $raw )
         {
-            if ( empty( $raw ) )
-            {
-                if ( Helper::is_true( $required ) )
-                {
-                    $this->validation_errors[] = new HtmlValidateError(
-                        'required value missing', $name, $this                
-                    );
-                }
-            }
-            else if ( $value !== $raw )
-            {
-                $this->validation_errors[] = new HtmlValidateError(
-                    '$post value does not match expected', $name, $this                
-                );         
-            }
+            $this->validation_errors[] = new HtmlValidateError(
+                '$post value does not match expected', $name, $this                
+            );         
         }
 
         $logger->log_return( $this->validation_errors );
