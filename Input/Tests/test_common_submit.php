@@ -21,48 +21,41 @@
 defined( 'ABSPATH' ) || exit;
 
 // -------------------------------------------------------------------------------
-/*
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'label',
-        'name'              => 'label_before_buttons',
-        'label'             => "--------------------------",
-        )
-    )
-);
+$button_name = 'submit';
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'              => 'checkbox',
-        'name'              => 'validate_post',
-        'label'             => 'Use mock POST data',
-        )
-    )
-);
+$submit = new Input\Button( [
+    'attributes'    => [
+    'type'          => 'submit',
+    'name'          => $button_name,
+    'value'         => 'submit',
+    'label'         => 'Submit',
+    ],
+]);
 
-$form->add_field(
-    \Input\Factory::Get(
-        array(
-        'type'          => 'button',
-        'name'          => 'reset',
-        'value'         => 'Reset',
-        'button-type'   => 'reset',
-        )
-    )
-);
-*/
+$mock = new Input\Button( [
+    'attributes'    => [
+    'type'          => 'submit',
+    'name'          => $button_name,
+    'value'         => 'mock',
+    'label'         => 'Use mock POST data',
+    ],
+]);
 
-$text = new Input\Button( [
-        'attributes'    => [
-        'type'          => 'submit',
-        'name'          => 'submit',
-        'value'         => 'Submit',
-        'label'         => 'Submit',
-        ],
-    ]);
-$form->add_child( $text );
+$clear = new Input\Button( [
+    'attributes'    => [
+    'type'          => 'submit',
+    'name'          => $button_name,
+    'value'         => 'clear',
+    'label'         => 'Clear Session',
+    ],
+]);
+
+$form->add_child(
+    new Input\Element( [
+        'tag'           => 'span',
+        'contents'      => [ 'Form Buttons', $submit, $mock, $clear ]
+    ])
+);
 
 // -------------------------------------------------------------------------------
 
@@ -78,22 +71,27 @@ $post = $form->get_submit_data();
 
 if ( ! empty( $post ) )
 {
-    Wkwgs_Logger::log_msg( '$post is set' );
-    Wkwgs_Logger::log_var( '$post', $post );
+    Wkwgs_Logger::log_msg( 'test_common_submit: Clear session values' );
 
     // Clear session values
     unset( $_SESSION['post'] );
     unset( $_SESSION['post_orig'] );
     unset( $_SESSION['form_values'] );
     unset( $_SESSION['form_errors'] );
+}
+
+if ( isset( $post[ 'mock' ] ) )
+{
+    Wkwgs_Logger::log_msg( 'test_common_submit: Mock data' );
 
     $_SESSION['post_orig'] = $post;
+    $post = falsify_post( $post );
+}
 
-    // Override $_POST values with test data
-    if ( isset( $post[ 'validate_post' ] ) )
-    {
-        $post = falsify_post( $post );
-    }
+if ( isset( $post[ 'submit' ] ) && $post[ 'submit' ] !== 'clear')
+{
+    Wkwgs_Logger::log_msg( 'test_common_submit: submit button' );
+
     $_SESSION['post'] = $post;
 
     // Validate data and store results
@@ -123,17 +121,17 @@ if ( isset( $_SESSION['post_orig'] ) )
 
 if ( isset( $_SESSION['post'] ) )
 {
-    echo '<h2>$_POST (After mock data)</h2>';
+    echo '<h2>$_POST</h2>';
     print_r( $_SESSION['post'] );
 }
 
 // Print out any validation errors stored in the session 
 if ( isset( $_SESSION['form_errors'] ) )
 {
-    Wkwgs_Logger::log_msg( '$_SESSION["form_errors"] is set ' );
+    Wkwgs_Logger::log_msg( 'test_common_submit: $_SESSION["form_errors"] is set' );
 
     echo '<div>';
-    echo '<h1>Errors from last SUBMIT</h1>';
+    echo '<h1>Validation Errors</h1>';
 
     $errors = unserialize( $_SESSION['form_errors'] );
     foreach ( $errors as $error)
@@ -162,10 +160,10 @@ if ( isset( $_SESSION['form_errors'] ) )
 // Print out any results stored in the session
 if ( isset( $_SESSION['form_values'] ) )
 {
-    Wkwgs_Logger::log_msg( '$_SESSION["form_values"] is set ' );
+    Wkwgs_Logger::log_msg( 'test_common_submit: $_SESSION["form_values"] is set' );
 
     echo '<div>';
-    echo '<h1>Values from last SUBMIT</h1>';
+    echo '<h1>Submit Values</h1>';
 
     $values = $_SESSION['form_values'];
     foreach ( $values as $name => $value)

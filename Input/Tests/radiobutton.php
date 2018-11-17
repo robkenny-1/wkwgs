@@ -27,7 +27,7 @@ $form = new Input\Form( [] );
 /* -------------------------------------------------------------------------------- */
 
 $form->add_child(
-new Input\Element( [
+    new Input\Element( [
         'tag'           => 'h3',
         'contents'      => 'no selected value',
     ])
@@ -35,24 +35,24 @@ new Input\Element( [
 
 $form->add_child(
     new Input\RadioButton( [
-            'attributes'            => [
-                'name'              => 'required_1',
-                'label'             => 'Please select a value',
-                'choices'           => array(
-                    'choice1'       => 'Choice 1',
-                    'choice2'       => 'Choice 2',
-                    'choice3'       => 'Choice 3',
-                ),
-                'selected'          => 'something bogus',
-            ],
-            'contents'              => [],
+        'attributes'            => [
+            'name'              => 'required_1',
+            'label'             => 'Please select a value',
+            'choices'           => array(
+                'choice1'       => 'Choice 1',
+                'choice2'       => 'Choice 2',
+                'choice3'       => 'Choice 3',
+            ),
+            'selected'          => 'something bogus',
+        ],
+        'contents'              => [],
     ])
 );
 
 /* -------------------------------------------------------------------------------- */
 
 $form->add_child(
-new Input\Element( [
+    new Input\Element( [
         'tag'           => 'h3',
         'contents'      => 'Required, Choice 2 should be selected',
     ])
@@ -60,25 +60,25 @@ new Input\Element( [
 
 $form->add_child(
     new Input\RadioButton( [
-            'attributes'            => [
-                'name'              => 'required_2',
-                'label'             => '3 choices, required',
-                'choices'           => array(
-                    'choice1'       => 'Choice 1',
-                    'choice2'       => 'Choice 2',
-                    'choice3'       => 'Choice 3',
-                ),
-                'selected'          => 'choice2',
-                'required'          => 'yes',
-            ],
-            'contents'              => [],
+        'attributes'            => [
+            'name'              => 'required_2',
+            'label'             => '3 choices, required',
+            'choices'           => array(
+                'choice1'       => 'Choice 1',
+                'choice2'       => 'Choice 2',
+                'choice3'       => 'Choice 3',
+            ),
+            'selected'          => 'choice2',
+            'required'          => 'yes',
+        ],
+        'contents'              => [],
     ])
 );
 
 /* -------------------------------------------------------------------------------- */
 
 $form->add_child(
-new Input\Element( [
+    new Input\Element( [
         'tag'           => 'h3',
         'contents'      => 'No label, Choice 3 should be selected',
     ])
@@ -86,16 +86,16 @@ new Input\Element( [
 
 $form->add_child(
     new Input\RadioButton( [
-            'attributes'            => [
-                'name'              => 'required_3',
-                'choices'           => array(
-                    'choice1'       => 'Choice 1',
-                    'choice2'       => 'Choice 2',
-                    'choice3'       => 'Choice 3',
-                ),
-                'selected'          => 'choice3',
-            ],
-            'contents'              => [],
+        'attributes'            => [
+            'name'              => 'required_3',
+            'choices'           => array(
+                'choice1'       => 'Choice 1',
+                'choice2'       => 'Choice 2',
+                'choice3'       => 'Choice 3',
+            ),
+            'selected'          => 'choice3',
+        ],
+        'contents'              => [],
     ])
 );
 
