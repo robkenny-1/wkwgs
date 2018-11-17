@@ -22,10 +22,10 @@ include_once( '..\Input.php' );
 Wkwgs_Logger::clear();
 
 $form = new Input\Form([
-        'attributes'        => [
-            'name'          => 'checkbox_test_form',
-        ],
-        'contents'          => [],
+    'attributes'        => [
+        'name'          => 'checkbox_test_form',
+    ],
+    'contents'          => [],
 ]);
 
 $form->add_child(
