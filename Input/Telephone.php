@@ -52,7 +52,7 @@ class Telephone extends Text
     public function validate_post( string $name, array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $this->validation_errors = [];
+        $ve = [];
 
         // Perform data validation
 
@@ -62,12 +62,12 @@ class Telephone extends Text
 
         if ( empty( $value ) )
         {
-            $this->validation_errors[] = new HtmlValidateError(
+            $ve[] = new HtmlValidateError(
                 'checkbox definition error: value must not be empty', $name, $this                
             );         
         }
 
-        $logger->log_return( $this->validation_errors );
-        return $this->validation_errors;
+        $logger->log_return( $ve );
+        return $ve;
     }
 }

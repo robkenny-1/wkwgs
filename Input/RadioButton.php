@@ -82,27 +82,27 @@ class RadioButton extends InputElement
         $html = '';
 
         $attributes     = $this->get_attributes()->get_attributes();
-        $alternates     = $this->get_attributes()->get_attributes_alternate();
+        $choices        = $this->get_attributes()->get_attribute_alternate( 'choices' );
         $logger->log_var( '$attributes',    $attributes );
-        $logger->log_var( '$alternates',    $alternates );
+        $logger->log_var( '$choices',       $choices );
 
-        if ( ! isset( $alternates[ 'choices' ] ) || empty( $alternates[ 'choices' ] ) )
+        if ( empty( $choices ) )
         {
             $html .= parent::get_html_just_me();
         }
         else
         {
-            $selected_value = $alternates[ 'selected' ];
-            $logger->log_var( '$selected_value', $selected_value );
+            $selected       = $this->get_attributes()->get_attribute_alternate( 'selected' );
+            $logger->log_var( '$selected', $selected );
 
-            foreach ( $alternates[ 'choices' ] as $value => $label  )
+            foreach ( $choices as $value => $label  )
             {
                 $logger->log_var( '$label', $label );
                 $logger->log_var( '$value', $value );
 
                 $attributes[ 'value' ]      = $value;
                 $attributes[ 'label' ]      = $label;
-                $attributes[ 'checked' ]    = $value === $selected_value;
+                $attributes[ 'checked' ]    = $value === $selected;
 
                 $rb = new RadioButton([
                     'attributes'                => $attributes,
@@ -129,30 +129,31 @@ class RadioButton extends InputElement
     public function validate_post( string $name, array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $this->validation_errors = [];
+        $ve = [];
 
         // Perform data validation
 
-        $raw        = $post[ $name ] ?? '';
-        $choices    = $this->get_choices();
+        $raw            = $post[ $name ] ?? '';
+        $choices        = $this->get_attributes()->get_attribute_alternate( 'choices' );
+        $choice_keys    = array_keys( $choices );
         $logger->log_var( '$raw',           $raw );
-        $logger->log_var( '$choices',       $choices );
+        $logger->log_var( '$choice_keys',   $choice_keys );
 
-        if ( empty( $choices ) )
+        if ( empty( $choice_keys ) )
         {
-            $this->validation_errors[] = new HtmlValidateError(
+            $ve[] = new HtmlValidateError(
                 'RadioButton definition error: choices must not be empty', $name, $this                
             );         
         }
-        else if ( ! in_array( $raw, $choices, True ) )
+        else if ( !empty($raw) && ! in_array( $raw, $choice_keys, True ) )
         {
-            $this->validation_errors[] = new HtmlValidateError(
+            $ve[] = new HtmlValidateError(
                 '$post value does not match expected', $name, $this                
             );         
         }
 
-        $logger->log_return( $this->validation_errors );
-        return $this->validation_errors;
+        $logger->log_return( $ve );
+        return $ve;
     }
 
     public function cleanse_data( $raw )
