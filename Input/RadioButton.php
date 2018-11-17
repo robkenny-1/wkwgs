@@ -129,10 +129,8 @@ class RadioButton extends InputElement
         // Perform data validation
 
         $raw        = $post[ $name ] ?? '';
-        $required   = $this->get_attributes()->get_attribute( 'required' );
-        $choices     = $this->get_choices();
+        $choices    = $this->get_choices();
         $logger->log_var( '$raw',           $raw );
-        $logger->log_var( '$required',      $required );
         $logger->log_var( '$choices',       $choices );
 
         if ( empty( $choices ) )
