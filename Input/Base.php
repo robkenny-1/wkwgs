@@ -640,45 +640,48 @@ class Element implements IHtmlElement, IAttributeProvider
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        $raw        = $post[ $name ] ?? '';
         $name       = $this->get_name();
+        $raw        = $post[ $name ] ?? '';
         $required   = Helper::is_true( $this->get_attributes()->get_attribute( 'required' ) );
         $pattern    = Helper::is_true( $this->get_attributes()->get_attribute( 'pattern' ) );
 
+        $this->validation_errors = [];
         $validation_errors = [];
-
-        if ( empty( $post ) )
-        {
-            $validation_errors[] = new HtmlValidateError(
-                '$post is empty', $name, $this                
-            );
-        }
         
+        // These first three errors preclude all others
         if ( empty( $name ) )
         {
-            $validation_errors[] = new HtmlValidateError(
+            $this->validation_errors[] = new HtmlValidateError(
                 '$name is empty', $name, $this                
             );
         }
-        
-        if ( $required && empty( $raw ) )
+        else if ( empty( $post ) )
         {
-            $validation_errors[] = new HtmlValidateError(
+            $this->validation_errors[] = new HtmlValidateError(
+                '$post is empty', $name, $this                
+            );
+        }
+        else if ( $required && empty( $raw ) )
+        {
+            $this->validation_errors[] = new HtmlValidateError(
                 '$post missing required data', $name, $this                
             );
         }
-
-        if ( !empty($pattern) && ! filter_var( $raw, FILTER_VALIDATE_REGEXP, $pattern )
+        else
         {
-            $validation_errors[] = new HtmlValidateError(
-                'value does not match defined pattern', $name, $this                
-            );
+            if ( !empty($pattern) && ! filter_var( $raw, FILTER_VALIDATE_REGEXP, $pattern ) )
+            {
+                $this->validation_errors[] = new HtmlValidateError(
+                    'value does not match defined pattern', $name, $this                
+                );
+            }
+
+            $ve = $this->validate_post( $name, $post );
+            $this->validation_errors = array_merge($this->validation_errors, $ve);
         }
 
-        $validation_errors = $this->validate_post( $name, $post );
-
-        //$logger->log_return( $validation_errors );
-        return $validation_errors;
+        //$logger->log_return( $this->validation_errors );
+        return $this->validation_errors;
     }
 
     public function get_validate_errors() : array
