@@ -743,9 +743,7 @@ class Helper
 
         if ( gettype( $val ) === 'string' )
         {
-            $val = strtolower( $val );
-
-            return in_array( $val, [ 'yes', '1', 'true' ] );
+            return filter_var($raw, FILTER_VALIDATE_BOOLEAN);
         }
 
         return False;
