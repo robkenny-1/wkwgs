@@ -197,7 +197,7 @@ class Element implements IHtmlElement, IAttributeProvider
  *  </div>
  *
  */
-abstract class InputElement extends Element implements IHtmlInputElement
+abstract class InputElement extends Element implements IHtmlInput
 {
     const Alternate_Attributes = [
         'label'        ,
@@ -289,7 +289,7 @@ abstract class InputElement extends Element implements IHtmlInputElement
                         ],
                         'contents'          => [
                             new HtmlText( $label ),
-                            new Callback( [ $this, 'get_html_just_me' ] ),
+                            new Callback( [ $this, 'parent::get_html' ] ),
                         ]
                     ])
                 ]
@@ -308,7 +308,7 @@ abstract class InputElement extends Element implements IHtmlInputElement
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IHtmlInputElement routines */
+    /* IHtmlInput routines */
     /*-------------------------------------------------------------------------*/
 
     /**
