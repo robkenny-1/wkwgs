@@ -100,7 +100,6 @@ class Button extends Element
 
         if ( ! empty( $this->tag ) )
         {
-            $children       = $this->get_children();
             $alternate      = $this->get_attributes()->get_attributes_alternate();
             $remaining      = $this->get_attributes()->get_attributes();
             $logger->log_var( '$alternate', $alternate );
