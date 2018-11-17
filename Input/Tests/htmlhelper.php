@@ -116,7 +116,11 @@ $e3 = new Input\Element([
 ]);
 $e2 = new Input\Element([
     'tag'           => 'p',
-    'contents'      => [ 'text before', $e3, 'text after' ]
+    'contents'      => [
+        new Input\HtmlText('text before'),
+        $e3,
+        new Input\HtmlText('text after')
+    ]
 ]);
 $e1 = new Input\Element([
     'tag'               => 'p',

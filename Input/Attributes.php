@@ -208,7 +208,7 @@ class Attributes implements IAttributes, IHtmlPrinter
      *
      * @return string
      */
-    public function get_html()
+    public function get_html() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 

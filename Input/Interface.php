@@ -35,7 +35,7 @@ interface IHtmlPrinter
      *
      * @return string
      */
-    public function get_html();
+    public function get_html() : string;
 }
 
 interface IHtmlPrinterList extends \Iterator

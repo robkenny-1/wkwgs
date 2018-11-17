@@ -81,7 +81,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      *
      * @return string
      */
-    public function get_html()
+    public function get_html() : string
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         //$logger->log_var( '$this', $this );
@@ -181,7 +181,7 @@ class HtmlText implements IHtmlPrinter
     {
         $this->text = $text;
     }
-    public function get_html()
+    public function get_html() : string
     {
         return $this->text;
     }
@@ -192,7 +192,7 @@ class Callback implements IHtmlPrinter
     protected   $callback   = '';
     protected   $params     = null;
 
-    public function __construct( $callback, $params = null )
+    public function __construct( callable $callback, $params = null )
     {
         $this->callback     = $callback;
         $this->params       = $params;
@@ -207,7 +207,7 @@ class Callback implements IHtmlPrinter
      *
      * @return string
      */
-    public function get_html()
+    public function get_html() : string
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 

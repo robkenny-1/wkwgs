@@ -98,7 +98,7 @@ class Element implements IHtmlElement, IAttributeProvider
      *
      * @return string
      */
-    public function get_html()
+    public function get_html() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         $logger->log_var( 'tag', $this->tag );
@@ -243,7 +243,7 @@ abstract class InputElement extends Element implements IHtmlInputElement
      *
      * @return string
      */
-    public function get_html()
+    public function get_html() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         $logger->log_var( 'tag',  $this->tag );
@@ -302,7 +302,7 @@ abstract class InputElement extends Element implements IHtmlInputElement
         return $html;
     }
 
-    public function get_html_just_me()
+    public function get_html_just_me() : string
     {
         return parent::get_html();
     }
