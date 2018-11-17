@@ -53,7 +53,7 @@ interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList
     public function get_name() : string;
 }
 
-interface IHtmlFormElement
+interface IHtmlInputElement
 {
     /**
      * Verify that this object's data in $post is valid

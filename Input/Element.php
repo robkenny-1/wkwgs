@@ -197,7 +197,7 @@ class Element implements IHtmlElement, IAttributeProvider
  *  </div>
  *
  */
-abstract class InputElement extends Element implements IHtmlFormElement
+abstract class InputElement extends Element implements IHtmlInputElement
 {
     const Alternate_Attributes = [
         'label'        ,
@@ -308,7 +308,7 @@ abstract class InputElement extends Element implements IHtmlFormElement
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IHtmlFormElement routines */
+    /* IHtmlInputElement routines */
     /*-------------------------------------------------------------------------*/
 
     /**

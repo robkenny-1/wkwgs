@@ -121,7 +121,7 @@ class Button extends Element
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IHtmlFormElement routines */
+    /* IHtmlInputElement routines */
     /*-------------------------------------------------------------------------*/
 
     /* all handled by InputElement */

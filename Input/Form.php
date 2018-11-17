@@ -28,7 +28,7 @@ include_once('Input.php');
 /* Classes */
 /*-------------------------------------------------------------------------*/
 
-class Form extends Element implements IHtmlFormElement
+class Form extends Element implements IHtmlInputElement
 {
     const Tag_Type              = 'form';
     const Default_Attributes    = [
@@ -98,12 +98,12 @@ class Form extends Element implements IHtmlFormElement
         foreach ( $this as $child )
         {
             $logger->log_var( 'gettype($child)', gettype($child) );
-            $logger->log_var( '$child instanceof IHtmlFormElement', ($child instanceof IHtmlFormElement) ? 'True' : 'False' );
+            $logger->log_var( '$child instanceof IHtmlInputElement', ($child instanceof IHtmlInputElement) ? 'True' : 'False' );
             $logger->log_var( '$child instanceof IHtmlElement', ($child instanceof IHtmlElement) ? 'True' : 'False' );
 
             // Need IHtmlElement for get_name()
-            // Only IHtmlFormElement need to have unique names
-            if ( $child instanceof IHtmlFormElement && $child instanceof IHtmlElement )
+            // Only IHtmlInputElement need to have unique names
+            if ( $child instanceof IHtmlInputElement && $child instanceof IHtmlElement )
             {
                 $name = $child->get_name();
                 $logger->log_var( '$name', $name );
@@ -139,7 +139,7 @@ class Form extends Element implements IHtmlFormElement
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IHtmlFormElement routines */
+    /* IHtmlInputElement routines */
     /*-------------------------------------------------------------------------*/
 
     public function validate( array $post ) : array
@@ -166,7 +166,7 @@ class Form extends Element implements IHtmlFormElement
         {
             foreach ( $this as $child )
             {
-                if ( $child instanceof IHtmlFormElement )
+                if ( $child instanceof IHtmlInputElement )
                 {
                     $errors = $child->validate( $post );
                     if ( ! empty( $errors ) )
@@ -193,7 +193,7 @@ class Form extends Element implements IHtmlFormElement
             {
                 $logger->log_var( '$child', $child );
 
-                if ( $child instanceof IHtmlFormElement )
+                if ( $child instanceof IHtmlInputElement )
                 {
                     $name  = $child->get_attributes()->get_attribute( 'name' );
                     if ( ! empty( $name ) )
