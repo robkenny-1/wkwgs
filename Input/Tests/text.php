@@ -85,22 +85,25 @@ define( 'ABSPATH', '1');
 session_start();
 include_once( '..\Input.php' );
 
-Wkwgs_Logger::clear();
+//Wkwgs_Logger::clear();
+Wkwgs_Logger::log_msg( 'text.php' );
 
 $form = new Input\Form( [] );
 
-$text = new Input\Text( [
+$form->add_child(
+    new Input\Text( [
         'attributes'    => [
             'class' => 'color-steelblue',
             'label' => 'I do not have a name, therefore no input results'
         ],
         'contents'      => [],
-    ]);
-$form->add_child( $text );
+    ])
+);
 
 /* ------------------------------------------------------------------------------------ */
 
-$text = new Input\Text( [
+$form->add_child(
+    new Input\Text( [
         'attributes'    => [
             'name'          => 'tooltip',
             'label'         => 'input with tooltip',
@@ -110,32 +113,62 @@ $text = new Input\Text( [
         'contents'      => [
             'I have a tooltip!',
         ]
-    ]);
-$form->add_child( $text );
+    ])
+);
 
 /* ------------------------------------------------------------------------------------ */
 
-$text = new Input\Text( [
+$form->add_child(
+    new Input\Text( [
         'attributes'    => [
             'name'          => 'tooltip',
             'name'          => 'text_on_right',
             'label'         => "I'm on the right",
             'css-container' => 'text-input-label-right'
         ],
-    ]);
-$form->add_child( $text );
+    ])
+);
 
 /* ------------------------------------------------------------------------------------ */
 
-$text = new Input\Text( [
+$form->add_child(
+    new Input\Element( [
+        'tag'           => 'h3',
+        'contents'      => 'Email input',
+    ])
+);
+
+$form->add_child(
+    new Input\Text( [
         'attributes'    => [
+            'type'              => 'email',
             'name'              => 'email',
             'label'             => 'email address',
             'required'          => 'yes',
             'value'             => 'abc@xyz.com',
         ],
-    ]);
-$form->add_child( $text );
+    ])
+);
+
+/* ------------------------------------------------------------------------------------ */
+
+$form->add_child(
+    new Input\Element( [
+        'tag'           => 'h3',
+        'contents'      => 'Telephone input',
+    ])
+);
+
+$form->add_child(
+    new Input\Text( [
+        'attributes'    => [
+            'type'              => 'tel',
+            'name'              => 'telephone',
+            'label'             => 'Phone number',
+            'placeholder'       => '999-555-1212',
+        ],
+    ])
+);
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation
