@@ -136,7 +136,7 @@ if ( isset( $_SESSION['form_errors'] ) )
     $errors = unserialize( $_SESSION['form_errors'] );
     foreach ( $errors as $error)
     {
-        if ( $error instanceof IHtmlValidateError)
+        if ( $error instanceof \Input\IHtmlValidateError )
         {
             $error_html = htmlspecialchars( $error->get_error() );
             $name_html  = htmlspecialchars( $error->get_name() );
