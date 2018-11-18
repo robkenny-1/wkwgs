@@ -49,12 +49,26 @@ interface IHtmlPrinterList extends \Iterator
 
 interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList
 {
-    public function get_tag() : string;
-    public function get_name() : string;
+    public function get_tag()   : string;
 }
 
 interface IHtmlInput
 {
+    /**
+     * Get the type of Input
+     *
+     * @return  string Input type
+     */
+    public function get_type() : string;
+
+    /**
+     * Get the name of the HTML input element,
+     * this is the index used to retrieve the data from POST
+     *
+     * @return string name of the input element
+     */
+    public function get_name()  : string;
+
     /**
      * Verify that this object's data in $post is valid
      * This validation should be similar, if not exact, to the client side validation

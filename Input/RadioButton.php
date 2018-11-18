@@ -75,7 +75,7 @@ class RadioButton extends InputElement
     /* IHtmlPrinter routines */
     /*-------------------------------------------------------------------------*/
 
-    public function get_html_just_me()
+    public function get_html_core() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
@@ -88,7 +88,7 @@ class RadioButton extends InputElement
 
         if ( empty( $choices ) )
         {
-            $html .= parent::get_html_just_me();
+            $html .= parent::get_html_core();
         }
         else
         {

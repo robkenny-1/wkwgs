@@ -59,7 +59,9 @@ class Element implements IHtmlElement, IAttributeProvider
 
         if ( empty( $tag ) )
         {
-            $logger->log_msg( '$tag is empty');
+            $msg = '$tag is empty';
+            $logger->log_msg( $msg );
+            throw new \Exception( $msg );
         }
 
         $this->tag = $tag;
@@ -105,16 +107,13 @@ class Element implements IHtmlElement, IAttributeProvider
 
         $html = '';
 
-        if ( ! empty( $this->tag ) )
+        $html .= "<{$this->tag}";
+        $html .= $this->get_attributes()->get_html();
+        $html .= '>';
+        if ( ! Helper::is_void_element( $this->tag ) )
         {
-            $html .= "<{$this->tag}";
-            $html .= $this->get_attributes()->get_html();
-            $html .= '>';
-            if ( ! Helper::is_void_element( $this->tag ) )
-            {
-                $html .= $this->children->get_html();
-                $html .= "</{$this->tag}>";
-            }
+            $html .= $this->children->get_html();
+            $html .= "</{$this->tag}>";
         }
 
         $logger->log_return( $html );
@@ -164,11 +163,6 @@ class Element implements IHtmlElement, IAttributeProvider
         return $this->tag;
     }
 
-    public function get_name() : string
-    {
-        return $this->get_attributes()->get_attribute( 'name' );
-    }
-
     /*-------------------------------------------------------------------------*/
     /* Helper routines for HTML */
     /*-------------------------------------------------------------------------*/
@@ -207,11 +201,6 @@ abstract class InputElement extends Element implements IHtmlInput
         'css-input'    ,
     ];
 
-    public function get_type()
-    {
-        return $this->get_attributes()->get_attribute( 'type' );
-    }
-
     /*-------------------------------------------------------------------------*/
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
@@ -246,70 +235,82 @@ abstract class InputElement extends Element implements IHtmlInput
     public function get_html() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'tag',  $this->tag );
-        $logger->log_var( 'type', $this->get_type());
 
-        $html = '';
+        $alternate      = $this->get_attributes()->get_attributes_alternate();
+        $attributes     = $this->get_attributes()->get_attributes();
+        $logger->log_var( '$alternate', $alternate );
+        $logger->log_var( '$attributes', $attributes );
 
-        if ( ! empty( $this->tag ) )
+        $required       = $attributes[ 'required'      ] ?? '';
+        $label          = $alternate [ 'label'         ] ?? '';
+        $tooltip        = $alternate [ 'data-tooltip'  ] ?? '';
+        $css_container  = $alternate [ 'css-container' ] ?? '';
+        $css_label      = $alternate [ 'css-label'     ] ?? '';
+
+        if ( Helper::is_true( $required ) )
         {
-            $alternate      = $this->get_attributes()->get_attributes_alternate();
-            $attributes     = $this->get_attributes()->get_attributes();
-            $logger->log_var( '$alternate', $alternate );
-            $logger->log_var( '$attributes', $attributes );
+            // Add required attribute back into input element's attributes
+            $attributes[ 'required' ] = True;
 
-            $required       = $attributes[ 'required'      ] ?? '';
-            $label          = $alternate [ 'label'         ] ?? '';
-            $tooltip        = $alternate [ 'data-tooltip'  ] ?? '';
-            $css_container  = $alternate [ 'css-container' ] ?? '';
-            $css_label      = $alternate [ 'css-label'     ] ?? '';
-
-            if ( Helper::is_true( $required ) )
+            if ( !empty( $label ) )
             {
-                // Add required attribute back into input element's attributes
-                $attributes[ 'required' ] = True;
-
-                if ( !empty( $label ) )
-                {
-                    $label .= '<abbr class="required" title="required">&nbsp;*</abbr>';
-                }
+                $label .= '<abbr class="required" title="required">&nbsp;*</abbr>';
             }
-
-            $logger->log_msg( 'Creating Element for output' );
-
-            $div = new Element([
-                'tag'                       => 'div',
-                'attributes'                => [ 'class' => $css_container ],
-                'contents'                  => [
-                    new Element([
-                        'tag'               => 'label',
-                        'attributes'        => [
-                            'class'         => $css_label,
-                            'data-tooltip'  => $tooltip,
-                        ],
-                        'contents'          => [
-                            new HtmlText( $label ),
-                            new Callback( [ $this, 'parent::get_html' ] ),
-                        ]
-                    ])
-                ]
-            ]);
-
-             $html = $div->get_html();
         }
+
+        // HTML for the <input> element
+        $html_input = $this->get_html_core();
+
+        $compound = new Element([
+            'tag'                       => 'div',
+            'attributes'                => [
+                'class'                 => $css_container
+            ],
+            'contents'                  => [
+                new Element([
+                    'tag'               => 'label',
+                    'attributes'        => [
+                        'class'         => $css_label,
+                        'data-tooltip'  => $tooltip,
+                    ],
+                    'contents'          => [
+                        new HtmlText( $label ),
+                        new HtmlText( $html_input ),
+                    ]
+                ])
+            ]
+        ]);    
+
+        $html = $compound->get_html();
 
         $logger->log_return( $html );
         return $html;
     }
 
-    public function get_html_just_me() : string
-    {
-        return parent::get_html();
-    }
-
     /*-------------------------------------------------------------------------*/
     /* IHtmlInput routines */
     /*-------------------------------------------------------------------------*/
+
+   /**
+     * Get the type of Input
+     *
+     * @return  string Input type
+     */
+    public function get_type() : string
+    {
+        return $this->get_attributes()->get_attribute( 'type' );
+    }
+
+    /**
+     * Get the name of the HTML input element,
+     * this is the index used to retrieve the data from POST
+     *
+     * @return string name of the input element
+     */
+    public function get_name() : string
+    {
+        return $this->get_attributes()->get_attribute( 'name' );
+    }
 
     /**
      * Verify that this object's data in $post is valid
@@ -426,4 +427,9 @@ abstract class InputElement extends Element implements IHtmlInput
      * @return array | list of validation errors or null if good
      */
     abstract public function validate_post( string $name, array $post ) : array;
+
+    public function get_html_core() : string
+    {
+        return parent::get_html();
+    }
 }

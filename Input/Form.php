@@ -142,6 +142,34 @@ class Form extends Element implements IHtmlInput
     /* IHtmlInput routines */
     /*-------------------------------------------------------------------------*/
 
+   /**
+     * Get the type of Input
+     *
+     * @return  string Input type
+     */
+    public function get_type() : string
+    {
+        return $this->get_attributes()->get_attribute( 'type' );
+    }
+
+    /**
+     * Get the name of the HTML input element,
+     * this is the index used to retrieve the data from POST
+     *
+     * @return string name of the input element
+     */
+    public function get_name() : string
+    {
+        return $this->get_attributes()->get_attribute( 'name' );
+    }
+
+    /**
+     * Verify that this object's data in $post is valid
+     * This validation should be similar, if not exact, to the client side validation
+     * This minimizes attacks that call POST directly
+     *
+     * @return array | list of validation errors or null if good
+     */
     public function validate( array $post ) : array
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
@@ -181,6 +209,11 @@ class Form extends Element implements IHtmlInput
         return $validation_errors;
     }
 
+    /**
+     * Get this object's data in $post
+     *
+     * @return string | string contents of the input object
+     */
     public function get_value( array $post )
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );

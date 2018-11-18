@@ -192,8 +192,10 @@ class Callback implements IHtmlPrinter
     protected   $callback   = '';
     protected   $params     = null;
 
-    public function __construct( callable $callback, $params = null )
+    public function __construct( callable $callback, ?array $params = null )
     {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
         $this->callback     = $callback;
         $this->params       = $params;
     }
