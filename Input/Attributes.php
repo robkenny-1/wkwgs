@@ -25,69 +25,6 @@ defined( 'ABSPATH' ) || exit;
 include_once('Input.php');
 
 /*-------------------------------------------------------------------------*/
-/* Interfaces */
-/*-------------------------------------------------------------------------*/
-
-/**
- * Attributes are a collection of name/value pairs
- * Attributes used by the HTML generation code are
- * split into two: values used for the HTML element and the others.
- *
- */
-interface IAttributes
-{
-    /**
-     * Set the attributes of both types
-     *
-     * @param $attributes associative array of values, contains both types
-     * @return null
-     */
-    public function set_attributes( array $attributes, array $default = null, array $alternate = null );
-
-    /**
-     * Get the attributes that are not in $alternate
-     *
-     * @return array, current attributes
-     */
-    public function get_attributes() : array;
-
-    /**
-     * Get the attributes that are in $alternate
-     *
-     * @return indexed array of the alternate values
-     */
-    public function get_attributes_alternate() : array;
-
-    /**
-     * Get the value of a single attribute
-     *
-     * @return mixed, value of $name. Empty string if unset
-     */
-    public function get_attribute( string $name );
-
-    /**
-     * Get the value of a single alternate attribute
-     *
-     * @return mixed, value of $name. Empty string if unset
-     */
-    public function get_attribute_alternate( string $name );
-
-    /**
-     * Set the specified attribute
-     *
-     * @return void
-     */
-    public function set_attribute( string $name, $value );
-}
-
-interface IAttributeProvider
-{
-    public function get_attributes_defaults() : array;
-
-    public function get_attributes_alternate() : array;
-}
-
-/*-------------------------------------------------------------------------*/
 /* Manage a collection of key/value pairs (aka HTML attributes) */
 /*-------------------------------------------------------------------------*/
 
