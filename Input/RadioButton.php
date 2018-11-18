@@ -24,18 +24,13 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Input.php');
 
-/**
- * The checkbox input class
- *
- * @since 1.0.0
- */
 class RadioButton extends InputElement
 {
     const Tag_Type              = 'input';
-    const Default_Attributes    = [
+    const Attributes_Default    = [
         'type'                  => 'radio',
     ];
-    const Alternate_Attributes  = [
+    const Attributes_Compound  = [
         'label',
         'choices',
         'selected',
@@ -62,13 +57,17 @@ class RadioButton extends InputElement
     public function define_attribute_default() : array
     {
         $parent = parent::define_attribute_default();
-        return array_merge( $parent, self::Default_Attributes );
+        return array_merge( $parent, self::Attributes_Default );
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeCompoundProvider routines */
+    /*-------------------------------------------------------------------------*/
 
     public function define_attribute_compound() : array
     {
         $parent = parent::define_attribute_compound();
-        return array_merge( $parent, self::Alternate_Attributes );
+        return array_merge( $parent, self::Attributes_Compound );
     }
 
     /*-------------------------------------------------------------------------*/

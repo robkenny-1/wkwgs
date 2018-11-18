@@ -25,15 +25,10 @@ defined( 'ABSPATH' ) || exit;
 include_once('Constants.php');
 include_once('Field.php');
 
-/**
- * The phone input class
- *
- * @since 1.0.0
- */
 class Telephone extends Text
 {
     const Input_Type            = 'tel';
-    const Default_Attributes    = array(
+    const Attributes_Default    = array(
             'type'              => self::Input_Type,
             'pattern'           => '^(?:(?:(\s*\(?([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\)?\s*(?:[.-]\s*)?)([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})$',
         );
@@ -41,7 +36,7 @@ class Telephone extends Text
     public function __construct( $attributes )
     {
         parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Default_Attributes );
+        $this->merge_attributes_default( self::Attributes_Default );
     }
 
     /**

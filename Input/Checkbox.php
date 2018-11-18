@@ -32,12 +32,12 @@ include_once('Input.php');
 class Checkbox extends InputElement
 {
     const Tag_Type              = 'input';
-    const Default_Attributes    = [
+    const Attributes_Default    = [
         'type'                  => 'checkbox',
         'checked'               => False,
         'value'                 => 'True',
     ];
-    const Alternate_Attributes  = [
+    const Attributes_Compound  = [
         'label',
     ];
 
@@ -62,13 +62,17 @@ class Checkbox extends InputElement
     public function define_attribute_default() : array
     {
         $parent = parent::define_attribute_default();
-        return array_merge( $parent, self::Default_Attributes );
+        return array_merge( $parent, self::Attributes_Default );
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeCompoundProvider routines */
+    /*-------------------------------------------------------------------------*/
 
     public function define_attribute_compound() : array
     {
         $parent = parent::define_attribute_compound();
-        return array_merge( $parent, self::Alternate_Attributes );
+        return array_merge( $parent, self::Attributes_Compound );
     }
 
     /*-------------------------------------------------------------------------*/

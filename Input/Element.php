@@ -34,7 +34,7 @@ include_once('Input.php');
 * similar for IHtmlPrinterList
 */
 
-class Element implements IHtmlElement, IAttributeCompoundProvider, IAttributeCompound
+class Element implements IHtmlElement
 {
     protected $tag;                 // string
     protected $attributes;          // Attribute
@@ -73,7 +73,78 @@ class Element implements IHtmlElement, IAttributeCompoundProvider, IAttributeCom
     }
 
     /*-------------------------------------------------------------------------*/
-    /* \Input\IAttribute routines */
+    /* IHtmlElement routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function get_tag() : string
+    {
+        return $this->tag;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinter routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Get the HTML that represents the current Attributes
+     *
+     * @return string
+     */
+    public function get_html() : string
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( 'tag', $this->tag );
+
+        $html = '';
+
+        $html .= "<{$this->tag}";
+        $html .= $this->attributes->get_html();
+        $html .= '>';
+        if ( ! Helper::is_void_element( $this->tag ) )
+        {
+            $html .= $this->children->get_html();
+            $html .= "</{$this->tag}>";
+        }
+
+        $logger->log_return( $html );
+        return $html;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IHtmlPrinterList routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function add_child( $child )
+    {
+        $this->children->add_child( $child );
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Iterator routines */
+    /*-------------------------------------------------------------------------*/
+
+    function rewind()
+    {
+        return $this->children->rewind();
+    }
+    function current()
+    {
+        return $this->children->current();
+    }
+    function key()
+    {
+        return $this->children->key();
+    }
+    function next()
+    {
+        return $this->children->next();
+    }
+    function valid()
+    {
+        return $this->children->valid();
+    }
+    /*-------------------------------------------------------------------------*/
+    /* IAttribute routines */
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -118,20 +189,8 @@ class Element implements IHtmlElement, IAttributeCompoundProvider, IAttributeCom
     }
 
     /*-------------------------------------------------------------------------*/
-    /* \Input\IAttribute routines */
+    /* IAttributeCompound routines */
     /*-------------------------------------------------------------------------*/
-
-    /**
-     * Define attributes that belong to compound elements
-     *
-     * @param array $compound non-associative array of attribute names
-     * that exist for the compound elements
-     * @return null
-     */
-    public function define_attributes_compound( array $compound )
-    {
-        $this->attributes->define_attributes_compound( $compound );
-    }
 
     /**
      * Get the attributes that are in $compound
@@ -154,7 +213,23 @@ class Element implements IHtmlElement, IAttributeCompoundProvider, IAttributeCom
     }
 
     /*-------------------------------------------------------------------------*/
-    /* \Input\IAttributeProvider routines */
+    /* IAttributeCompoundProvider routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Define attributes that belong to compound elements
+     *
+     * @param array $compound non-associative array of attribute names
+     * that exist for the compound elements
+     * @return null
+     */
+    public function define_attributes_compound( array $compound )
+    {
+        $this->attributes->define_attributes_compound( $compound );
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
     public function define_attribute_default() : array
@@ -162,81 +237,13 @@ class Element implements IHtmlElement, IAttributeCompoundProvider, IAttributeCom
         return [];
     }
 
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeCompoundProvider routines */
+    /*-------------------------------------------------------------------------*/
+
     public function define_attribute_compound() : array
     {
         return [];
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* \Input\IHtmlPrinter routines */
-    /*-------------------------------------------------------------------------*/
-
-    /**
-     * Get the HTML that represents the current Attributes
-     *
-     * @return string
-     */
-    public function get_html() : string
-    {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'tag', $this->tag );
-
-        $html = '';
-
-        $html .= "<{$this->tag}";
-        $html .= $this->attributes->get_html();
-        $html .= '>';
-        if ( ! Helper::is_void_element( $this->tag ) )
-        {
-            $html .= $this->children->get_html();
-            $html .= "</{$this->tag}>";
-        }
-
-        $logger->log_return( $html );
-        return $html;
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* \Input\IHtmlPrinterList routines */
-    /*-------------------------------------------------------------------------*/
-
-    public function add_child( $child )
-    {
-        $this->children->add_child( $child );
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* \Iterator routines */
-    /*-------------------------------------------------------------------------*/
-
-    function rewind()
-    {
-        return $this->children->rewind();
-    }
-    function current()
-    {
-        return $this->children->current();
-    }
-    function key()
-    {
-        return $this->children->key();
-    }
-    function next()
-    {
-        return $this->children->next();
-    }
-    function valid()
-    {
-        return $this->children->valid();
-    }
-
-    /*-------------------------------------------------------------------------*/
-    /* \Input\IHtmlElement routines */
-    /*-------------------------------------------------------------------------*/
-
-    public function get_tag() : string
-    {
-        return $this->tag;
     }
 
     /*-------------------------------------------------------------------------*/
@@ -269,7 +276,7 @@ class Element implements IHtmlElement, IAttributeCompoundProvider, IAttributeCom
  */
 abstract class InputElement extends Element implements IHtmlInput
 {
-    const Alternate_Attributes = [
+    const Attributes_Compound = [
         'label'        ,
         'data-tooltip' ,
         'css-container',
@@ -286,9 +293,13 @@ abstract class InputElement extends Element implements IHtmlInput
         return [];
     }
 
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeCompoundProvider routines */
+    /*-------------------------------------------------------------------------*/
+
     public function define_attribute_compound() : array
     {
-        return self::Alternate_Attributes;
+        return self::Attributes_Compound;
     }
 
     /*-------------------------------------------------------------------------*/

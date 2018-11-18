@@ -25,22 +25,17 @@ defined( 'ABSPATH' ) || exit;
 include_once('Constants.php');
 include_once('Field.php');
 
-/**
- * The email input class
- *
- * @since 1.0.0
- */
 class Email extends Text
 {
     const Input_Type = 'email';
-    const Default_Attributes    = array(
+    const Attributes_Default    = array(
             'type'              => self::Input_Type,
         );
 
     public function __construct( $attributes )
     {
         parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Default_Attributes );
+        $this->merge_attributes_default( self::Attributes_Default );
     }
 
     /**

@@ -24,20 +24,16 @@ defined( 'ABSPATH' ) || exit;
 
 include_once('Input.php');
 
-/*-------------------------------------------------------------------------*/
-/* Classes */
-/*-------------------------------------------------------------------------*/
-
 class Form extends Element implements IHtmlInput
 {
     const Tag_Type              = 'form';
-    const Default_Attributes    = [
+    const Attributes_Default    = [
         'name'              => 'form0',
         'action'            => '#', // submit data to same page
         'method'            => 'post',
         'enctype'           => 'multipart/form-data',
     ];
-    const Alternate_Attributes = [
+    const Attributes_Compound = [
     ];
 
     public function __construct( $desc )
@@ -124,13 +120,17 @@ class Form extends Element implements IHtmlInput
     public function define_attribute_default() : array
     {
         $parent = parent::define_attribute_default();
-        return array_merge( $parent, self::Default_Attributes );
+        return array_merge( $parent, self::Attributes_Default );
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeCompoundProvider routines */
+    /*-------------------------------------------------------------------------*/
 
     public function define_attribute_compound() : array
     {
         $parent = parent::define_attribute_compound();
-        return array_merge( $parent, self::Alternate_Attributes );
+        return array_merge( $parent, self::Attributes_Compound );
     }
 
     /*-------------------------------------------------------------------------*/
