@@ -81,8 +81,8 @@ class RadioButton extends InputElement
 
         $html = '';
 
-        $attributes     = $this->get_attributes()->get_attributes();
-        $choices        = $this->get_attributes()->get_attribute_compound( 'choices' );
+        $attributes     = $this->get_attributes();
+        $choices        = $this->get_attribute_compound( 'choices' );
         $logger->log_var( '$attributes',    $attributes );
         $logger->log_var( '$choices',       $choices );
 
@@ -92,7 +92,7 @@ class RadioButton extends InputElement
         }
         else
         {
-            $selected       = $this->get_attributes()->get_attribute_compound( 'selected' );
+            $selected       = $this->get_attribute_compound( 'selected' );
             $logger->log_var( '$selected', $selected );
 
             foreach ( $choices as $value => $label  )
@@ -134,7 +134,7 @@ class RadioButton extends InputElement
         // Perform data validation
 
         $raw            = $post[ $name ] ?? '';
-        $choices        = $this->get_attributes()->get_attribute_compound( 'choices' );
+        $choices        = $this->get_attribute_compound( 'choices' );
         $choice_keys    = array_keys( $choices );
         $logger->log_var( '$raw',           $raw );
         $logger->log_var( '$choice_keys',   $choice_keys );

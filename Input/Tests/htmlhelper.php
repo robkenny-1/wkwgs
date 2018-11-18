@@ -80,8 +80,8 @@ $e1 = new Input\Element( [
         'attributes'    => [ 'class' => 'color-red' ],
         'contents'      => "override default class, should be red"
     ]);
-$existing_attr = $e1->get_attributes()->get_attributes();
-$e1->get_attributes()->set_attributes( $existing_attr, [ 'class' => 'color-steelblue' ] );
+$existing_attr = $e1->get_attributes();
+$e1->set_attributes( $existing_attr, [ 'class' => 'color-steelblue' ] );
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
@@ -94,8 +94,8 @@ $e1 = new Input\Element( [
         'tag'           => 'h2',
         'contents'      => "using default class, should be steel-blue"
     ]);
-$existing_attr = $e1->get_attributes()->get_attributes();
-$e1->get_attributes()->set_attributes( $existing_attr, [ 'class' => 'color-steelblue' ] );
+$existing_attr = $e1->get_attributes();
+$e1->set_attributes( $existing_attr, [ 'class' => 'color-steelblue' ] );
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */

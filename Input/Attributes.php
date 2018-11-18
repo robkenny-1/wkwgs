@@ -46,7 +46,7 @@ class Attributes implements IAttributeCompound, IHtmlPrinter
      * @param array $attributes associative array of attribute name/value
      * @return null
      */
-    public function set_attributes( array $attributes, array $default = [])
+    public function set_attributes( array $attributes, array $default = [] )
     {
         $this->invalidate_cache();
 

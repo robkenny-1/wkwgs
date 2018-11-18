@@ -100,8 +100,8 @@ class Button extends Element
 
         if ( ! empty( $this->tag ) )
         {
-            $compound       = $this->get_attributes()->get_attributes_compound();
-            $remaining      = $this->get_attributes()->get_attributes();
+            $compound       = $this->get_attributes_compound();
+            $remaining      = $this->get_attributes();
             $logger->log_var( '$compound', $compound );
             $logger->log_var( '$remaining', $remaining );
 
@@ -141,7 +141,7 @@ class Button extends Element
         $validation_errors = [];
 
         // The button should only return 'value'
-        if ( $post[ $name ] !== $this->get_attributes()->get_attribute( 'value' ) )
+        if ( $post[ $name ] !== $this->get_attribute( 'value' ) )
         {
             $validation_errors[] = new HtmlValidateError(
                 '$post post data does not match expected', $name, $this

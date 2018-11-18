@@ -57,7 +57,7 @@ class Telephone extends Text
         // Perform data validation
 
         $raw        = $post[ $name ] ?? '';
-        $required   = $this->get_attributes()->get_attribute( 'required' );
+        $required   = $this->get_attribute( 'required' );
         $logger->log_var( '$raw', $raw );
 
         if ( empty( $value ) )

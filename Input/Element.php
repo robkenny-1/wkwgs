@@ -34,7 +34,7 @@ include_once('Input.php');
 * similar for IHtmlPrinterList
 */
 
-class Element implements IHtmlElement, IAttributeCompoundProvider
+class Element implements IHtmlElement, IAttributeCompoundProvider, IAttributeCompound
 {
     protected $tag;                 // string
     protected $attributes;          // Attribute
@@ -72,9 +72,85 @@ class Element implements IHtmlElement, IAttributeCompoundProvider
         $this-> attributes = new Attributes( $attributes, $default , $compound );
     }
 
-    public function get_attributes() : IAttribute
+    /*-------------------------------------------------------------------------*/
+    /* \Input\IAttribute routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Set the attributes of both types
+     *
+     * @param array $attributes associative array of attribute name/value
+     * @return null
+     */
+    public function set_attributes( array $attributes, array $default = [] )
     {
-        return $this->attributes;
+        $this->attributes->set_attributes( $attributes, $default );
+    }
+
+    /**
+     * Get the attributes that are not in $compound
+     *
+     * @return array, current attributes
+     */
+    public function get_attributes() : array
+    {
+        return $this->attributes->get_attributes();
+    }
+
+    /**
+     * Get the value of a single attribute
+     *
+     * @return mixed, value of $name. Empty string if unset
+     */
+    public function get_attribute( string $name )
+    {
+        return $this->attributes->get_attribute( $name );
+    }
+
+    /**
+     * Set the specified attribute
+     *
+     * @return void
+     */
+    public function set_attribute( string $name, $value )
+    {
+        $this->attributes->set_attribute( $name, $value );
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* \Input\IAttribute routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Define attributes that belong to compound elements
+     *
+     * @param array $compound non-associative array of attribute names
+     * that exist for the compound elements
+     * @return null
+     */
+    public function define_attributes_compound( array $compound )
+    {
+        $this->attributes->define_attributes_compound( $compound );
+    }
+
+    /**
+     * Get the attributes that are in $compound
+     *
+     * @return indexed array of the alternate values
+     */
+    public function get_attributes_compound() : array
+    {
+        return $this->attributes->get_attributes_compound();
+    }
+
+    /**
+     * Get the value of a single alternate attribute
+     *
+     * @return mixed, value of $name. Empty string if unset
+     */
+    public function get_attribute_compound( string $name )
+    {
+        return $this->attributes->get_attribute_compound( $name );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -108,7 +184,7 @@ class Element implements IHtmlElement, IAttributeCompoundProvider
         $html = '';
 
         $html .= "<{$this->tag}";
-        $html .= $this->get_attributes()->get_html();
+        $html .= $this->attributes->get_html();
         $html .= '>';
         if ( ! Helper::is_void_element( $this->tag ) )
         {
@@ -236,9 +312,9 @@ abstract class InputElement extends Element implements IHtmlInput
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        $compound       = $this->get_attributes()->get_attributes_compound();
-        $attributes     = $this->get_attributes()->get_attributes();
-        $logger->log_var( '$compound', $compound );
+        $compound       = $this->get_attributes_compound();
+        $attributes     = $this->get_attributes();
+        $logger->log_var( '$compound',   $compound );
         $logger->log_var( '$attributes', $attributes );
 
         $required       = $attributes[ 'required'      ] ?? '';
@@ -291,14 +367,14 @@ abstract class InputElement extends Element implements IHtmlInput
     /* IHtmlInput routines */
     /*-------------------------------------------------------------------------*/
 
-   /**
+    /**
      * Get the type of Input
      *
      * @return  string Input type
      */
     public function get_type() : string
     {
-        return $this->get_attributes()->get_attribute( 'type' );
+        return $this->get_attribute( 'type' );
     }
 
     /**
@@ -309,7 +385,7 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_name() : string
     {
-        return $this->get_attributes()->get_attribute( 'name' );
+        return $this->get_attribute( 'name' );
     }
 
     /**
@@ -325,8 +401,8 @@ abstract class InputElement extends Element implements IHtmlInput
 
         $name       = $this->get_name();
         $raw        = $post[ $name ] ?? '';
-        $required   = Helper::is_true( $this->get_attributes()->get_attribute( 'required' ) );
-        $pattern    = Helper::is_true( $this->get_attributes()->get_attribute( 'pattern' ) );
+        $required   = Helper::is_true( $this->get_attribute( 'required' ) );
+        $pattern    = Helper::is_true( $this->get_attribute( 'pattern' ) );
 
         $validation_errors = [];
 
@@ -395,7 +471,7 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_form_id() : string
     {
-        return $this->get_attributes()->get_attribute( 'form' );
+        return $this->get_attribute( 'form' );
     }
 
     /**

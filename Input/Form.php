@@ -66,7 +66,7 @@ class Form extends Element implements IHtmlInput
         $submit = [];
 
         $form_name = $this->get_name();
-            $submit_method = $this->get_attributes()->get_attribute( 'method' );
+            $submit_method = $this->get_attribute( 'method' );
         switch ( $submit_method )
         {
             case 'post':
@@ -144,7 +144,7 @@ class Form extends Element implements IHtmlInput
      */
     public function get_type() : string
     {
-        return $this->get_attributes()->get_attribute( 'type' );
+        return $this->get_attribute( 'type' );
     }
 
     /**
@@ -155,7 +155,7 @@ class Form extends Element implements IHtmlInput
      */
     public function get_name() : string
     {
-        return $this->get_attributes()->get_attribute( 'name' );
+        return $this->get_attribute( 'name' );
     }
 
     /**
@@ -223,7 +223,7 @@ class Form extends Element implements IHtmlInput
 
                 if ( $child instanceof IHtmlInput )
                 {
-                    $name  = $child->get_attributes()->get_attribute( 'name' );
+                    $name  = $child->get_attribute( 'name' );
                     if ( ! empty( $name ) )
                     {
                         $value = $child->get_value( $post );
@@ -244,7 +244,7 @@ class Form extends Element implements IHtmlInput
      */
     public function get_form_id() : string
     {
-        return $this->get_attributes()->get_attribute( 'form' );
+        return $this->get_attribute( 'form' );
     }
 
     /**
@@ -254,7 +254,7 @@ class Form extends Element implements IHtmlInput
      */
     public function set_form_id( string $form_id )
     {
-        $this->get_attributes()->set_attribute( 'form', $form_id );
+        $this->set_attribute( 'form', $form_id );
     }
 
     /*-------------------------------------------------------------------------*/

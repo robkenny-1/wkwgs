@@ -88,7 +88,7 @@ class Checkbox extends InputElement
         // Perform data validation
 
         $raw        = $post[ $name ] ?? '';
-        $value      = $this->get_attributes()->get_attribute( 'value' );
+        $value      = $this->get_attribute( 'value' );
         $logger->log_var( '$raw',           $raw );
         $logger->log_var( '$value',         $value );
 
