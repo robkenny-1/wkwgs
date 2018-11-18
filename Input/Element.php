@@ -29,12 +29,12 @@ include_once('Input.php');
 /*-------------------------------------------------------------------------*/
 
 /*
-* class should implement IAttributes,
+* class should implement IAttribute,
 * current get_attributes() should be renamed get_attributes_handler()
 * similar for IHtmlPrinterList
 */
 
-class Element implements IHtmlElement, IAttributeProvider
+class Element implements IHtmlElement, IAttributeCompoundProvider
 {
     protected $tag;                 // string
     protected $attributes;          // Attribute
@@ -67,12 +67,12 @@ class Element implements IHtmlElement, IAttributeProvider
         $this->tag = $tag;
         $this->children = new ElementList( $children );
 
-        $default    = $this->define_default_attributes();
-        $compound   = $this->define_compound_attributes();
+        $default    = $this->define_attribute_default();
+        $compound   = $this->define_attribute_compound();
         $this-> attributes = new Attributes( $attributes, $default , $compound );
     }
 
-    public function get_attributes() : IAttributes
+    public function get_attributes() : IAttribute
     {
         return $this->attributes;
     }
@@ -81,12 +81,12 @@ class Element implements IHtmlElement, IAttributeProvider
     /* \Input\IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_default_attributes() : array
+    public function define_attribute_default() : array
     {
         return [];
     }
 
-    public function define_compound_attributes() : array
+    public function define_attribute_compound() : array
     {
         return [];
     }
@@ -205,12 +205,12 @@ abstract class InputElement extends Element implements IHtmlInput
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_default_attributes() : array
+    public function define_attribute_default() : array
     {
         return [];
     }
 
-    public function define_compound_attributes() : array
+    public function define_attribute_compound() : array
     {
         return self::Alternate_Attributes;
     }

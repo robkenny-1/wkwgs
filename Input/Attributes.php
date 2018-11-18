@@ -28,36 +28,30 @@ include_once('Input.php');
 /* Manage a collection of key/value pairs (aka HTML attributes) */
 /*-------------------------------------------------------------------------*/
 
-class Attributes implements IAttributes, IHtmlPrinter
+class Attributes implements IAttributeCompound, IHtmlPrinter
 {
     public function __construct( array $attributes, array $default = [], array $compound = [] )
     {
-        $this->set_attributes($attributes, $default, $compound);
+        $this->set_attributes($attributes, $default );
+        $this->define_attributes_compound($compound);
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributes routines */
+    /* IAttribute routines */
     /*-------------------------------------------------------------------------*/
 
     /**
-     * Set the attributes for this input object,
-     * this overrides any previous attributes
+     * Set the attributes of both types
      *
-     * @return void
+     * @param array $attributes associative array of attribute name/value
+     * @return null
      */
-    public function set_attributes( array $attributes, array $default = [], array $compound = [] )
+    public function set_attributes( array $attributes, array $default = [])
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
         $this->invalidate_cache();
 
-        $this->attributes   = $attributes               ?? [];
-        $this->default      = $default                  ?? [];
-        $this->compound     = array_values($compound)   ?? [];
-
-        //$logger->log_var( '$this->attributes', $this->attributes );
-        //$logger->log_var( '$this->default',    $this->default );
-        //$logger->log_var( '$this->compound',  $this->compound );
+        $this->attributes   = $attributes   ?? [];
+        $this->default      = $default      ?? [];
     }
 
     /**
@@ -71,22 +65,6 @@ class Attributes implements IAttributes, IHtmlPrinter
 
         $this->update_cache();
         $attributes = $this->cached;
-
-        //->log_return( $attributes );
-        return $attributes;
-    }
-
-    /**
-     * Get the compound attributes for this input object
-     *
-     * @return indexed array of the compound values
-     */
-    public function get_attributes_compound() : array
-    {
-        // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        $this->update_cache();
-        $attributes = $this->cached_compound;
 
         //->log_return( $attributes );
         return $attributes;
@@ -108,6 +86,53 @@ class Attributes implements IAttributes, IHtmlPrinter
     }
 
     /**
+     * Set the specified attribute
+     *
+     * @return void
+     */
+    public function set_attribute( string $name, $value )
+    {
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $this->invalidate_cache();
+
+        $this->attributes[ $name ] = $value;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeCompound routines */
+    /*-------------------------------------------------------------------------*/
+
+    /**
+     * Define attributes that belong to compound elements
+     *
+     * @param array $compound non-associative array of attribute names
+     * that exist for the compound elements
+     * @return null
+     */
+    public function define_attributes_compound( array $compound )
+    {
+        $this->invalidate_cache();
+        $this->compound = array_values($compound)   ?? [];
+    }
+
+    /**
+     * Get the compound attributes for this input object
+     *
+     * @return indexed array of the compound values
+     */
+    public function get_attributes_compound() : array
+    {
+        // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $this->update_cache();
+        $attributes = $this->cached_compound;
+
+        //->log_return( $attributes );
+        return $attributes;
+    }
+
+    /**
      * Get the value of a single compound attribute
      *
      * @return mixed, value of $name. Empty string if unset
@@ -120,20 +145,6 @@ class Attributes implements IAttributes, IHtmlPrinter
 
         //$logger->log_return( $attribute );
         return $attribute;
-    }
-
-    /**
-     * Set the specified attribute
-     *
-     * @return void
-     */
-    public function set_attribute( string $name, $value )
-    {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-
-        $this->invalidate_cache();
-
-        $this->attributes[ $name ] = $value;
     }
 
     /*-------------------------------------------------------------------------*/

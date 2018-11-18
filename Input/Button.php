@@ -62,15 +62,15 @@ class Button extends Element
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_default_attributes() : array
+    public function define_attribute_default() : array
     {
-        $parent = parent::define_default_attributes();
+        $parent = parent::define_attribute_default();
         return array_merge( $parent, self::Default_Attributes );
     }
 
-    public function define_compound_attributes() : array
+    public function define_attribute_compound() : array
     {
-        $parent = parent::define_compound_attributes();
+        $parent = parent::define_attribute_compound();
         return array_merge( $parent, self::Alternate_Attributes );
     }
 

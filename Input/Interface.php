@@ -102,21 +102,18 @@ interface IHtmlInput
 
 /*-------------------------------------------------------------------------*/
 
-/**
+/*
  * Attributes are a collection of name/value pairs
- * Attributes used by the HTML generation code are
- * split into two: values used for the HTML element and the others.
- *
  */
-interface IAttributes
+interface IAttribute
 {
     /**
      * Set the attributes of both types
      *
-     * @param $attributes associative array of values, contains both types
+     * @param array $attributes associative array of attribute name/value
      * @return null
      */
-    public function set_attributes( array $attributes, array $default = [], array $compound = [] );
+    public function set_attributes( array $attributes, array $default = [] );
 
     /**
      * Get the attributes that are not in $compound
@@ -126,25 +123,11 @@ interface IAttributes
     public function get_attributes() : array;
 
     /**
-     * Get the attributes that are in $compound
-     *
-     * @return indexed array of the alternate values
-     */
-    public function get_attributes_compound() : array;
-
-    /**
      * Get the value of a single attribute
      *
      * @return mixed, value of $name. Empty string if unset
      */
     public function get_attribute( string $name );
-
-    /**
-     * Get the value of a single alternate attribute
-     *
-     * @return mixed, value of $name. Empty string if unset
-     */
-    public function get_attribute_compound( string $name );
 
     /**
      * Set the specified attribute
@@ -154,11 +137,44 @@ interface IAttributes
     public function set_attribute( string $name, $value );
 }
 
+/*
+ * Compound attributes are split into two groups
+ * The second group is defined by the attributes passed to define_attributes_compound
+ */
+interface IAttributeCompound extends IAttribute
+{
+    /**
+     * Define attributes that belong to compound elements
+     *
+     * @param array $compound non-associative array of attribute names
+     * that exist for the compound elements
+     * @return null
+     */
+    public function define_attributes_compound( array $compound );
+
+    /**
+     * Get the attributes that are in $compound
+     *
+     * @return indexed array of the alternate values
+     */
+    public function get_attributes_compound() : array;
+
+    /**
+     * Get the value of a single alternate attribute
+     *
+     * @return mixed, value of $name. Empty string if unset
+     */
+    public function get_attribute_compound( string $name );
+}
+
 interface IAttributeProvider
 {
-    public function define_default_attributes() : array;
+    public function define_attribute_default() : array;
+}
 
-    public function define_compound_attributes() : array;
+interface IAttributeCompoundProvider extends IAttributeProvider
+{
+    public function define_attribute_compound() : array;
 }
 
 ?>
