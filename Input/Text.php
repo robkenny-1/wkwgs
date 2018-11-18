@@ -52,15 +52,15 @@ class Text extends InputElement
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function get_attributes_defaults() : array
+    public function define_default_attributes() : array
     {
-        $parent = parent::get_attributes_defaults();
+        $parent = parent::define_default_attributes();
         return array_merge( $parent, self::Default_Attributes );
     }
 
-    public function get_attributes_alternate() : array
+    public function define_compound_attributes() : array
     {
-        $parent = parent::get_attributes_alternate();
+        $parent = parent::define_compound_attributes();
         return array_merge( $parent, self::Alternate_Attributes );
     }
 

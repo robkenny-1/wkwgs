@@ -30,9 +30,9 @@ include_once('Input.php');
 
 class Attributes implements IAttributes, IHtmlPrinter
 {
-    public function __construct( array $attributes, array $default = [], array $alternate = [] )
+    public function __construct( array $attributes, array $default = [], array $compound = [] )
     {
-        $this->set_attributes($attributes, $default, $alternate);
+        $this->set_attributes($attributes, $default, $compound);
     }
 
     /*-------------------------------------------------------------------------*/
@@ -45,19 +45,19 @@ class Attributes implements IAttributes, IHtmlPrinter
      *
      * @return void
      */
-    public function set_attributes( array $attributes, array $default = null, array $alternate = null )
+    public function set_attributes( array $attributes, array $default = [], array $compound = [] )
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->invalidate_cache();
 
-        $this->attributes   = $attributes   ?? [];
-        $this->default      = $default      ?? [];
-        $this->alternate    = $alternate    ?? [];
+        $this->attributes   = $attributes               ?? [];
+        $this->default      = $default                  ?? [];
+        $this->compound     = array_values($compound)   ?? [];
 
         //$logger->log_var( '$this->attributes', $this->attributes );
         //$logger->log_var( '$this->default',    $this->default );
-        //$logger->log_var( '$this->alternate',  $this->alternate );
+        //$logger->log_var( '$this->compound',  $this->compound );
     }
 
     /**
@@ -70,23 +70,23 @@ class Attributes implements IAttributes, IHtmlPrinter
         // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->update_cache();
-        $attributes = $this->cached_remaining;
+        $attributes = $this->cached;
 
         //->log_return( $attributes );
         return $attributes;
     }
 
     /**
-     * Get the alternate attributes for this input object
+     * Get the compound attributes for this input object
      *
-     * @return indexed array of the alternate values
+     * @return indexed array of the compound values
      */
-    public function get_attributes_alternate() : array
+    public function get_attributes_compound() : array
     {
         // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->update_cache();
-        $attributes = $this->cached_alternate;
+        $attributes = $this->cached_compound;
 
         //->log_return( $attributes );
         return $attributes;
@@ -108,15 +108,15 @@ class Attributes implements IAttributes, IHtmlPrinter
     }
 
     /**
-     * Get the value of a single alternate attribute
+     * Get the value of a single compound attribute
      *
      * @return mixed, value of $name. Empty string if unset
      */
-    public function get_attribute_alternate( string $name )
+    public function get_attribute_compound( string $name )
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         
-        $attribute = $this->get_attributes_alternate()[ $name ] ?? '';
+        $attribute = $this->get_attributes_compound()[ $name ] ?? '';
 
         //$logger->log_return( $attribute );
         return $attribute;
@@ -175,47 +175,47 @@ class Attributes implements IAttributes, IHtmlPrinter
      */
     protected       $attributes;
     protected       $default;
-    protected       $alternate;
-    protected       $cached_remaining;
-    protected       $cached_alternate;
+    protected       $compound;
+    protected       $cached;
+    protected       $cached_compound;
 
     protected function invalidate_cache()
     {
-        $this->cached_remaining = null;
-        $this->cached_alternate = null;
+        $this->cached = null;
+        $this->cached_compound = null;
     }
     
     protected function update_cache()
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         //$logger->log_var( '$this->attributes', $this->attributes );
-        //$logger->log_var( '$this->alternate',  $this->alternate );
+        //$logger->log_var( '$this->compound',  $this->compound );
 
-        if ( is_null( $this->cached_remaining) || is_null( $this->cached_alternate) )
+        if ( is_null( $this->cached) || is_null( $this->cached_compound) )
         {
-            $alternate      = [];
+            $compound      = [];
             $remaining      = array_merge( $this->default, $this->attributes );
 
-            // If we have alternate attributes, split them out
-            if ( ! is_null( $this->alternate ) )
+            // If we have compound attributes, split them out
+            if ( ! is_null( $this->compound ) )
             {
-                foreach ( $this->alternate as $alt )
+                foreach ( $this->compound as $alt )
                 {
                     //$logger->log_var( '$alt', $alt );
                     if ( isset( $remaining[ $alt ] ) )
                     {
-                        //$logger->log_msg( 'Moving from $remaining to $alternate' );
-                        // move $alt from $remaining to $alternate
-                        $alternate[ $alt ] = $remaining[ $alt ];
+                        //$logger->log_msg( 'Moving from $remaining to $compound' );
+                        // move $alt from $remaining to $compound
+                        $compound[ $alt ] = $remaining[ $alt ];
                         unset( $remaining[ $alt ] );
                     }
                 }
             }
             //$logger->log_var( '$remaining',  $remaining );
-            //$logger->log_var( '$alternate', $alternate );
+            //$logger->log_var( '$compound', $compound );
 
-            $this->cached_remaining = $remaining;
-            $this->cached_alternate = $alternate;
+            $this->cached = $remaining;
+            $this->cached_compound = $compound;
         }
     }
 }

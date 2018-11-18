@@ -100,6 +100,7 @@ interface IHtmlInput
     public function set_form_id( string $form_id );
 }
 
+/*-------------------------------------------------------------------------*/
 
 /**
  * Attributes are a collection of name/value pairs
@@ -115,21 +116,21 @@ interface IAttributes
      * @param $attributes associative array of values, contains both types
      * @return null
      */
-    public function set_attributes( array $attributes, array $default = null, array $alternate = null );
+    public function set_attributes( array $attributes, array $default = [], array $compound = [] );
 
     /**
-     * Get the attributes that are not in $alternate
+     * Get the attributes that are not in $compound
      *
      * @return array, current attributes
      */
     public function get_attributes() : array;
 
     /**
-     * Get the attributes that are in $alternate
+     * Get the attributes that are in $compound
      *
      * @return indexed array of the alternate values
      */
-    public function get_attributes_alternate() : array;
+    public function get_attributes_compound() : array;
 
     /**
      * Get the value of a single attribute
@@ -143,7 +144,7 @@ interface IAttributes
      *
      * @return mixed, value of $name. Empty string if unset
      */
-    public function get_attribute_alternate( string $name );
+    public function get_attribute_compound( string $name );
 
     /**
      * Set the specified attribute
@@ -155,9 +156,9 @@ interface IAttributes
 
 interface IAttributeProvider
 {
-    public function get_attributes_defaults() : array;
+    public function define_default_attributes() : array;
 
-    public function get_attributes_alternate() : array;
+    public function define_compound_attributes() : array;
 }
 
 ?>

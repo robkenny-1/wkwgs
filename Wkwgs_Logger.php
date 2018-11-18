@@ -26,7 +26,7 @@ class Wkwgs_Logger
 {
     const log_file_name = __DIR__ . '/../../../wkwgs.log';
     public static $Indent = 0;
-    public static $Wkwgs_Logger_Disable = False;
+    public static $Wkwgs_Logger_Disable = True;
 
     public static function indent()
     {

@@ -59,15 +59,15 @@ class RadioButton extends InputElement
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function get_attributes_defaults() : array
+    public function define_default_attributes() : array
     {
-        $parent = parent::get_attributes_defaults();
+        $parent = parent::define_default_attributes();
         return array_merge( $parent, self::Default_Attributes );
     }
 
-    public function get_attributes_alternate() : array
+    public function define_compound_attributes() : array
     {
-        $parent = parent::get_attributes_alternate();
+        $parent = parent::define_compound_attributes();
         return array_merge( $parent, self::Alternate_Attributes );
     }
 
@@ -82,7 +82,7 @@ class RadioButton extends InputElement
         $html = '';
 
         $attributes     = $this->get_attributes()->get_attributes();
-        $choices        = $this->get_attributes()->get_attribute_alternate( 'choices' );
+        $choices        = $this->get_attributes()->get_attribute_compound( 'choices' );
         $logger->log_var( '$attributes',    $attributes );
         $logger->log_var( '$choices',       $choices );
 
@@ -92,7 +92,7 @@ class RadioButton extends InputElement
         }
         else
         {
-            $selected       = $this->get_attributes()->get_attribute_alternate( 'selected' );
+            $selected       = $this->get_attributes()->get_attribute_compound( 'selected' );
             $logger->log_var( '$selected', $selected );
 
             foreach ( $choices as $value => $label  )
@@ -134,7 +134,7 @@ class RadioButton extends InputElement
         // Perform data validation
 
         $raw            = $post[ $name ] ?? '';
-        $choices        = $this->get_attributes()->get_attribute_alternate( 'choices' );
+        $choices        = $this->get_attributes()->get_attribute_compound( 'choices' );
         $choice_keys    = array_keys( $choices );
         $logger->log_var( '$raw',           $raw );
         $logger->log_var( '$choice_keys',   $choice_keys );

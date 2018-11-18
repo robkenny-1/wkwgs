@@ -62,15 +62,15 @@ class Button extends Element
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function get_attributes_defaults() : array
+    public function define_default_attributes() : array
     {
-        $parent = parent::get_attributes_defaults();
+        $parent = parent::define_default_attributes();
         return array_merge( $parent, self::Default_Attributes );
     }
 
-    public function get_attributes_alternate() : array
+    public function define_compound_attributes() : array
     {
-        $parent = parent::get_attributes_alternate();
+        $parent = parent::define_compound_attributes();
         return array_merge( $parent, self::Alternate_Attributes );
     }
 
@@ -100,12 +100,12 @@ class Button extends Element
 
         if ( ! empty( $this->tag ) )
         {
-            $alternate      = $this->get_attributes()->get_attributes_alternate();
+            $compound       = $this->get_attributes()->get_attributes_compound();
             $remaining      = $this->get_attributes()->get_attributes();
-            $logger->log_var( '$alternate', $alternate );
+            $logger->log_var( '$compound', $compound );
             $logger->log_var( '$remaining', $remaining );
 
-            $label = $alternate[ 'label' ] ?? '';
+            $label = $compound[ 'label' ] ?? '';
 
             $button = new Element([
                 'tag'               => 'button',

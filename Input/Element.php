@@ -67,28 +67,28 @@ class Element implements IHtmlElement, IAttributeProvider
         $this->tag = $tag;
         $this->children = new ElementList( $children );
 
-        $default    = $this->get_attributes_defaults();
-        $alternate  = $this->get_attributes_alternate();
-        $this-> attributes = new Attributes( $attributes, $default , $alternate );
-    }
-
-    public function get_attributes_defaults() : array
-    {
-        return [];
-    }
-
-    public function get_attributes_alternate() : array
-    {
-        return [];
+        $default    = $this->define_default_attributes();
+        $compound   = $this->define_compound_attributes();
+        $this-> attributes = new Attributes( $attributes, $default , $compound );
     }
 
     public function get_attributes() : IAttributes
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        //$logger->log_var( '$this->tag', $this->tag );
-        //$logger->log_var( '$this->attributes', $this->attributes );
-
         return $this->attributes;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* \Input\IAttributeProvider routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function define_default_attributes() : array
+    {
+        return [];
+    }
+
+    public function define_compound_attributes() : array
+    {
+        return [];
     }
 
     /*-------------------------------------------------------------------------*/
@@ -205,12 +205,12 @@ abstract class InputElement extends Element implements IHtmlInput
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function get_attributes_defaults() : array
+    public function define_default_attributes() : array
     {
         return [];
     }
 
-    public function get_attributes_alternate() : array
+    public function define_compound_attributes() : array
     {
         return self::Alternate_Attributes;
     }
@@ -236,16 +236,16 @@ abstract class InputElement extends Element implements IHtmlInput
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        $alternate      = $this->get_attributes()->get_attributes_alternate();
+        $compound       = $this->get_attributes()->get_attributes_compound();
         $attributes     = $this->get_attributes()->get_attributes();
-        $logger->log_var( '$alternate', $alternate );
+        $logger->log_var( '$compound', $compound );
         $logger->log_var( '$attributes', $attributes );
 
         $required       = $attributes[ 'required'      ] ?? '';
-        $label          = $alternate [ 'label'         ] ?? '';
-        $tooltip        = $alternate [ 'data-tooltip'  ] ?? '';
-        $css_container  = $alternate [ 'css-container' ] ?? '';
-        $css_label      = $alternate [ 'css-label'     ] ?? '';
+        $label          = $compound  [ 'label'         ] ?? '';
+        $tooltip        = $compound  [ 'data-tooltip'  ] ?? '';
+        $css_container  = $compound  [ 'css-container' ] ?? '';
+        $css_label      = $compound  [ 'css-label'     ] ?? '';
 
         if ( Helper::is_true( $required ) )
         {

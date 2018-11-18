@@ -97,13 +97,8 @@ class Form extends Element implements IHtmlInput
 
         foreach ( $this as $child )
         {
-            $logger->log_var( 'gettype($child)', gettype($child) );
-            $logger->log_var( '$child instanceof IHtmlInput', ($child instanceof IHtmlInput) ? 'True' : 'False' );
-            $logger->log_var( '$child instanceof IHtmlElement', ($child instanceof IHtmlElement) ? 'True' : 'False' );
-
-            // Need IHtmlElement for get_name()
             // Only IHtmlInput need to have unique names
-            if ( $child instanceof IHtmlInput && $child instanceof IHtmlElement )
+            if ( $child instanceof IHtmlInput )
             {
                 $name = $child->get_name();
                 $logger->log_var( '$name', $name );
@@ -126,15 +121,15 @@ class Form extends Element implements IHtmlInput
     /* IAttributeProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function get_attributes_defaults() : array
+    public function define_default_attributes() : array
     {
-        $parent = parent::get_attributes_defaults();
+        $parent = parent::define_default_attributes();
         return array_merge( $parent, self::Default_Attributes );
     }
 
-    public function get_attributes_alternate() : array
+    public function define_compound_attributes() : array
     {
-        $parent = parent::get_attributes_alternate();
+        $parent = parent::define_compound_attributes();
         return array_merge( $parent, self::Alternate_Attributes );
     }
 
