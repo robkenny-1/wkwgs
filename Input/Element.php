@@ -68,7 +68,7 @@ class Element implements IHtmlElement
         $this->children = new ElementList( $children );
 
         $default    = $this->define_attribute_default();
-        $compound   = $this->define_attribute_compound();
+        $compound   = $this->define_attribute_seconday();
         $this-> attributes = new Attributes( $attributes, $default , $compound );
     }
 
@@ -171,11 +171,11 @@ class Element implements IHtmlElement
     /**
      * Get the value of a single attribute
      *
-     * @return mixed, value of $name. Empty string if unset
+     * @return mixed, value of $attribute. Empty string if unset
      */
-    public function get_attribute( string $name )
+    public function get_attribute( string $attribute )
     {
-        return $this->attributes->get_attribute( $name );
+        return $this->attributes->get_attribute( $attribute );
     }
 
     /**
@@ -183,13 +183,13 @@ class Element implements IHtmlElement
      *
      * @return void
      */
-    public function set_attribute( string $name, $value )
+    public function set_attribute( string $attribute, $value )
     {
-        $this->attributes->set_attribute( $name, $value );
+        $this->attributes->set_attribute( $attribute, $value );
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompound routines */
+    /* IAttributeSeconday routines */
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -197,23 +197,23 @@ class Element implements IHtmlElement
      *
      * @return indexed array of the alternate values
      */
-    public function get_attributes_compound() : array
+    public function get_attributes_seconday() : array
     {
-        return $this->attributes->get_attributes_compound();
+        return $this->attributes->get_attributes_seconday();
     }
 
     /**
      * Get the value of a single alternate attribute
      *
-     * @return mixed, value of $name. Empty string if unset
+     * @return mixed, value of $attribute. Empty string if unset
      */
-    public function get_attribute_compound( string $name )
+    public function get_attribute_seconday( string $attribute )
     {
-        return $this->attributes->get_attribute_compound( $name );
+        return $this->attributes->get_attribute_seconday( $attribute );
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompoundProvider routines */
+    /* IAttributeSecondayProvider routines */
     /*-------------------------------------------------------------------------*/
 
     /**
@@ -223,9 +223,9 @@ class Element implements IHtmlElement
      * that exist for the compound elements
      * @return null
      */
-    public function define_attributes_compound( array $compound )
+    public function set_attribute_seconday( array $compound )
     {
-        $this->attributes->define_attributes_compound( $compound );
+        $this->attributes->set_attribute_seconday( $compound );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -238,10 +238,10 @@ class Element implements IHtmlElement
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompoundProvider routines */
+    /* IAttributeSecondayProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_attribute_compound() : array
+    public function define_attribute_seconday() : array
     {
         return [];
     }
@@ -279,11 +279,9 @@ abstract class InputElement extends Element implements IHtmlInput
     const Attributes_Default    = [
         'type'                  => 'text',
     ];
-    const Attributes_Compound = [
-        'label',
-        'label-class',
-        'label-tooltip',
-        'container-class',
+    const Attributes_Seconday = [
+        'label-',
+        'container-',
     ];
 
     /*-------------------------------------------------------------------------*/
@@ -296,12 +294,12 @@ abstract class InputElement extends Element implements IHtmlInput
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompoundProvider routines */
+    /* IAttributeSecondayProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_attribute_compound() : array
+    public function define_attribute_seconday() : array
     {
-        return self::Attributes_Compound;
+        return self::Attributes_Seconday;
     }
 
     /*-------------------------------------------------------------------------*/
@@ -325,22 +323,16 @@ abstract class InputElement extends Element implements IHtmlInput
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
-        $compound       = $this->get_attributes_compound();
-        $attributes     = $this->get_attributes();
-        $logger->log_var( '$compound',   $compound );
-        $logger->log_var( '$attributes', $attributes );
+        $required               = $this->get_attributes( 'required' );
+        $label_attributes       = $this->get_attributes_seconday()[ 'label' ];
+        $container_attributes   = $this->get_attributes_seconday()[ 'container' ];
+        $label_text             = $label_attributes[ 'text' ];
 
-        $required       = $attributes[ 'required'           ] ?? '';
-        $label          = $compound  [ 'label'              ] ?? '';
-        $lable_css      = $compound  [ 'label-class'        ] ?? '';
-        $label_tooltip  = $compound  [ 'label_tooltip'      ] ?? '';
-        $container_css  = $compound  [ 'container-class'    ] ?? '';
+        $logger->log_var( '$label_attributes',      $label_attributes );
+        $logger->log_var( '$container_attributes',  $container_attributes );
 
         if ( Helper::is_true( $required ) )
         {
-            // Add required attribute back into input element's attributes
-            $attributes[ 'required' ] = True;
-
             if ( !empty( $label ) )
             {
                 $label .= '<abbr class="required" title="required">&nbsp;*</abbr>';
@@ -352,18 +344,13 @@ abstract class InputElement extends Element implements IHtmlInput
 
         $compound = new Element([
             'tag'                       => 'div',
-            'attributes'                => [
-                'class'                 => $container_css
-            ],
+            'attributes'                => $container_attributes,
             'contents'                  => [
                 new Element([
                     'tag'               => 'label',
-                    'attributes'        => [
-                        'class'         => $lable_css,
-                        'data-tooltip'  => $label_tooltip,
-                    ],
+                    'attributes'        => $label_attributes,
                     'contents'          => [
-                        new HtmlText( $label ),
+                        new HtmlText( $label_text ),
                         new HtmlText( $html_input ),
                     ]
                 ])

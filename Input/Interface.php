@@ -93,9 +93,9 @@ interface IAttributeProvider
 
 /*
  * Compound attributes are split into two groups
- * The second group is defined by the attributes passed to define_attributes_compound
+ * The second group is defined by the attributes passed to set_attribute_seconday
  */
-interface IAttributeCompound extends IAttribute
+interface IAttributeSeconday extends IAttribute
 {
     /**
      * Define attributes that belong to compound elements
@@ -104,31 +104,31 @@ interface IAttributeCompound extends IAttribute
      * that exist for the compound elements
      * @return null
      */
-    public function define_attributes_compound( array $compound );
+    public function set_attribute_seconday( array $compound );
 
     /**
      * Get the attributes that are in $compound
      *
      * @return indexed array of the alternate values
      */
-    public function get_attributes_compound() : array;
+    public function get_attributes_seconday() : array;
 
     /**
      * Get the value of a single alternate attribute
      *
      * @return mixed, value of $name. Empty string if unset
      */
-    public function get_attribute_compound( string $name );
+    public function get_attribute_seconday( string $name );
 }
 
-interface IAttributeCompoundProvider extends IAttributeProvider
+interface IAttributeSecondayProvider extends IAttributeProvider
 {
-    public function define_attribute_compound() : array;
+    public function define_attribute_seconday() : array;
 }
 
 /*-------------------------------------------------------------------------*/
 
-interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList, IAttributeCompoundProvider, IAttributeCompound
+interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList, IAttributeSecondayProvider, IAttributeSeconday
 {
     public function get_tag()   : string;
 }

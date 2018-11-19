@@ -30,7 +30,7 @@ class Text extends InputElement
     const Attributes_Default    = [
         'type'                  => 'text',
     ];
-    const Attributes_Compound  = [
+    const Attributes_Seconday  = [
         'label',
     ];
 
@@ -59,13 +59,13 @@ class Text extends InputElement
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompoundProvider routines */
+    /* IAttributeSecondayProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_attribute_compound() : array
+    public function define_attribute_seconday() : array
     {
-        $parent = parent::define_attribute_compound();
-        return array_merge( $parent, self::Attributes_Compound );
+        $parent = parent::define_attribute_seconday();
+        return array_merge( $parent, self::Attributes_Seconday );
     }
 
     /*-------------------------------------------------------------------------*/

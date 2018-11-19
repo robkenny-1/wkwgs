@@ -177,7 +177,7 @@ class HtmlText implements IHtmlPrinter
 {
     protected $text;
 
-    public function __construct( $text )
+    public function __construct( string $text )
     {
         $this->text = $text;
     }

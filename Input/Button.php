@@ -35,7 +35,7 @@ class Button extends Element
     const Attributes_Default    = [
         'type'          => 'submit',
     ];
-    const Attributes_Compound = [
+    const Attributes_Seconday = [
         'label',
     ];
 
@@ -64,13 +64,13 @@ class Button extends Element
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompoundProvider routines */
+    /* IAttributeSecondayProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_attribute_compound() : array
+    public function define_attribute_seconday() : array
     {
-        $parent = parent::define_attribute_compound();
-        return array_merge( $parent, self::Attributes_Compound );
+        $parent = parent::define_attribute_seconday();
+        return array_merge( $parent, self::Attributes_Seconday );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ class Button extends Element
 
         if ( ! empty( $this->tag ) )
         {
-            $compound       = $this->get_attributes_compound();
+            $compound       = $this->get_attributes_seconday();
             $remaining      = $this->get_attributes();
             $logger->log_var( '$compound', $compound );
             $logger->log_var( '$remaining', $remaining );

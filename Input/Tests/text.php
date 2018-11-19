@@ -92,11 +92,11 @@ $form = new Input\Form( [] );
 
 $form->add_child(
     new Input\Text( [
-        'attributes'    => [
-            'class' => 'color-steelblue',
-            'label' => 'I do not have a name, therefore no input results'
+        'attributes'                => [
+            'class'                 => 'color-steelblue',
+            'label-text'            => 'I do not have a name, therefore no input results'
         ],
-        'contents'      => [],
+        'contents'                  => [],
     ])
 );
 
@@ -104,11 +104,11 @@ $form->add_child(
 
 $form->add_child(
     new Input\Text( [
-        'attributes'    => [
-            'name'          => 'tooltip',
-            'label'         => 'input with tooltip',
-            'label-tooltip'  => 'This is a tooltip message',
-            'css-container' => 'tooltip-special'
+        'attributes'                => [
+            'name'                  => 'tooltip',
+            'label-text'            => 'input with tooltip',
+            'label-data-tooltip'    => 'This is a tooltip message',
+            'container-class'       => 'tooltip-special'
         ],
     ])
 );
@@ -117,31 +117,10 @@ $form->add_child(
 
 $form->add_child(
     new Input\Text( [
-        'attributes'    => [
-            'name'          => 'text_on_right',
-            'label'         => "I'm on the right",
-            'css-container' => 'text-input-label-right'
-        ],
-    ])
-);
-
-/* ------------------------------------------------------------------------------------ */
-
-$form->add_child(
-    new Input\Element( [
-        'tag'           => 'h3',
-        'contents'      => [ new Input\HtmlText('Email input') ]
-    ])
-);
-
-$form->add_child(
-    new Input\Text( [
-        'attributes'    => [
-            'type'              => 'email',
-            'name'              => 'email',
-            'label'             => 'email address',
-            'required'          => 'yes',
-            'value'             => 'abc@xyz.com',
+        'attributes'                => [
+            'name'                  => 'text_on_right',
+            'label-text'            => "I'm on the right",
+            'container-class'       => 'text-input-label-right'
         ],
     ])
 );
@@ -150,18 +129,39 @@ $form->add_child(
 
 $form->add_child(
     new Input\Element( [
-        'tag'           => 'h3',
-        'contents'      => [ new Input\HtmlText('Telephone input') ],
+        'tag'                       => 'h3',
+        'contents'                  => [ new Input\HtmlText('Email input') ]
     ])
 );
 
 $form->add_child(
     new Input\Text( [
-        'attributes'    => [
-            'type'              => 'tel',
-            'name'              => 'telephone',
-            'label'             => 'Phone number',
-            'placeholder'       => '999-555-1212',
+        'attributes'                => [
+            'type'                  => 'email',
+            'name'                  => 'email',
+            'label-text'            => 'email address',
+            'required'              => 'yes',
+            'value'                 => 'abc@xyz.com',
+        ],
+    ])
+);
+
+/* ------------------------------------------------------------------------------------ */
+
+$form->add_child(
+    new Input\Element( [
+        'tag'                       => 'h3',
+        'contents'                  => [ new Input\HtmlText('Telephone input') ],
+    ])
+);
+
+$form->add_child(
+    new Input\Text( [
+        'attributes'                => [
+            'type'                  => 'tel',
+            'name'                  => 'telephone',
+            'label-text'            => 'Phone number',
+            'placeholder'           => '999-555-1212',
         ],
     ])
 );

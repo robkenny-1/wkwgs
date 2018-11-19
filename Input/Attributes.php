@@ -28,12 +28,12 @@ include_once('Input.php');
 /* Manage a collection of key/value pairs (aka HTML attributes) */
 /*-------------------------------------------------------------------------*/
 
-class Attributes implements IAttributeCompound, IHtmlPrinter
+class Attributes implements IAttributeSeconday, IHtmlPrinter
 {
-    public function __construct( array $attributes, array $default = [], array $compound = [] )
+    public function __construct( array $attributes, array $default = [], array $seconday = [] )
     {
         $this->set_attributes($attributes, $default );
-        $this->define_attributes_compound($compound);
+        $this->set_attribute_seconday($seconday);
     }
 
     /*-------------------------------------------------------------------------*/
@@ -100,48 +100,48 @@ class Attributes implements IAttributeCompound, IHtmlPrinter
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompound routines */
+    /* IAttributeSeconday routines */
     /*-------------------------------------------------------------------------*/
 
     /**
-     * Define attributes that belong to compound elements
+     * Define attributes that belong to seconday elements
      *
-     * @param array $compound non-associative array of attribute names
-     * that exist for the compound elements
+     * @param array $seconday non-associative array of attribute names
+     * that exist for the seconday elements
      * @return null
      */
-    public function define_attributes_compound( array $compound )
+    public function set_attribute_seconday( array $seconday )
     {
         $this->invalidate_cache();
-        $this->compound = array_values($compound)   ?? [];
+        $this->seconday = array_values($seconday)   ?? [];
     }
 
     /**
-     * Get the compound attributes for this input object
+     * Get the seconday attributes for this input object
      *
-     * @return indexed array of the compound values
+     * @return indexed array of the seconday values
      */
-    public function get_attributes_compound() : array
+    public function get_attributes_seconday() : array
     {
         // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->update_cache();
-        $attributes = $this->cached_compound;
+        $attributes = $this->cached_seconday;
 
         //->log_return( $attributes );
         return $attributes;
     }
 
     /**
-     * Get the value of a single compound attribute
+     * Get the value of a single seconday attribute
      *
      * @return mixed, value of $name. Empty string if unset
      */
-    public function get_attribute_compound( string $name )
+    public function get_attribute_seconday( string $name )
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         
-        $attribute = $this->get_attributes_compound()[ $name ] ?? '';
+        $attribute = $this->get_attributes_seconday()[ $name ] ?? '';
 
         //$logger->log_return( $attribute );
         return $attribute;
@@ -186,47 +186,90 @@ class Attributes implements IAttributeCompound, IHtmlPrinter
      */
     protected       $attributes;
     protected       $default;
-    protected       $compound;
+    protected       $seconday;
     protected       $cached;
-    protected       $cached_compound;
+    protected       $cached_seconday;
 
     protected function invalidate_cache()
     {
         $this->cached = null;
-        $this->cached_compound = null;
+        $this->cached_seconday = null;
     }
     
     protected function update_cache()
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        //$logger->log_var( '$this->attributes', $this->attributes );
-        //$logger->log_var( '$this->compound',  $this->compound );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( '$this->attributes', $this->attributes );
+        $logger->log_var( '$this->seconday',  $this->seconday );
 
-        if ( is_null( $this->cached) || is_null( $this->cached_compound) )
+        if ( is_null( $this->cached) || is_null( $this->cached_seconday) )
         {
-            $compound      = [];
-            $remaining      = array_merge( $this->default, $this->attributes );
+            $secondary      = [];
+            $attributes      = array_merge( $this->default, $this->attributes );
 
-            // If we have compound attributes, split them out
-            if ( ! is_null( $this->compound ) )
+            foreach ( $this->seconday as $seconday_value )
             {
-                foreach ( $this->compound as $alt )
+                if ( Helper::ends_with( $seconday_value, '-' ) )
                 {
-                    //$logger->log_var( '$alt', $alt );
-                    if ( isset( $remaining[ $alt ] ) )
+                    $seconday_name = substr( $seconday_value, 0, -1 );
+                    $secondary[ $seconday_name ] = Attributes::move_values( $seconday_value, $attributes );
+                }
+                else
+                {
+                    if ( isset( $attributes[ $seconday_value ] ) )
                     {
-                        //$logger->log_msg( 'Moving from $remaining to $compound' );
-                        // move $alt from $remaining to $compound
-                        $compound[ $alt ] = $remaining[ $alt ];
-                        unset( $remaining[ $alt ] );
+                        // move $seconday_value from $attributes to $secondary
+                        $secondary[ $seconday_value ] = $attributes[ $seconday_value ];
+                        unset( $attributes[ $seconday_value ] );
                     }
                 }
             }
-            //$logger->log_var( '$remaining',  $remaining );
-            //$logger->log_var( '$compound', $compound );
 
-            $this->cached = $remaining;
-            $this->cached_compound = $compound;
+            $logger->log_var( '$attributes',  $attributes );
+            $logger->log_var( '$secondary', $secondary );
+
+            $this->cached = $attributes;
+            $this->cached_seconday = $secondary;
         }
+    }
+
+    /*
+     * If $seconday_value ends with a -, move all matching
+     * to a label array in $seconday
+     * Example:
+     * $seconday_value = 'label-';
+     * $attributes  = [ 'label-class' => 'aaa', 'style' => 'bbb', 'label-id' => 'ccc' ];
+     * returns
+     * [ 'class' => 'aaa', 'id' => 'ccc' ]
+     * $attributes = [ 'style' => 'bbb' ];
+     */
+    public static function move_values( string $seconday_value, array & $attributes ) : array
+    {
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        // Build the PCRE pattern
+        $delim = '#';
+        $pattern = $delim . '^' . preg_quote( $seconday_value, $delim ) . '(.*)$' . $delim;
+
+        $moved = [];
+
+        foreach( $attributes as $rr => $rr_value )
+        {
+            $logger->log_var( '$rr', $rr );
+
+            $matches = [];
+
+            if ( preg_match( $pattern, $rr, $matches) === 1 )
+            {
+                $new_key = $matches[1];
+                $logger->log_var( '$new_key', $new_key );
+
+                $moved[ $new_key ] = $rr_value;
+                unset( $attributes[ $rr ] );
+            }
+        }
+
+        $logger->log_return( $moved );
+        return $moved;
     }
 }

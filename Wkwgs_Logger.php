@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
 class Wkwgs_Logger 
 {
     public    static $Log_File_Name    = __DIR__ . '/../../../wkwgs.log';
-    public    static $Disable          = False;
+    public    static $Disable          = True;
 
     protected static $Indent           = 0;
 

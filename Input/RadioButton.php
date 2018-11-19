@@ -30,7 +30,7 @@ class RadioButton extends InputElement
     const Attributes_Default    = [
         'type'                  => 'radio',
     ];
-    const Attributes_Compound  = [
+    const Attributes_Seconday  = [
         'label',
         'choices',
         'selected',
@@ -61,13 +61,13 @@ class RadioButton extends InputElement
     }
 
     /*-------------------------------------------------------------------------*/
-    /* IAttributeCompoundProvider routines */
+    /* IAttributeSecondayProvider routines */
     /*-------------------------------------------------------------------------*/
 
-    public function define_attribute_compound() : array
+    public function define_attribute_seconday() : array
     {
-        $parent = parent::define_attribute_compound();
-        return array_merge( $parent, self::Attributes_Compound );
+        $parent = parent::define_attribute_seconday();
+        return array_merge( $parent, self::Attributes_Seconday );
     }
 
     /*-------------------------------------------------------------------------*/
@@ -81,7 +81,7 @@ class RadioButton extends InputElement
         $html = '';
 
         $attributes     = $this->get_attributes();
-        $choices        = $this->get_attribute_compound( 'choices' );
+        $choices        = $this->get_attribute_seconday( 'choices' );
         $logger->log_var( '$attributes',    $attributes );
         $logger->log_var( '$choices',       $choices );
 
@@ -91,7 +91,7 @@ class RadioButton extends InputElement
         }
         else
         {
-            $selected       = $this->get_attribute_compound( 'selected' );
+            $selected       = $this->get_attribute_seconday( 'selected' );
             $logger->log_var( '$selected', $selected );
 
             foreach ( $choices as $value => $label  )
@@ -133,7 +133,7 @@ class RadioButton extends InputElement
         // Perform data validation
 
         $raw            = $post[ $name ] ?? '';
-        $choices        = $this->get_attribute_compound( 'choices' );
+        $choices        = $this->get_attribute_seconday( 'choices' );
         $choice_keys    = array_keys( $choices );
         $logger->log_var( '$raw',           $raw );
         $logger->log_var( '$choice_keys',   $choice_keys );
