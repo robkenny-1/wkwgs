@@ -24,89 +24,27 @@ defined( 'ABSPATH' ) || exit;
 
 class Wkwgs_Logger 
 {
-    const log_file_name = __DIR__ . '/../../../wkwgs.log';
-    public static $Indent = 0;
-    public static $Wkwgs_Logger_Disable = True;
+    public    static $Log_File_Name    = __DIR__ . '/../../../wkwgs.log';
+    public    static $Disable          = False;
+
+    protected static $Indent           = 0;
 
     public static function indent()
     {
         return str_repeat( ' ', self::$Indent );
     }
-    public static function ends_with_eol( $text )
+    public static function ends_with_eol( string $text )
     {
         return substr( $text, -1 ) === PHP_EOL;
-    }
-    
-    protected static function get_param_names( $func, $class = '' ) : array
-    {
-        $paramNames = [];
-
-        try
-        {
-            if ( ! empty( $class ) )
-            {
-                $reflection =  new \ReflectionMethod($class, $func);
-            }
-            else
-            {
-                $reflection =  new \ReflectionFunction($func);
-            }
-
-            $params = $reflection->getParameters();
-            $paramNames = array_map(
-                function( $item )
-                {
-                    return $item->getName();
-                },
-                $params
-            );
-        }
-        catch (Exception $e)
-        {
-        }
-
-        return $paramNames;
     }
 
     public static function clear()
     {
         $previous_error_handler = set_error_handler( "self::ignore_file_not_exist_error" );
 
-        unlink( self::log_file_name );
+        unlink( self::Log_File_Name );
 
         set_error_handler( $previous_error_handler );
-    }
-    public static function log_function( $func, $params = null, $class = '' )
-    {
-        $message = '===== Enter ' . ( empty( $class ) ? $func : "$class::$func" );
-        self::log_internal( $message );
-
-        if ( ! empty( $params ) )
-        {
-            $param_names = self::get_param_names( $func, $class );
-
-            $i = 0;
-            foreach ( $params as $param )
-            {
-                $param_name = $param_names[ $i ] ?? $i;
-
-                $i = $i + 1;
-                self::log_param( $param_name, $param );
-            }
-        }
-    }
-    public static function log_return( $func, $value = null )
-    {
-        if ( isset( $value ) )
-        {
-            $value = self::var_to_text( $value );
-            $message = "===== Exit $func = $value";
-        }
-        else
-        {
-            $message = "===== Exit $func";
-        }
-        self::log_internal( $message );
     }
     protected static function var_to_text( $var )
     {
@@ -127,33 +65,33 @@ class Wkwgs_Logger
         }
         return $var;
     }
-    public static function log_value( $var_name, $var, $prefix = 'Variable' )
+    public static function log_value( string $var_name, $var, string $prefix = 'Variable' )
     {
         $var = self::var_to_text( $var );
         $message   = "----- $prefix $var_name = $var";
         self::log_internal( $message );
     }
-    public static function log_var( $var_name, $var )
+    public static function log_var( string $var_name, $var )
     {
         //self::log_value( $var_name, $var, 'Variable' );
         self::log_value( $var_name, $var, '' );
     }
-    public static function log_param( $var_name, $var )
+    public static function log_param( string $var_name, $var )
     {
         self::log_value( $var_name, $var, 'Param' );
     }
-    public static function log_msg( $message )
+    public static function log_msg( string $message )
     {
         $message = "------ $message";
         self::log_internal( $message );
     }
-	public static function log( $message )
+	public static function log( string $message )
     {
         self::log_internal( $message );
     }
-	protected static function log_internal( $message )
+	protected static function log_internal( string $message )
     {
-        if ( is_null( $message ) || Wkwgs_Logger::$Wkwgs_Logger_Disable == True )
+        if ( is_null( $message ) || Wkwgs_Logger::$Disable == True )
         {
             return;
         }
@@ -178,7 +116,7 @@ class Wkwgs_Logger
     {
         if ( ! empty( $text ) )
         {
-            file_put_contents( self::log_file_name, $text, FILE_APPEND );
+            file_put_contents( Wkwgs_Logger::$Log_File_Name, $text, FILE_APPEND );
         }
     }
 
@@ -188,7 +126,7 @@ class Wkwgs_Logger
         {
             return True;
         }
-        self::log_function( 'ignore_file_not_exist_error');
+        self::log_msg( '***** ignore_file_not_exist_error');
         self::log_var( '$errno'             , $errno            );
         self::log_var( '$errstr'            , $errstr           );
         self::log_var( '$errfile'           , $errfile          );
@@ -199,40 +137,89 @@ class Wkwgs_Logger
     }
 }
 
-class Wkwgs_Function_Logger
+class Wkwgs_Function_Logger extends Wkwgs_Logger
 {
     private $function_name = '';
     private $function_return;
 
-    public function __construct( $func, $params = null, $class = '' )
+    public function __construct( string $func, $params = null, string $class = '' )
     {
         Wkwgs_Logger::$Indent += 2;
         
         $this->function_name = empty( $class ) ? $func : "$class::$func";
 
-        Wkwgs_Logger::log_function( $func, $params, $class );
+        $this->log_function( $params, $class );
     }
 
     public function __destruct()
     {
-        Wkwgs_Logger::log_return( $this->function_name, $this->function_return );
+        $this->log_return( $this->function_name, $this->function_return );
         Wkwgs_Logger::$Indent -= 2;
     }
+        
+    protected function get_param_names( string $class = '' ) : array
+    {
+        $paramNames = [];
 
-    public function log_var( $var_name, $var )
-    {
-        Wkwgs_Logger::log_var( $var_name, $var );
+        try
+        {
+            if ( ! empty( $class ) )
+            {
+                $reflection =  new \ReflectionMethod($class, $this->function_name);
+            }
+            else
+            {
+                $reflection =  new \ReflectionFunction($this->function_name);
+            }
+
+            $params = $reflection->getParameters();
+            $paramNames = array_map(
+                function( $item )
+                {
+                    return $item->getName();
+                },
+                $params
+            );
+        }
+        catch (Exception $e)
+        {
+        }
+
+        return $paramNames;
     }
-    public function log_msg( $message )
+
+    public function log_function( $params = null, string $class = '' )
     {
-        Wkwgs_Logger::log_msg( $message );
+        $message = '===== Enter ' . ( empty( $class ) ? $this->function_name : "$class::$this->function_name" );
+        self::log_internal( $message );
+
+        if ( ! empty( $params ) )
+        {
+            $param_names = self::get_param_names( $this->function_name, $class );
+
+            $i = 0;
+            foreach ( $params as $param )
+            {
+                $param_name = $param_names[ $i ] ?? $i;
+
+                $i = $i + 1;
+                self::log_param( $param_name, $param );
+            }
+        }
     }
-    public function log_return( $var )
+
+    public function log_return( $value = null )
     {
-       $this->function_return = $var;
+        if ( isset( $value ) )
+        {
+            $value = self::var_to_text( $value );
+            $message = '===== Exit ' . $this->function_name . ' = $value';
+        }
+        else
+        {
+            $message = '===== Exit ' . $this->function_name;
+        }
+        self::log_internal( $message );
     }
-	public function log( $message )
-    {
-        Wkwgs_Logger::log( $message );
-    }
+
 }
