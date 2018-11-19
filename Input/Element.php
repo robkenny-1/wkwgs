@@ -266,22 +266,24 @@ class Element implements IHtmlElement
  * The InputElement Class
  *
  * Layout of the input element
- *  <div class="css-container">
- *     <label class="css-label">
+ *  <div class="container-class">
+ *     <label class="label-class">
  *       Label Text
- *       <input class="css-input" />
+ *       <input type='text' />
  *     </label>
  *  </div>
  *
  */
 abstract class InputElement extends Element implements IHtmlInput
 {
+    const Attributes_Default    = [
+        'type'                  => 'text',
+    ];
     const Attributes_Compound = [
-        'label'        ,
-        'data-tooltip' ,
-        'css-container',
-        'css-label'    ,
-        'css-input'    ,
+        'label',
+        'label-class',
+        'label-tooltip',
+        'container-class',
     ];
 
     /*-------------------------------------------------------------------------*/
@@ -290,7 +292,7 @@ abstract class InputElement extends Element implements IHtmlInput
 
     public function define_attribute_default() : array
     {
-        return [];
+        return self::Attributes_Default;
     }
 
     /*-------------------------------------------------------------------------*/
@@ -310,10 +312,10 @@ abstract class InputElement extends Element implements IHtmlInput
      * Get the HTML that represents the current Attributes
      *
      * Layout of the output field
-     *  <div class="css-container">
+     *  <div class="container-class">
      *     <label class="css-label">
      *       Label Text
-     *       <input class="css-input" />
+     *       <input class="class" />
      *     </label>
      *  </div>
      *
@@ -328,11 +330,11 @@ abstract class InputElement extends Element implements IHtmlInput
         $logger->log_var( '$compound',   $compound );
         $logger->log_var( '$attributes', $attributes );
 
-        $required       = $attributes[ 'required'      ] ?? '';
-        $label          = $compound  [ 'label'         ] ?? '';
-        $tooltip        = $compound  [ 'data-tooltip'  ] ?? '';
-        $css_container  = $compound  [ 'css-container' ] ?? '';
-        $css_label      = $compound  [ 'css-label'     ] ?? '';
+        $required       = $attributes[ 'required'           ] ?? '';
+        $label          = $compound  [ 'label'              ] ?? '';
+        $lable_css      = $compound  [ 'label-class'        ] ?? '';
+        $label_tooltip  = $compound  [ 'label_tooltip'      ] ?? '';
+        $container_css  = $compound  [ 'container-class'    ] ?? '';
 
         if ( Helper::is_true( $required ) )
         {
@@ -346,19 +348,19 @@ abstract class InputElement extends Element implements IHtmlInput
         }
 
         // HTML for the <input> element
-        $html_input = $this->get_html_core();
+        $html_input = parent::get_html();
 
         $compound = new Element([
             'tag'                       => 'div',
             'attributes'                => [
-                'class'                 => $css_container
+                'class'                 => $container_css
             ],
             'contents'                  => [
                 new Element([
                     'tag'               => 'label',
                     'attributes'        => [
-                        'class'         => $css_label,
-                        'data-tooltip'  => $tooltip,
+                        'class'         => $lable_css,
+                        'data-tooltip'  => $label_tooltip,
                     ],
                     'contents'          => [
                         new HtmlText( $label ),
@@ -514,9 +516,4 @@ abstract class InputElement extends Element implements IHtmlInput
      * @return array | list of validation errors or null if good
      */
     abstract public function validate_post( string $name, array $post ) : array;
-
-    public function get_html_core() : string
-    {
-        return parent::get_html();
-    }
 }
