@@ -36,12 +36,7 @@ class Button extends Element
         'type'          => 'submit',
     ];
     const Attributes_Compound = [
-        'label'        ,
-        'required'     ,
-        'data-tooltip' ,
-        'css-container',
-        'css-label'    ,
-        'css-input'    ,
+        'label',
     ];
 
     public function __construct( $desc )
