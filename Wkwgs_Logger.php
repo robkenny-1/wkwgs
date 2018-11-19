@@ -42,7 +42,7 @@ class Wkwgs_Logger
     {
         $previous_error_handler = set_error_handler( "self::ignore_file_not_exist_error" );
 
-        unlink( self::Log_File_Name );
+        unlink( Wkwgs_Logger::$Log_File_Name );
 
         set_error_handler( $previous_error_handler );
     }
