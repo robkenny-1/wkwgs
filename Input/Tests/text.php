@@ -107,7 +107,7 @@ $form->add_child(
         'attributes'    => [
             'name'          => 'tooltip',
             'label'         => 'input with tooltip',
-            'data-tooltip'  => 'This is a tooltip message',
+            'label-tooltip'  => 'This is a tooltip message',
             'css-container' => 'tooltip-special'
         ],
     ])
@@ -118,7 +118,6 @@ $form->add_child(
 $form->add_child(
     new Input\Text( [
         'attributes'    => [
-            'name'          => 'tooltip',
             'name'          => 'text_on_right',
             'label'         => "I'm on the right",
             'css-container' => 'text-input-label-right'
