@@ -698,7 +698,7 @@ class Helper
      */
     public static function get_html_attribute( $attr, $value )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         /*
          * Boolean attributes, when set, are specified in only 1 of 3 ways
@@ -722,7 +722,7 @@ class Helper
             $html = $attr . '="' . $value . '"';
         }
 
-        $logger->log_return( $html );
+        //$logger->log_return( $html );
         return $html;
     }
     
