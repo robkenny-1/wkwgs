@@ -153,7 +153,15 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
     public function __destruct()
     {
-        $this->log_return( $this->function_name, $this->function_return );
+        $message = '===== Exit ' . $this->function_name;
+
+        if ( isset( $this->function_return ) )
+        {
+            $message .= ' = ' . self::var_to_text( $this->function_return );
+        }
+
+        self::log_internal( $message );
+
         Wkwgs_Logger::$Indent -= 2;
     }
         
@@ -208,18 +216,8 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
         }
     }
 
-    public function log_return( $value = null )
+    public function log_return( $value )
     {
-        if ( isset( $value ) )
-        {
-            $value = self::var_to_text( $value );
-            $message = '===== Exit ' . $this->function_name . ' = $value';
-        }
-        else
-        {
-            $message = '===== Exit ' . $this->function_name;
-        }
-        self::log_internal( $message );
+        $this->function_return = $value;
     }
-
 }
