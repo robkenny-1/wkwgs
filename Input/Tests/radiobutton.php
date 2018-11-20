@@ -19,6 +19,7 @@ define( 'ABSPATH', '1');
 
 session_start();
 include_once( '..\Input.php' );
+include_once( 'TestFramework.php' );
 
 Wkwgs_Logger::clear();
 
@@ -111,7 +112,8 @@ function falsify_post( $post )
     return $post;
 }
 
-include_once( 'test_common_submit.php' );
+$test = new \Input\Test\TestFramework('falsify_post');
+$test->test_form($form);
 
 ?>
 

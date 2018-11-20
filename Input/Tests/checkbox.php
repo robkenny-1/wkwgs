@@ -18,6 +18,7 @@ define( 'ABSPATH', '1');
 
 session_start();
 include_once( '..\Input.php' );
+include_once( 'TestFramework.php' );
 
 Wkwgs_Logger::clear();
 
@@ -41,7 +42,7 @@ $form->add_child(
     new Input\Checkbox([
         'attributes'        => [
             'name'          => 'checkbox_with_label',
-            'label'         => 'checkbox with label',
+            'label-text'    => 'checkbox with label',
         ],
         'contents'          => [],
     ])
@@ -51,7 +52,7 @@ $form->add_child(
     new Input\Checkbox([
         'attributes'        => [
             'name'          => 'checkbox_required',
-            'label'         => 'Value Required',
+            'label-text'    => 'Value Required',
             'required'      => 'True',
         ],
         'contents'          => [],
@@ -62,7 +63,7 @@ $form->add_child(
     new Input\Checkbox([
         'attributes'        => [
             'name'          => 'checkbox_enabled',
-            'label'         => 'checkbox_enabled',
+            'label-text'    => 'checkbox_enabled',
             'checked'       => True,
             'value'         => 'Has Been Checked',
         ],
@@ -74,7 +75,7 @@ $form->add_child(
     new Input\Checkbox([
         'attributes'        => [
             'name'          => 'html_and_special_chars',
-            'label'         => '< html & special chars >',
+            'label-text'    => '< html & special chars >',
             'help'          => 'This checkbox contains special HTML chars like <, >, &',
         ],
         'contents'          => [],
@@ -90,7 +91,8 @@ function falsify_post( $post )
     return $post;
 }
 
-include_once( 'test_common_submit.php' );
+$test = new \Input\Test\TestFramework('falsify_post');
+$test->test_form($form);
 
 ?>
 
