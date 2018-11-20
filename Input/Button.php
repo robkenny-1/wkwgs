@@ -36,7 +36,7 @@ class Button extends Element
         'type'          => 'submit',
     ];
     const Attributes_Seconday = [
-        'label',
+        'label-text',
     ];
 
     public function __construct( $desc )
@@ -93,27 +93,27 @@ class Button extends Element
     public function get_html() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( 'tag', $this->tag );
 
-        $html = '';
+        $remaining      = $this->get_attributes();
+        $label          = $this->get_attribute_seconday( 'label-text' );
 
-        if ( ! empty( $this->tag ) )
+        $logger->log_var( '$remaining', $remaining );
+        $logger->log_var( '$label',     $label );
+
+        // Buttons can contain (inline only) child elements
+        // If label-text was specified we'll over-write all children
+        // with the text value
+        if ( ! empty($label) )
         {
-            $compound       = $this->get_attributes_seconday();
-            $remaining      = $this->get_attributes();
-            $logger->log_var( '$compound', $compound );
-            $logger->log_var( '$remaining', $remaining );
-
-            $label = $compound[ 'label' ] ?? '';
-
-            $button = new Element([
-                'tag'               => 'button',
-                'attributes'        => $remaining,
-                'contents'          => [ new HtmlText($label) ]
-            ]);
-
-             $html = $button->get_html();
+            $this->children = [ new HtmlText($label) ];
         }
+        
+        $button = new Element([
+            'tag'               => 'button',
+            'attributes'        => $remaining,
+            'contents'          => $this->children
+        ]);
+        $html = $button->get_html();
 
         $logger->log_return( $html );
         return $html;

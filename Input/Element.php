@@ -322,14 +322,19 @@ abstract class InputElement extends Element implements IHtmlInput
     public function get_html() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger->log_var( 'tag', $this->tag );
+        $logger->log_var( '$type',  $this->get_type() );
 
         $required               = $this->get_attributes( 'required' );
         $label_attributes       = $this->get_attributes_seconday()[ 'label' ];
         $container_attributes   = $this->get_attributes_seconday()[ 'container' ];
-        $label_text             = $label_attributes[ 'text' ];
+        $label_text             = $label_attributes[ 'text' ] ?? '';
 
         $logger->log_var( '$label_attributes',      $label_attributes );
         $logger->log_var( '$container_attributes',  $container_attributes );
+        $logger->log_var( '$label_text',            $label_text );
+
+        unset($label_attributes[ 'text' ]);
 
         if ( Helper::is_true( $required ) )
         {
@@ -340,7 +345,17 @@ abstract class InputElement extends Element implements IHtmlInput
         }
 
         // HTML for the <input> element
-        $html_input = parent::get_html();
+        $html_input = $this->get_html_core();
+
+        $label_contents = [];
+        if ( !empty($label_text))
+        {
+            $label_contents[] = new HtmlText( $label_text );
+        }
+        if ( !empty($html_input))
+        {
+            $label_contents[] = new HtmlText( $html_input );
+        }
 
         $compound = new Element([
             'tag'                       => 'div',
@@ -349,10 +364,7 @@ abstract class InputElement extends Element implements IHtmlInput
                 new Element([
                     'tag'               => 'label',
                     'attributes'        => $label_attributes,
-                    'contents'          => [
-                        new HtmlText( $label_text ),
-                        new HtmlText( $html_input ),
-                    ]
+                    'contents'          => $label_contents
                 ])
             ]
         ]);    
@@ -503,4 +515,15 @@ abstract class InputElement extends Element implements IHtmlInput
      * @return array | list of validation errors or null if good
      */
     abstract public function validate_post( string $name, array $post ) : array;
+
+    /**
+     * Get the HTML for the core (<input>) object
+     * This is used by get_html
+     *
+     * @return string HTML of the <input> element
+     */
+    protected function get_html_core() : string
+    {
+        return parent::get_html();
+    }
 }

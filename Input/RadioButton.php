@@ -31,7 +31,8 @@ class RadioButton extends InputElement
         'type'                  => 'radio',
     ];
     const Attributes_Seconday  = [
-        'label',
+        // 'label-',        // defined in parent class
+        // 'container-',    // defined in parent class    
         'choices',
         'selected',
     ];
@@ -74,7 +75,15 @@ class RadioButton extends InputElement
     /* IHtmlPrinter routines */
     /*-------------------------------------------------------------------------*/
 
-    public function get_html_core() : string
+    /**
+     * Get the HTML for the core (<input>) object
+     * Since a radio button is actually multiple <input type='radio'> elements
+     * we override InputElement::get_html_core to provide the HTML
+     * for all elements
+     *
+     * @return string HTML of the <input> element
+     */
+    protected function get_html_core() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
@@ -82,30 +91,31 @@ class RadioButton extends InputElement
 
         $attributes     = $this->get_attributes();
         $choices        = $this->get_attribute_seconday( 'choices' );
+        $selected       = $this->get_attribute_seconday( 'selected' );
         $logger->log_var( '$attributes',    $attributes );
         $logger->log_var( '$choices',       $choices );
+        $logger->log_var( '$selected',       $selected );
 
         if ( empty( $choices ) )
         {
+            $logger->log_msg( 'RadioButton rendering single button' );
+
+            // Render the simple (single) RadioButton <input type='radio'> element
             $html .= parent::get_html_core();
         }
         else
         {
-            $selected       = $this->get_attribute_seconday( 'selected' );
-            $logger->log_var( '$selected', $selected );
-
+            // For each radio button defined in choices, we create
+            // a simple (single) RadioButton to render
             foreach ( $choices as $value => $label  )
             {
-                $logger->log_var( '$label', $label );
-                $logger->log_var( '$value', $value );
-
                 $attributes[ 'value' ]      = $value;
-                $attributes[ 'label' ]      = $label;
+                $attributes[ 'label-text' ] = $label;
                 $attributes[ 'checked' ]    = $value === $selected;
+                $logger->log_var( 'new RadioButton attributes', $attributes );
 
                 $rb = new RadioButton([
-                    'attributes'                => $attributes,
-                    'contents'                  => [],
+                    'attributes' => $attributes,
                 ]);
 
                 $html .= $rb->get_html();
