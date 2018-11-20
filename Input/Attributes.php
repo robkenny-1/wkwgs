@@ -75,11 +75,11 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      *
      * @return string
      */
-    public function get_attribute( string $name )
+    public function get_attribute( string $attribute )
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         
-        $attribute = $this->get_attributes()[ $name ] ?? '';
+        $attribute = $this->get_attributes()[ $attribute ] ?? '';
 
         //$logger->log_return( $attribute );
         return $attribute;
@@ -90,13 +90,13 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      *
      * @return void
      */
-    public function set_attribute( string $name, $value )
+    public function set_attribute( string $attribute, $value )
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $this->invalidate_cache();
 
-        $this->attributes[ $name ] = $value;
+        $this->attributes[ $attribute ] = $value;
     }
 
     /*-------------------------------------------------------------------------*/
@@ -135,13 +135,13 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
     /**
      * Get the value of a single seconday attribute
      *
-     * @return mixed, value of $name. Empty string if unset
+     * @return mixed, value of $attribute. Empty string if unset
      */
-    public function get_attribute_seconday( string $name )
+    public function get_attribute_seconday( string $attribute )
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         
-        $attribute = $this->get_attributes_seconday()[ $name ] ?? '';
+        $attribute = $this->get_attributes_seconday()[ $attribute ] ?? '';
 
         //$logger->log_return( $attribute );
         return $attribute;
@@ -199,8 +199,6 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
     protected function update_cache()
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        $logger->log_var( '$this->attributes', $this->attributes );
-        $logger->log_var( '$this->seconday',  $this->seconday );
 
         if ( is_null( $this->cached) || is_null( $this->cached_seconday) )
         {
@@ -225,11 +223,16 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
                 }
             }
 
+            $logger->log_msg('UPDATED CACHE');
             $logger->log_var( '$attributes',  $attributes );
             $logger->log_var( '$secondary', $secondary );
 
             $this->cached = $attributes;
             $this->cached_seconday = $secondary;
+        }
+        else
+        {
+            $logger->log_return('<cache is up to date>');
         }
     }
 
@@ -255,8 +258,6 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
 
         foreach( $attributes as $rr => $rr_value )
         {
-            $logger->log_var( '$rr', $rr );
-
             $matches = [];
 
             if ( preg_match( $pattern, $rr, $matches) === 1 )
