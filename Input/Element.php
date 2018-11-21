@@ -278,12 +278,12 @@ abstract class InputElement extends Element implements IHtmlInput
 {
     const Attributes_Default    = [
         'type'                  => 'text',
+        'container-tag'         => 'div',
     ];
     const Attributes_Seconday = [
         'label-',
         'container-',
     ];
-    const Default_Container_Tag = 'div';
 
     /*-------------------------------------------------------------------------*/
     /* IAttributeProvider routines */
@@ -328,7 +328,7 @@ abstract class InputElement extends Element implements IHtmlInput
 
         $label_attributes       = $this->get_attributes_seconday()[ 'label' ];
         $container_attributes   = $this->get_attributes_seconday()[ 'container' ];
-        $container_tag          = Attributes::get_attribute_and_remove( 'tag',  $container_attributes, InputElement::Default_Container_Tag);
+        $container_tag          = Attributes::get_attribute_and_remove( 'tag',  $container_attributes);
         $label_text             = Attributes::get_attribute_and_remove( 'text', $label_attributes);
 
         $logger->log_var( '$label_attributes',      $label_attributes );
