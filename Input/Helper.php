@@ -719,6 +719,7 @@ class Helper
         }
         else if ( ! empty( $value ) )
         {
+            $value = htmlspecialchars($value);
             $html = $attr . '="' . $value . '"';
         }
 
