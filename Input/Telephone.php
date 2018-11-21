@@ -22,22 +22,30 @@ namespace Input;
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once('Field.php');
+include_once('Input.php');
 
 class Telephone extends Text
 {
     const Input_Type            = 'tel';
     const Attributes_Default    = array(
             'type'              => self::Input_Type,
-            'pattern'           => '^(?:(?:(\s*\(?([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\)?\s*(?:[.-]\s*)?)([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})$',
+            //'pattern'           => '^(?:(?:(\s*\(?([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\)?\s*(?:[.-]\s*)?)([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})$',
+            'pattern'             => '^\+?(\(?[0-9]{3}\)?|[0-9]{3})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
         );
 
-    public function __construct( $attributes )
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeProvider routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function define_attribute_default() : array
     {
-        parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Attributes_Default );
+        $parent = parent::define_attribute_default();
+        return array_merge( $parent, self::Attributes_Default );
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* InputElement routines */
+    /*-------------------------------------------------------------------------*/
 
     /**
      * Validate data for a telephone number
@@ -51,16 +59,7 @@ class Telephone extends Text
 
         // Perform data validation
 
-        $raw        = $post[ $name ] ?? '';
-        $required   = $this->get_attribute( 'required' );
-        $logger->log_var( '$raw', $raw );
-
-        if ( empty( $value ) )
-        {
-            $ve[] = new HtmlValidateError(
-                'checkbox definition error: value must not be empty', $name, $this                
-            );         
-        }
+        // parent class should validate the pattern
 
         $logger->log_return( $ve );
         return $ve;

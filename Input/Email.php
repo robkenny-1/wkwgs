@@ -22,8 +22,7 @@ namespace Input;
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-include_once('Constants.php');
-include_once('Field.php');
+include_once('Input.php');
 
 class Email extends Text
 {
@@ -32,11 +31,19 @@ class Email extends Text
             'type'              => self::Input_Type,
         );
 
-    public function __construct( $attributes )
+    /*-------------------------------------------------------------------------*/
+    /* IAttributeProvider routines */
+    /*-------------------------------------------------------------------------*/
+
+    public function define_attribute_default() : array
     {
-        parent::__construct( $attributes );
-        $this->merge_attributes_default( self::Attributes_Default );
+        $parent = parent::define_attribute_default();
+        return array_merge( $parent, self::Attributes_Default );
     }
+
+    /*-------------------------------------------------------------------------*/
+    /* InputElement routines */
+    /*-------------------------------------------------------------------------*/
 
     /**
      * Validate data for an email address
@@ -50,7 +57,7 @@ class Email extends Text
 
         // Perform data validation
 
-        $raw        = $post[ $name ] ?? '';
+        $raw = $post[ $name ] ?? '';
         $logger->log_var( '$raw', $raw );
         
         if ( ! filter_var($raw, FILTER_VALIDATE_EMAIL) )
