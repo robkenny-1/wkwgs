@@ -26,84 +26,47 @@ include_once('Wkwgs_Logger.php');
 include_once(WP_PLUGIN_DIR . '/wkwgs/Input/Input.php' );
 
 //Wkwgs_Logger::clear();
-Wkwgs_Logger::$Disable = True;
 
 class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 {
     protected function get_admin_form() : \Input\Form
     {
-        $form =
-        new \Input\Form([
+        $form = new \Input\Form([
             'attributes'        => [
                 'name'          => 'unused in ui',
             ],
+            'contents'          => [
+            ]
         ]);
 
-        $fieldset =         new Input\Element([
+        $fieldset = new Input\Element([
             'tag'               => 'fieldset',
             'attributes'        => [
-                'style'         => 'background: steelblue',
             ],
             'contents'          => [
-                new Input\Element([
-                    'tag'               => 'legend',
-                    'attributes'        => [
-                    ],
-                    'contents'          => [ new \Input\HtmlText('WKWGS Options') ]
-                ])
             ],
         ]);
 
-        $div =
-        new Input\Element([
+        $checkbox = new Input\Element([
             'tag'               => 'div',
             'attributes'        => [
                 'class'         => 'options_group',
-            ]
-        ]);
-
-        $p =
-        new Input\Element([
-            'tag'               => 'p',
-            'attributes'        => [
-                'class'         => 'form-field _sku_field',
-            ]
-        ]);
-
-        $label =
-        new \Input\Element([
-            'tag'               => 'label',
-            'attributes'        => [
-                'style'         => 'background: yellow',
             ],
             'contents'          => [
-                new Input\HtmlText('Use Dual Membership'),
-                new \Input\Element([
-                    'tag'               => 'input',
-                    'attributes'        => [
-                        'type'          => 'checkbox',
-                        'class'         => 'checkbox',
-                        'id'            => 'wkwgs_dual_membership_use',
-                        'name'          => 'wkwgs_dual_membership_use2',
+                new \Input\Checkbox([
+                    'attributes'            => [
+                        'container-tag'     => 'p',
+                        'container-class'   => 'form-field',
+                        'label-text'        => 'Show Dual Membership',
+                        'label-class'       => '',
+                        'name'              => 'wkwgs_dual_membership_use',
+                        'class'             => 'checkbox',
                     ],
                 ])
-            ]
-        ]);
-
-
-       $checkbox =
-        new \Input\Checkbox([
-            'attributes'        => [
-                'name'          => 'wkwgs_dual_membership_use',
-                'label'         => 'Show Dual Membership',
-                'style'         => 'background: orange',
             ],
         ]);
 
-        $p->add_child( $label );
-        $div->add_child( $p );
-        $div->add_child( $checkbox );
-        $fieldset->add_child( $div );
+        $fieldset->add_child( $checkbox );
         $form->add_child( $fieldset );
 
         return $form;
