@@ -35,7 +35,7 @@ class Button extends Element
     const Attributes_Default    = [
         'type'          => 'submit',
     ];
-    const Attributes_Seconday = [
+    const Attributes_Secondary = [
         'label-text',
     ];
 
@@ -70,7 +70,7 @@ class Button extends Element
     public function define_attribute_seconday() : array
     {
         $parent = parent::define_attribute_seconday();
-        return array_merge( $parent, self::Attributes_Seconday );
+        return array_merge( $parent, self::Attributes_Secondary );
     }
 
     /*-------------------------------------------------------------------------*/

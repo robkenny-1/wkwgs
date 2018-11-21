@@ -30,7 +30,7 @@ class RadioButton extends InputElement
     const Attributes_Default    = [
         'type'                  => 'radio',
     ];
-    const Attributes_Seconday  = [
+    const Attributes_Secondary  = [
         // 'label-',        // defined in parent class
         // 'container-',    // defined in parent class    
         'choices',
@@ -68,7 +68,7 @@ class RadioButton extends InputElement
     public function define_attribute_seconday() : array
     {
         $parent = parent::define_attribute_seconday();
-        return array_merge( $parent, self::Attributes_Seconday );
+        return array_merge( $parent, self::Attributes_Secondary );
     }
 
     /*-------------------------------------------------------------------------*/

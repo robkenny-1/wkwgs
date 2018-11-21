@@ -33,7 +33,7 @@ class Form extends Element implements IHtmlInput
         'method'            => 'post',
         'enctype'           => 'multipart/form-data',
     ];
-    const Attributes_Seconday = [
+    const Attributes_Secondary = [
     ];
 
     public function __construct( $desc )
@@ -130,7 +130,7 @@ class Form extends Element implements IHtmlInput
     public function define_attribute_seconday() : array
     {
         $parent = parent::define_attribute_seconday();
-        return array_merge( $parent, self::Attributes_Seconday );
+        return array_merge( $parent, self::Attributes_Secondary );
     }
 
     /*-------------------------------------------------------------------------*/

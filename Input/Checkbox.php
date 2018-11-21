@@ -37,7 +37,7 @@ class Checkbox extends InputElement
         'checked'               => False,
         'value'                 => 'True',
     ];
-    const Attributes_Seconday  = [
+    const Attributes_Secondary  = [
         'label',
     ];
 
@@ -72,7 +72,7 @@ class Checkbox extends InputElement
     public function define_attribute_seconday() : array
     {
         $parent = parent::define_attribute_seconday();
-        return array_merge( $parent, self::Attributes_Seconday );
+        return array_merge( $parent, self::Attributes_Secondary );
     }
 
     /*-------------------------------------------------------------------------*/

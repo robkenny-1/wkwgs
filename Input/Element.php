@@ -283,7 +283,7 @@ abstract class InputElement extends Element implements IHtmlInput
         'type'                  => 'text',
         'container-tag'         => 'div',
     ];
-    const Attributes_Seconday = [
+    const Attributes_Secondary = [
         'label-',
         'container-',
     ];
@@ -303,7 +303,7 @@ abstract class InputElement extends Element implements IHtmlInput
 
     public function define_attribute_seconday() : array
     {
-        return self::Attributes_Seconday;
+        return self::Attributes_Secondary;
     }
 
     /*-------------------------------------------------------------------------*/
