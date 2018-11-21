@@ -58,7 +58,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         'container-tag'     => 'p',
                         'container-class'   => 'form-field',
                         'label-text'        => 'Show Dual Membership',
-                        'label-class'       => '',
+                        'style'       => 'margin-right: 5px !important;',
                         'name'              => 'wkwgs_dual_membership_use',
                         'class'             => 'checkbox',
                     ],
