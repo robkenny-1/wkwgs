@@ -283,6 +283,7 @@ abstract class InputElement extends Element implements IHtmlInput
         'label-',
         'container-',
     ];
+    const Default_Container_Tag = 'div';
 
     /*-------------------------------------------------------------------------*/
     /* IAttributeProvider routines */
@@ -323,25 +324,19 @@ abstract class InputElement extends Element implements IHtmlInput
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         $logger->log_var( 'tag', $this->tag );
-        $logger->log_var( '$type',  $this->get_type() );
+        $logger->log_var( 'type',  $this->get_type() );
 
-        $required               = $this->get_attributes( 'required' );
         $label_attributes       = $this->get_attributes_seconday()[ 'label' ];
         $container_attributes   = $this->get_attributes_seconday()[ 'container' ];
-        $label_text             = $label_attributes[ 'text' ] ?? '';
+        $container_tag          = Attributes::get_attribute_and_remove( 'tag',  $container_attributes, InputElement::Default_Container_Tag);
+        $label_text             = Attributes::get_attribute_and_remove( 'text', $label_attributes);
 
         $logger->log_var( '$label_attributes',      $label_attributes );
         $logger->log_var( '$container_attributes',  $container_attributes );
-        $logger->log_var( '$label_text',            $label_text );
 
-        unset($label_attributes[ 'text' ]);
-
-        if ( Helper::is_true( $required ) )
+        if ( !empty($label_text) && Helper::is_true($this->get_attributes( 'required' )))
         {
-            if ( !empty( $label ) )
-            {
-                $label .= '<abbr class="required" title="required">&nbsp;*</abbr>';
-            }
+            $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }
 
         // HTML for the <input> element
@@ -358,7 +353,7 @@ abstract class InputElement extends Element implements IHtmlInput
         }
 
         $compound = new Element([
-            'tag'                       => 'div',
+            'tag'                       => $container_tag,
             'attributes'                => $container_attributes,
             'contents'                  => [
                 new Element([
