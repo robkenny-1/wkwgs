@@ -210,9 +210,9 @@ class Element implements IHtmlElement
      *
      * @return mixed, value of $attribute. Empty string if unset
      */
-    public function get_attribute_seconday( string $attribute )
+    public function get_attribute_secondary( string $attribute )
     {
-        return $this->attributes->get_attribute_seconday( $attribute );
+        return $this->attributes->get_attribute_secondary( $attribute );
     }
 
     /*-------------------------------------------------------------------------*/

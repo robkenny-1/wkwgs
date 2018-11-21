@@ -118,7 +118,7 @@ interface IAttributeSeconday extends IAttribute
      *
      * @return mixed, value of $name. Empty string if unset
      */
-    public function get_attribute_seconday( string $name );
+    public function get_attribute_secondary( string $name );
 }
 
 interface IAttributeSecondayProvider extends IAttributeProvider

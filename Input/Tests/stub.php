@@ -86,6 +86,26 @@ include_once( '..\Input.php' );
 Wkwgs_Logger::clear();
 Wkwgs_Logger::$Disable = False;
 
+function dumpstr( string $str)
+{
+    echo '<br>';
+    echo $str;
+    echo '<br>';
+
+    $first = True;
+    $len = strlen($str);
+    for ($i = 0; $i < $len; $i += 1)
+    {
+        if (!$first)
+        {
+            echo '|';
+        }
+        $first = False;
+        echo $str[$i];
+    }
+
+    echo '<br>';
+}
 function test()
 {
     $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args() );
@@ -96,17 +116,19 @@ function test()
     $logger->log_var( '$raw', $raw );
     $logger->log_var( '$pattern', $pattern );
 
-
     $regex = $delim . preg_quote( $pattern, $delim ) . $delim;
     $matches  = preg_match($regex, $raw);
     $logger->log_var( '$regex', $regex );
     $logger->log_var( '$matches', $matches );
 
-    $regex = $delim . preg_replace( '([^\\])#', '$1\\#', $regex) . $delim;
+    $regex = $delim . addcslashes($regex, '#') . $delim;
     $matches  = preg_match($regex, $raw);
     $logger->log_var( '$regex', $regex );
     $logger->log_var( '$matches', $matches );
 
+    $str = '# \# \\#';
+    dumpstr($str);
+    dumpstr(addcslashes($str, '#'));
 }
 
 

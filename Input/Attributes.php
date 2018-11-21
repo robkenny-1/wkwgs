@@ -137,7 +137,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      *
      * @return mixed, value of $attribute. Empty string if unset
      */
-    public function get_attribute_seconday( string $attribute )
+    public function get_attribute_secondary( string $attribute )
     {
         //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
         

@@ -95,7 +95,7 @@ class Button extends Element
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $remaining      = $this->get_attributes();
-        $label          = $this->get_attribute_seconday( 'label-text' );
+        $label          = $this->get_attribute_secondary( 'label-text' );
 
         $logger->log_var( '$remaining', $remaining );
         $logger->log_var( '$label',     $label );
