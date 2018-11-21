@@ -130,14 +130,32 @@ $form->add_child(
 $form->add_child(
     new Input\Element( [
         'tag'                       => 'h3',
-        'contents'                  => [ new Input\HtmlText('Email input') ]
+        'contents'                  => [ new Input\HtmlText('<h1>HTML Chars (this should be an h3 not an h1)') ]
     ])
 );
 
 $form->add_child(
     new Input\Text( [
         'attributes'                => [
-            'type'                  => 'email',
+            'name'                  => '&gt;<angles>&lt;',
+            'label-text'            => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
+            'value'                 => '&&amp;&gt;h1&lt;',
+        ],
+    ])
+);
+
+/* ------------------------------------------------------------------------------------ */
+
+$form->add_child(
+    new Input\Element( [
+        'tag'                       => 'h3',
+        'contents'                  => [ new Input\HtmlText('Email input') ]
+    ])
+);
+
+$form->add_child(
+    new Input\Email( [
+        'attributes'                => [
             'name'                  => 'email',
             'label-text'            => 'email address',
             'required'              => 'yes',
@@ -156,9 +174,8 @@ $form->add_child(
 );
 
 $form->add_child(
-    new Input\Text( [
+    new Input\Telephone( [
         'attributes'                => [
-            'type'                  => 'tel',
             'name'                  => 'telephone',
             'label-text'            => 'Phone number',
             'placeholder'           => '999-555-1212',
@@ -170,7 +187,8 @@ $form->add_child(
 // Called if we should muck with the post data to test validation
 function falsify_post( $post )
 {
-    $post[ 'email' ] = 'this-is-not-a-valid-email-address <&>';
+    $post[ 'email' ]     = 'this-is-not-a-valid-email-address <&>';
+    $post[ 'telephone' ] = '123abc';
 
     return $post;
 }

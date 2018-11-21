@@ -93,17 +93,20 @@ class Element implements IHtmlElement
     public function get_html() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+
+        $tag = $this->tag;
+        $tag = htmlspecialchars($tag);
         $logger->log_var( 'tag', $this->tag );
 
         $html = '';
 
-        $html .= "<{$this->tag}";
+        $html .= "<$tag";
         $html .= $this->attributes->get_html();
         $html .= '>';
         if ( ! Helper::is_void_element( $this->tag ) )
         {
             $html .= $this->children->get_html();
-            $html .= "</{$this->tag}>";
+            $html .= "</$tag>";
         }
 
         $logger->log_return( $html );
@@ -339,18 +342,12 @@ abstract class InputElement extends Element implements IHtmlInput
             $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
         }
 
-        // HTML for the <input> element
-        $html_input = $this->get_html_core();
-
         $label_contents = [];
         if ( !empty($label_text))
         {
             $label_contents[] = new HtmlText( $label_text );
         }
-        if ( !empty($html_input))
-        {
-            $label_contents[] = new HtmlText( $html_input );
-        }
+        $label_contents[] = new \Input\Callback( [ $this, 'get_html_core' ] );
 
         $compound = new Element([
             'tag'                       => $container_tag,
@@ -404,12 +401,12 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function validate( array $post ) : array
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
         $name       = $this->get_name();
         $raw        = $post[ $name ] ?? '';
         $required   = Helper::is_true( $this->get_attribute( 'required' ) );
-        $pattern    = Helper::is_true( $this->get_attribute( 'pattern' ) );
+        $pattern    = $this->get_attribute('pattern');
 
         $validation_errors = [];
 
@@ -434,18 +431,26 @@ abstract class InputElement extends Element implements IHtmlInput
         }
         else
         {
-            if ( !empty($pattern) && ! filter_var( $raw, FILTER_VALIDATE_REGEXP, $pattern ) )
+            if ( !empty($pattern))
             {
-                $validation_errors[] = new HtmlValidateError(
-                    'value does not match defined pattern', $name, $this
-                );
+                $delim = '#';
+                $pattern = $delim . preg_quote( $pattern, $delim ) . $delim;
+
+                if (preg_match($pattern, $raw) !== 1)
+                {
+                    $logger->log_msg('$raw does not match pattern');
+
+                    $validation_errors[] = new HtmlValidateError(
+                        'value does not match defined pattern', $name, $this
+                    );
+                }
             }
 
             $ve = $this->validate_post( $name, $post );
             $validation_errors = array_merge($validation_errors, $ve);
         }
 
-        //$logger->log_return( $validation_errors );
+        $logger->log_return( $validation_errors );
         return $validation_errors;
     }
 
@@ -517,7 +522,7 @@ abstract class InputElement extends Element implements IHtmlInput
      *
      * @return string HTML of the <input> element
      */
-    protected function get_html_core() : string
+    public function get_html_core() : string
     {
         return parent::get_html();
     }

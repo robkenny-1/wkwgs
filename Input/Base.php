@@ -183,7 +183,7 @@ class HtmlText implements IHtmlPrinter
     }
     public function get_html() : string
     {
-        return $this->text;
+        return htmlspecialchars($this->text);
     }
 }
 

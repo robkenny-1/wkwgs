@@ -83,7 +83,7 @@ class RadioButton extends InputElement
      *
      * @return string HTML of the <input> element
      */
-    protected function get_html_core() : string
+    public function get_html_core() : string
     {
         $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
 
