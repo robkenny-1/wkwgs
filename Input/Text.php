@@ -31,7 +31,6 @@ class Text extends InputElement
         'type'                  => 'text',
     ];
     const Attributes_Seconday  = [
-        'label',
     ];
 
     public function __construct( $desc )
