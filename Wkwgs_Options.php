@@ -41,7 +41,7 @@ class Wkwgs_Options extends Wkwgs_LifeCycle
             'ATextInput'     => array(__('Enter in some text', 'wkwgs')),
             'AmAwesome'      => array(__('I like this awesome plugin', 'wkwgs'), 'false', 'true'),
             'CanDoSomething' => array(__('Which user role can do something', 'wkwgs'),
-                                        'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone')
+                                        'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone'),
             'Enable Debug'   => array(__('Enable Debug', 'wkwgs'), 'false', 'true'),
         );
     }
