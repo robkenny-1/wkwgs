@@ -431,10 +431,10 @@ abstract class InputElement extends Element implements IHtmlInput
         }
         else
         {
-            if ( !empty($pattern))
+            if ( !empty($pattern) && !empty( $raw ))
             {
                 $delim = '#';
-                $pattern = $delim . preg_quote( $pattern, $delim ) . $delim;
+                $pattern = $delim . addcslashes($pattern, $delim) . $delim;
 
                 if (preg_match($pattern, $raw) !== 1)
                 {
