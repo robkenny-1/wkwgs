@@ -159,10 +159,10 @@ $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Input\Element([
     'tag'       => 'p',
     'contents'  => [
-        new Input\Callback( 'callback_test1' ),
+        new \Input\Callback( 'callback_test1' ),
     ]
 ]);
 $e1->render();
@@ -173,12 +173,12 @@ $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Input\Element([
     'tag'       => 'p',
     'contents'  => [
-        new Input\HtmlText('Calling static method on class'),
-        new Input\Element( 'br' ),
-        new Input\Callback( [ $cb, 'callback_static' ] ),
+        new \Input\HtmlText('Calling static method on class'),
+        new \Input\Element( 'br' ),
+        new \Input\Callback( [ $cb, 'callback_static' ] ),
     ]
 ]);
 $e1->render();
@@ -189,12 +189,12 @@ $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Input\Element([
     'tag'       => 'p',
     'contents'  => [
-        new Input\HtmlText('Calling static method on class'),
-        new Input\Element( 'br' ),
-        new Input\Callback( [ $cb, 'callback_noparam' ] ),
+        new \Input\HtmlText('Calling static method on class'),
+        new \Input\Element( 'br' ),
+        new \Input\Callback( [ $cb, 'callback_noparam' ] ),
     ]
 ]);
 $e1->render();
@@ -205,12 +205,12 @@ $test_msg   = "#### Test $test ####";
 \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Input\Element([
     'tag'       => 'p',
     'contents'  => [
-        new Input\HtmlText('Calling static method on class'),
-        new Input\Element( 'br' ),
-        new Input\Callback( [ $cb, 'callback_param' ], [  'param value 1', 'param value 2' ] ),
+        new \Input\HtmlText('Calling static method on class'),
+        new \Input\Element( 'br' ),
+        new \Input\Callback( [ $cb, 'callback_param' ], [  'param value 1', 'param value 2' ] ),
     ]
 ]);
 $e1->render();
