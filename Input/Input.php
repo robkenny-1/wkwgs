@@ -36,3 +36,5 @@ include_once('Text.php');
 include_once('Button.php');
 include_once('Checkbox.php');
 include_once('RadioButton.php');
+include_once('Email.php');
+include_once('Telephone.php');
