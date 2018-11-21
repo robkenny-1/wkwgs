@@ -53,7 +53,7 @@ form {
   opacity:1;
 }
 
-// Style to put label text on right
+<!-- Style to put label text on right -->
 .text-input-label-right {
   position: relative;
   background: orange;

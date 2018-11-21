@@ -53,7 +53,7 @@ form {
   opacity:1;
 }
 
-// Style to put label text on right
+<!-- Style to put label text on right -->
 .text-input-label-right {
   position: relative;
   background: orange;
@@ -84,34 +84,31 @@ define( 'ABSPATH', '1');
 include_once( '..\Input.php' );
 
 Wkwgs_Logger::clear();
+Wkwgs_Logger::$Disable = False;
 
 function test()
 {
     $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args() );
 
-    $remaining = [
-            'name'          => 'tooltip',
-            'label'         => 'input with tooltip',
-            'label-tooltip'  => 'This is a tooltip message',
-            'container-css' => 'tooltip-special'
-        ];
-    $pattern = '/^label-(.*)$/';
-
+    $raw = '4257800901';
+    $pattern = '^\+?(\(?[0-9]{3}\)?|[0-9]{3})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$';
+    $delim = '#';
+    $logger->log_var( '$raw', $raw );
     $logger->log_var( '$pattern', $pattern );
 
-    //$matches  = preg_grep( $pattern, array_keys( $remaining ) );
-    //$logger->log_var( '$matches', $matches );
 
-    //$return = preg_match( $pattern, 'label-tooltip', $matches );
-    //$logger->log_var( '$return' , $return );
-    //$logger->log_var( '$matches', $matches );
+    $regex = $delim . preg_quote( $pattern, $delim ) . $delim;
+    $matches  = preg_match($regex, $raw);
+    $logger->log_var( '$regex', $regex );
+    $logger->log_var( '$matches', $matches );
 
-    $remaining = [ 'label-class' => 'aaa', 'style' => 'bbb', 'label-id' => 'ccc' ];
-    $matches = \Input\Attributes::move_values( 'label-', $remaining );
-    $logger->log_var( '$remaining', $remaining );
+    $regex = $delim . preg_replace( '([^\\])#', '$1\\#', $regex) . $delim;
+    $matches  = preg_match($regex, $raw);
+    $logger->log_var( '$regex', $regex );
     $logger->log_var( '$matches', $matches );
 
 }
+
 
 test();
 
