@@ -273,4 +273,23 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
         $logger->log_return( $moved );
         return $moved;
     }
+
+    /**
+     * Get and remove the named attribute from the array
+     *
+     * @return mixed Value of the attribute or $default
+     */
+    public static function get_attribute_and_remove( string $attribute, array & $attributes, string $default = '' )
+    {
+        $value = $default;
+
+        if (isset($attributes[ $attribute ]))
+        {
+            $value = $attributes[ $attribute ];
+            unset($attributes[ $attribute ]);
+        }
+    
+        return $value;
+    }
+
 }
