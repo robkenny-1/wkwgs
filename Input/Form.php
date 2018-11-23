@@ -1,53 +1,54 @@
 <?php
+
 /*
-    Input Copyright (C) 2018 Rob Kenny
+  Input Copyright (C) 2018 Rob Kenny
 
-    WordPress Plugin Template is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+  WordPress Plugin Template is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-    WordPress Plugin Template is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+  WordPress Plugin Template is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Contact Form to Database Extension.
-    If not, see http://www.gnu.org/licenses/gpl-3.0.html
-*/
+  You should have received a copy of the GNU General Public License
+  along with Contact Form to Database Extension.
+  If not, see http://www.gnu.org/licenses/gpl-3.0.html
+ */
 
 namespace Input;
 
 // Exit if accessed directly
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
 include_once('Input.php');
 
 class Form extends Element implements IHtmlInput
 {
-    const Tag_Type              = 'form';
-    const Attributes_Default    = [
-        'name'              => 'form0',
-        'action'            => '#', // submit data to same page
-        'method'            => 'post',
-        'enctype'           => 'multipart/form-data',
+    const Tag_Type             = 'form';
+    const Attributes_Default   = [
+        'name'    => 'form0',
+        'action'  => '#', // submit data to same page
+        'method'  => 'post',
+        'enctype' => 'multipart/form-data',
     ];
     const Attributes_Secondary = [
     ];
 
-    public function __construct( $desc )
+    public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
-        
-        if ( gettype( $desc ) !== 'array' )
+        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+
+        if (gettype($desc) !== 'array')
         {
-            $logger->log_var( '$desc is not an array', $desc );
+            $logger->log_var('$desc is not an array', $desc);
             return;
         }
 
-        $desc[ 'tag' ] = self::Tag_Type;
-        parent::__construct( $desc );
+        $desc['tag'] = self::Tag_Type;
+        parent::__construct($desc);
     }
 
     /**
@@ -55,96 +56,96 @@ class Form extends Element implements IHtmlInput
      *
      * @return array of posted data
      */
-    public function get_submit_data( ) : array
+    public function get_submit_data(): array
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
 
         $submit = [];
 
-        $form_name = $this->get_name();
-            $submit_method = $this->get_attribute( 'method' );
-        switch ( $submit_method )
+        $form_name     = $this->get_name();
+        $submit_method = $this->get_attribute('method');
+        switch ($submit_method)
         {
             case 'post':
-                $submit =  $_POST;
+                $submit = $_POST;
                 break;
 
             case 'get':
-                $submit =  $_GET;
+                $submit = $_GET;
                 break;
 
             default:
                 $msg = "Form '$form_name': Unknown submit method: '$submit_method'";
-                $logger->log_msg( $msg );
-                throw new \Exception( $msg );
+                $logger->log_msg($msg);
+                throw new \Exception($msg);
         }
 
-        $logger->log_return( $submit );
+        $logger->log_return($submit);
         return $submit;
     }
 
-    public function has_duplicate_names() : bool
+    public function has_duplicate_names(): bool
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
 
         $is_duplicate = False;
 
         $existing_names = [];
 
-        foreach ( $this as $child )
+        foreach ($this as $child)
         {
             // Only IHtmlInput need to have unique names
-            if ( $child instanceof IHtmlInput )
+            if ($child instanceof IHtmlInput)
             {
                 $name = $child->get_name();
-                $logger->log_var( '$name', $name );
+                $logger->log_var('$name', $name);
 
-                if ( isset( $existing_names[ $name ] ) )
+                if (isset($existing_names[$name]))
                 {
                     $is_duplicate = True;
                     break;
                 }
 
-                $existing_names[ $name ] = True;
+                $existing_names[$name] = True;
             }
         }
 
-        $logger->log_return( $is_duplicate );
+        $logger->log_return($is_duplicate);
         return $is_duplicate;
     }
 
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
     /* IAttributeProvider routines */
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
 
-    public function define_attribute_default() : array
+    public function define_attribute_default(): array
     {
         $parent = parent::define_attribute_default();
-        return array_merge( $parent, self::Attributes_Default );
+        return array_merge($parent, self::Attributes_Default);
     }
 
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
     /* IAttributeSecondayProvider routines */
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
 
-    public function define_attribute_seconday() : array
+    public function define_attribute_seconday(): array
     {
         $parent = parent::define_attribute_seconday();
-        return array_merge( $parent, self::Attributes_Secondary );
+        return array_merge($parent, self::Attributes_Secondary);
     }
 
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
     /* IHtmlInput routines */
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
 
-   /**
+    /**
      * Get the type of Input
      *
      * @return  string Input type
      */
-    public function get_type() : string
+    public function get_type(): string
     {
-        return $this->get_attribute( 'type' );
+        return $this->get_attribute('type');
     }
 
     /**
@@ -153,9 +154,9 @@ class Form extends Element implements IHtmlInput
      *
      * @return string name of the input element
      */
-    public function get_name() : string
+    public function get_name(): string
     {
-        return $this->get_attribute( 'name' );
+        return $this->get_attribute('name');
     }
 
     /**
@@ -165,42 +166,42 @@ class Form extends Element implements IHtmlInput
      *
      * @return array | list of validation errors or null if good
      */
-    public function validate( array $post ) : array
+    public function validate(array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
 
         $validation_errors = [];
 
         $name = $this->get_name();
 
-        if ( empty( $post ) )
+        if (empty($post))
         {
             $validation_errors[] = new HtmlValidateError(
-                '$post is empty', $name, $this                
+                    '$post is empty', $name, $this
             );
         }
-        else if ( $this->has_duplicate_names() )
+        else if ($this->has_duplicate_names())
         {
             $validation_errors[] = new HtmlValidateError(
-                'input objects do not all have unique names', $name, $this                
-            );        
+                    'input objects do not all have unique names', $name, $this
+            );
         }
         else
         {
-            foreach ( $this as $child )
+            foreach ($this as $child)
             {
-                if ( $child instanceof IHtmlInput )
+                if ($child instanceof IHtmlInput)
                 {
-                    $errors = $child->validate( $post );
-                    if ( ! empty( $errors ) )
+                    $errors = $child->validate($post);
+                    if (!empty($errors))
                     {
-                        $validation_errors = array_merge( $validation_errors, $errors );
+                        $validation_errors = array_merge($validation_errors, $errors);
                     }
                 }
             }
         }
 
-        $logger->log_return( $validation_errors );
+        $logger->log_return($validation_errors);
         return $validation_errors;
     }
 
@@ -209,31 +210,31 @@ class Form extends Element implements IHtmlInput
      *
      * @return string | string contents of the input object
      */
-    public function get_value( array $post )
+    public function get_value(array $post)
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
 
         $values = array();
 
-        if ( ! empty( $post ) )
+        if (!empty($post))
         {
-            foreach ( $this as $child )
+            foreach ($this as $child)
             {
-                $logger->log_var( '$child', $child );
+                $logger->log_var('$child', $child);
 
-                if ( $child instanceof IHtmlInput )
+                if ($child instanceof IHtmlInput)
                 {
-                    $name  = $child->get_attribute( 'name' );
-                    if ( ! empty( $name ) )
+                    $name = $child->get_attribute('name');
+                    if (!empty($name))
                     {
-                        $value = $child->get_value( $post );
-                        $values[ $name ] = $value;
+                        $value           = $child->get_value($post);
+                        $values[$name] = $value;
                     }
                 }
             }
         }
 
-        $logger->log_return( $values );
+        $logger->log_return($values);
         return $values;
     }
 
@@ -242,9 +243,9 @@ class Form extends Element implements IHtmlInput
      *
      * @return string
      */
-    public function get_form_id() : string
+    public function get_form_id(): string
     {
-        return $this->get_attribute( 'form' );
+        return $this->get_attribute('form');
     }
 
     /**
@@ -252,37 +253,39 @@ class Form extends Element implements IHtmlInput
      *
      * @return string
      */
-    public function set_form_id( string $form_id )
+    public function set_form_id(string $form_id)
     {
-        $this->set_attribute( 'form', $form_id );
+        $this->set_attribute('form', $form_id);
     }
 
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
     /* InputElement routines */
-    /*-------------------------------------------------------------------------*/
+    /* ------------------------------------------------------------------------- */
 
-    public function validate_post( string $name, array $post ) : array
+    public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger            = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
         $validation_errors = [];
 
         // Perform data validation
 
-        $logger->log_return( $validation_errors );
+        $logger->log_return($validation_errors);
         return $validation_errors;
     }
 
-    public function cleanse_data( $raw )
+    public function cleanse_data($raw)
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
 
         $cleansed = null;
 
         // No cleansing necessary?
         $cleansed = $raw;
 
-        $logger->log_return( $cleansed );
+        $logger->log_return($cleansed);
         return $cleansed;
     }
+
 }
+
 ?>
