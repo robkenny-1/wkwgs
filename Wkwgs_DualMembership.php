@@ -40,7 +40,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             ]
         ]);
 
-        $fieldset = new Input\Element([
+        $fieldset = new \Input\Element([
             'tag'        => 'fieldset',
             'attributes' => [
             ],
@@ -48,7 +48,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             ],
         ]);
 
-        $checkbox = new Input\Element([
+        $checkbox = new \Input\Element([
             'tag'        => 'div',
             'attributes' => [
                 'class' => 'options_group',
@@ -75,42 +75,66 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     protected function get_cart_form(): \Input\Form
     {
-        $form = new Input\Form([
+        $css_aligned_input = 'margin-left:5px';
+
+        $form = new \Input\Form([
             'attributes' => [
                 'name' => 'unused in ui',
             ],
         ]);
 
-        $form->add_child(
-                new Input\Text([
+        $fieldset = new \Input\Element([
+            'tag'        => 'fieldset',
             'attributes' => [
-                'name'  => 'wkwgs_dual_membership_first',
-                'label' => 'First Name',
+            ],
+            'contents'   => [
+                new \Input\Element([
+                    'tag'        => 'legend',
+                    'attributes' => [
+                        'style' => '',
+                    ],
+                    'contents'   => [
+                        new \Input\HtmlText('Second Member Registration'),
+                    ],
+                        ])
+            ],
+        ]);
+        $form->add_child($fieldset);
+
+        $fieldset->add_child(
+                new \Input\Text([
+            'attributes' => [
+                'name'       => 'wkwgs_dual_membership_first',
+                'label-text' => 'First Name',
+                'style'      => $css_aligned_input,
             ],
                 ])
         );
-        $form->add_child(
-                new Input\Text([
+        $fieldset->add_child(
+                new \Input\Text([
             'attributes' => [
-                'name'  => 'wkwgs_dual_membership_last',
-                'label' => 'Last Name',
+                'name'       => 'wkwgs_dual_membership_last',
+                'label-text' => 'Last Name',
+                'style'      => $css_aligned_input,
             ],
                 ])
         );
-        $form->add_child(
-                new Input\Email([
+        $fieldset->add_child(
+                new \Input\Text([
             'attributes' => [
-                'name'     => 'wkwgs_dual_membership_email',
-                'label'    => 'Email',
-                'required' => True,
+                'name'       => 'wkwgs_dual_membership_email',
+                'label-text' => 'Email',
+                'required'   => True,
+                'style'      => $css_aligned_input,
             ],
                 ])
         );
-        $form->add_child(
-                new Input\Phone([
+        $fieldset->add_child(
+                new \Input\Telephone([
             'attributes' => [
-                'name'  => 'wkwgs_dual_membership_phone',
-                'label' => 'Phone',
+                'name'       => 'wkwgs_dual_membership_phone',
+                'label-text' => 'Phone',
+                'style'      => $css_aligned_input,
             ],
                 ])
         );
@@ -118,54 +142,32 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         return $form;
     }
 
+    public function set_form_field_values(WC_Product $product, \Input\Form $form)
+    {
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+
+        foreach ($form as $child)
+        {
+            if ($child instanceof IHtmlInput)
+            {
+                $name         = $child->get_name();
+                $product_meta = $product->get_meta($name, True);
+                $logger->log_var('$name', $name);
+                $logger->log_var('$product_meta', $product_meta);
+
+                if (isset($product_meta))
+                {
+                    $child->set_value($product_meta);
+                }
+            }
+        }
+    }
+
     /*
      * ********************************************************************************
      *  Plugin Values
      * ********************************************************************************
      */
-
-    /**
-     * Values to display on the product's edit page, under WK&WGS
-     * @return array
-     */
-    protected function get_product_customized()
-    {
-        return array(
-            'wkwgs_is_dual_membership' => array(
-                'admin' => array(
-                    array(
-                        'type'  => 'checkbox',
-                        'name'  => 'wkwgs_is_dual_membership',
-                        'label' => __('Include Dual email', Input\DOMAIN),
-                    )
-                ),
-                // Fields to display on product's cart page
-                'cart' => array(
-                    array(
-                        'name'  => 'wkwgs_is_dual_membership_first_name',
-                        'type'  => 'text',
-                        'label' => __('First Name', 'wkwgs'),
-                    ),
-                    array(
-                        'name'  => 'wkwgs_is_dual_membership_last_name',
-                        'type'  => 'text',
-                        'label' => __('Last Name', 'wkwgs'),
-                    ),
-                    array(
-                        'name'     => 'wkwgs_is_dual_membership_dual_membership_email',
-                        'type'     => 'email',
-                        'label'    => __('Email address', 'wkwgs'),
-                        'required' => true,
-                    ),
-                    array(
-                        'name'  => 'wkwgs_is_dual_membership_dual_membership_phone',
-                        'type'  => 'tel',
-                        'label' => __('Phone', 'wkwgs'),
-                    ),
-                )
-            ),
-        );
-    }
 
     protected function getMainPluginFileName()
     {
@@ -199,207 +201,208 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_show()
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         global $product;
         ?>
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <div class="options_group">
-        <?php
-        // Render the children only
-        foreach ($this->get_cart_form() as $field)
-        {
-            $field->render();
-        }
-        ?>
+                <?php
+                $form = $this->get_cart_form();
+                $this->set_form_field_values($product, $form);
+
+                foreach ($form as $element)
+                {
+                    $element->render();
+                }
+                ?>
             </div>
         </div>
-                <?php
-            }
-
-            public function product_cart_validation($passed, $product_id, $quantity)
-            {
-                $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-
-                $form              = $this->get_cart_form();
-                $validation_errors = $form->validate($_POST);
-
-                $logger->log_return($passed);
-                return $passed;
-            }
-
-            /**
-             * Save the product's custom field values when added to the cart
-             * @return updated $cart_item_data
-             */
-            public function product_cart_save($cart_item_data, $product_id, $variation_id, $quantity)
-            {
-                $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-
-                $product = wc_get_product($variation_id ? $variation_id : $product_id);
-
-                $form = $this->get_cart_form();
-                // Save all the values to the cart
-                foreach ($form->get_value($_POST) as $key => $value)
-                {
-                    $cart_item_data[$key] = $value;
-                }
-
-                $logger->log_return($cart_item_data);
-                return $cart_item_data;
-            }
-
-            /**
-             * product_cart_item_data
-             */
-            public function product_cart_item_data($item_data, $cart_item)
-            {
-                $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-
-                if (empty($cart_item['wkwgs_dual_membership_email']))
-                {
-                    return $item_data;
-                }
-
-                $item_data[] = array(
-                    'key'     => __('Dual Member', 'wkwgs'),
-                    'value'   => wc_clean($cart_item['wkwgs_dual_membership_email']),
-                    'display' => '',
-                );
-
-                $logger->log_return($item_data);
-                return $item_data;
-            }
-
-            /*
-             * ********************************************************************************
-             *  Code for Manager/Admin
-             * ********************************************************************************
-             */
-
-            /**
-             * Create the custom tab
-             * @see     https://github.com/woocommerce/woocommerce/blob/e1a82a412773c932e76b855a97bd5ce9dedf9c44/includes/admin/meta-boxes/class-wc-meta-box-product-data.php
-             * @param   $tabs
-             * @since   1.0.0
-             */
-            public function product_admin_tab($tabs)
-            {
-                $tabs['wkwgs'] = array(
-                    'label'     => __('WK & WGS', 'wkwgs'), // The name of your panel
-                    'target'    => 'wkwgs_product_panel', // Will be used to create an anchor link so needs to be unique
-                    'css-input' => array('wkwgs_tab', 'show_if_simple', 'show_if_variable'), // Class for your panel tab - helps hide/show depending on product type
-                    'priority'  => 80, // Where your panel will appear. By default, 70 is last item
-                );
-                return $tabs;
-            }
-
-            /**
-             * Add the enable button for custom fields
-             * @return void
-             */
-            public function product_admin_show()
-            {
-                $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-
-                global $thepostid, $product_object;
-                ?>
-        <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
         <?php
-        // Render the children only
-        foreach ($this->get_admin_form() as $field)
+    }
+
+    public function product_cart_validation($passed, $product_id, $quantity)
+    {
+        $logger            = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+        $form              = $this->get_cart_form();
+        $validation_errors = $form->validate($_POST);
+        $passed            = empty($validation_errors);
+
+        $logger->log_return($passed);
+        return $passed;
+    }
+
+    /**
+     * Save the product's custom field values when added to the cart
+     * @return updated $cart_item_data
+     */
+    public function product_cart_save($cart_item_data, $product_id, $variation_id, $quantity)
+    {
+        $logger      = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+        $product     = wc_get_product($variation_id ? $variation_id : $product_id);
+        $form        = $this->get_cart_form();
+        $form_values = $form->get_value($_POST);
+        // Save all the values to the cart
+        foreach ($form_values as $key => $value)
         {
-            $logger->log_var('$field', $field);
-            $field->render();
+            $cart_item_data[$key] = $value;
         }
+
+        $logger->log_return($cart_item_data);
+        return $cart_item_data;
+    }
+
+    /**
+     * product_cart_item_data
+     */
+    public function product_cart_item_data($item_data, $cart_item)
+    {
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+
+        if (empty($cart_item['wkwgs_dual_membership_email']))
+        {
+            return $item_data;
+        }
+
+        $item_data[] = array(
+            'key'     => __('Dual Member', 'wkwgs'),
+            'value'   => wc_clean($cart_item['wkwgs_dual_membership_email']),
+            'display' => '',
+        );
+
+        $logger->log_return($item_data);
+        return $item_data;
+    }
+
+    /*
+     * ********************************************************************************
+     *  Code for Manager/Admin
+     * ********************************************************************************
+     */
+
+    /**
+     * Create the custom tab
+     * @see     https://github.com/woocommerce/woocommerce/blob/e1a82a412773c932e76b855a97bd5ce9dedf9c44/includes/admin/meta-boxes/class-wc-meta-box-product-data.php
+     * @param   $tabs
+     * @since   1.0.0
+     */
+    public function product_admin_tab($tabs)
+    {
+        $tabs['wkwgs'] = array(
+            'label'     => __('WK & WGS', 'wkwgs'), // The name of your panel
+            'target'    => 'wkwgs_product_panel', // Will be used to create an anchor link so needs to be unique
+            'css-input' => array('wkwgs_tab', 'show_if_simple', 'show_if_variable'), // Class for your panel tab - helps hide/show depending on product type
+            'priority'  => 80, // Where your panel will appear. By default, 70 is last item
+        );
+        return $tabs;
+    }
+
+    /**
+     * Add the enable button for custom fields
+     * @return void
+     */
+    public function product_admin_show()
+    {
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+
+        global $thepostid, $product_object;
         ?>
-        </div>
+        <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
             <?php
-        }
-
-        /**
-         * Save the enable button for custom fields
-         * @param $post_id
-         * @since 1.0.0
-         */
-        public function product_admin_save($post_id)
-        {
-            $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-
-            $product = wc_get_product($post_id);
-
-            $form = $this->get_cart_form();
-            // Save all the values to the cart
-            foreach ($form->get_value($_POST) as $key => $value)
+            // Render the children only
+            foreach ($this->get_admin_form() as $field)
             {
-                $product->update_meta_data($key, $value);
+                $logger->log_var('$field', $field);
+                $field->render();
             }
+            ?>
+        </div>
+        <?php
+    }
 
-            $product->save();
+    /**
+     * Save the enable button for custom fields
+     * @param $post_id
+     * @since 1.0.0
+     */
+    public function product_admin_save($post_id)
+    {
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+
+        $product = wc_get_product($post_id);
+
+        $form = $this->get_cart_form();
+        // Save all the values to the cart
+        foreach ($form->get_value($_POST) as $key => $value)
+        {
+            $product->update_meta_data($key, $value);
         }
 
-        /*
-         * ********************************************************************************
-         *  Plugin Management
-         * ********************************************************************************
-         */
+        $product->save();
+    }
 
-        /**
-         * See: http://plugin.michael-simpson.com/?page_id=31
-         * @return array of option meta data.
-         */
-        public function getOptionMetaData()
-        {
-            //  http://plugin.michael-simpson.com/?page_id=31
-            //
+    /*
+     * ********************************************************************************
+     *  Plugin Management
+     * ********************************************************************************
+     */
+
+    /**
+     * See: http://plugin.michael-simpson.com/?page_id=31
+     * @return array of option meta data.
+     */
+    public function getOptionMetaData()
+    {
+        //  http://plugin.michael-simpson.com/?page_id=31
+        //
         //  These are global options
-            return array(
-                //'_version' => array('Installed Version'), // Leave this one commented-out. Uncomment to test upgrades.
-                'enable_debug' => array(__('Enable Debug', 'wkwgs'), 'false', 'true'),
-            );
-        }
+        return array(
+            //'_version' => array('Installed Version'), // Leave this one commented-out. Uncomment to test upgrades.
+            'enable_debug' => array(__('Enable Debug', 'wkwgs'), 'false', 'true'),
+        );
+    }
 
-        protected function initOptions()
+    protected function initOptions()
+    {
+        $options = $this->getOptionMetaData();
+        if (!empty($options))
         {
-            $options = $this->getOptionMetaData();
-            if (!empty($options))
+            foreach ($options as $key => $arr)
             {
-                foreach ($options as $key => $arr)
+                if (is_array($arr) && count($arr > 1))
                 {
-                    if (is_array($arr) && count($arr > 1))
-                    {
-                        $this->addOption($key, $arr[1]);
-                    }
+                    $this->addOption($key, $arr[1]);
                 }
             }
         }
-
-        /**
-         * See: http://plugin.michael-simpson.com/?page_id=101
-         * Called by install() to create any database tables if needed.
-         * Best Practice:
-         * (1) Prefix all table names with $wpdb->prefix
-         * (2) make table names lower case only
-         * @return void
-         */
-        protected function installDatabaseTables()
-        {
-            //global $wpdb;
-            //$tableName = $this->prefixTableName('Options');
-            //$wpdb->query("CREATE TABLE IF NOT EXISTS `$tableName` (
-            //    `id` INTEGER NOT NULL");
-        }
-
-        /**
-         * See: http://plugin.michael-simpson.com/?page_id=101
-         * Drop plugin-created tables on uninstall.
-         * @return void
-         */
-        protected function unInstallDatabaseTables()
-        {
-            //global $wpdb;
-            //$tableName = $this->prefixTableName('Options');
-            //$wpdb->query("DROP TABLE IF EXISTS `$tableName`");
-        }
-
     }
+
+    /**
+     * See: http://plugin.michael-simpson.com/?page_id=101
+     * Called by install() to create any database tables if needed.
+     * Best Practice:
+     * (1) Prefix all table names with $wpdb->prefix
+     * (2) make table names lower case only
+     * @return void
+     */
+    protected function installDatabaseTables()
+    {
+        //global $wpdb;
+        //$tableName = $this->prefixTableName('Options');
+        //$wpdb->query("CREATE TABLE IF NOT EXISTS `$tableName` (
+        //    `id` INTEGER NOT NULL");
+    }
+
+    /**
+     * See: http://plugin.michael-simpson.com/?page_id=101
+     * Drop plugin-created tables on uninstall.
+     * @return void
+     */
+    protected function unInstallDatabaseTables()
+    {
+        //global $wpdb;
+        //$tableName = $this->prefixTableName('Options');
+        //$wpdb->query("DROP TABLE IF EXISTS `$tableName`");
+    }
+
+}

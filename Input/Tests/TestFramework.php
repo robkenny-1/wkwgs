@@ -48,7 +48,7 @@ class TestFramework
 
     public function handle_post(array $post)
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         if ( ! empty( $post ) )
         {
@@ -76,7 +76,7 @@ class TestFramework
 
     public function session_display()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         if ( isset( $_SESSION['post_orig'] ) )
         {
@@ -141,7 +141,7 @@ class TestFramework
     
     protected function add_submit_buttons()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $button_name = 'submit';
 
@@ -182,7 +182,7 @@ class TestFramework
     
     protected function session_erase()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         unset( $_SESSION['post'] );
         unset( $_SESSION['post_orig'] );
@@ -192,7 +192,7 @@ class TestFramework
     
     protected function session_mock( array & $post )
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $_SESSION['post_orig'] = $post;
 
@@ -201,7 +201,7 @@ class TestFramework
     
     protected function session_validate(array $post)
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $_SESSION['post'] = $post;
 

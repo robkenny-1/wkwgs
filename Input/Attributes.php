@@ -61,7 +61,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      */
     public function get_attributes() : array
     {
-        // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        // = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $this->update_cache();
         $attributes = $this->cached;
@@ -77,7 +77,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      */
     public function get_attribute( string $attribute )
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         
         $attribute = $this->get_attributes()[ $attribute ] ?? '';
 
@@ -92,7 +92,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      */
     public function set_attribute( string $attribute, $value )
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $this->invalidate_cache();
 
@@ -123,7 +123,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      */
     public function get_attributes_seconday() : array
     {
-        // = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        // = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $this->update_cache();
         $attributes = $this->cached_seconday;
@@ -139,7 +139,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      */
     public function get_attribute_secondary( string $attribute )
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         
         $attribute = $this->get_attributes_seconday()[ $attribute ] ?? '';
 
@@ -158,7 +158,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      */
     public function get_html() : string
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $attributes = $this->get_attributes();
 
@@ -198,7 +198,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
     
     protected function update_cache()
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         if ( is_null( $this->cached) || is_null( $this->cached_seconday) )
         {
@@ -248,7 +248,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
      */
     public static function move_values( string $seconday_value, array & $attributes ) : array
     {
-        $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         // Build the PCRE pattern
         $delim = '#';

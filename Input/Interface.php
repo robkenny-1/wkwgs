@@ -180,6 +180,16 @@ interface IHtmlInput
     public function get_value(array $post);
 
     /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute. This routine, given the value returned
+     * by get_value(), sets the appropriate attribute.
+     *
+     * @param type $value New value of the input element
+     */
+    public function set_value($value);
+
+    /**
      * Get the assigned form identity
      *
      * @return string

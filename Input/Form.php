@@ -27,6 +27,7 @@ include_once('Input.php');
 
 class Form extends Element implements IHtmlInput
 {
+
     const Tag_Type             = 'form';
     const Attributes_Default   = [
         'name'    => 'form0',
@@ -39,7 +40,7 @@ class Form extends Element implements IHtmlInput
 
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         if (gettype($desc) !== 'array')
         {
@@ -58,7 +59,7 @@ class Form extends Element implements IHtmlInput
      */
     public function get_submit_data(): array
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $submit = [];
 
@@ -86,7 +87,7 @@ class Form extends Element implements IHtmlInput
 
     public function has_duplicate_names(): bool
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $is_duplicate = False;
 
@@ -168,7 +169,7 @@ class Form extends Element implements IHtmlInput
      */
     public function validate(array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $validation_errors = [];
 
@@ -212,9 +213,9 @@ class Form extends Element implements IHtmlInput
      */
     public function get_value(array $post)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
-        $values = array();
+        $values = [];
 
         if (!empty($post))
         {
@@ -227,7 +228,7 @@ class Form extends Element implements IHtmlInput
                     $name = $child->get_attribute('name');
                     if (!empty($name))
                     {
-                        $value           = $child->get_value($post);
+                        $value         = $child->get_value($post);
                         $values[$name] = $value;
                     }
                 }
@@ -236,6 +237,19 @@ class Form extends Element implements IHtmlInput
 
         $logger->log_return($values);
         return $values;
+    }
+
+    /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute. This routine, given the value returned
+     * by get_value(), sets the appropriate attribute.
+     *
+     * @param type $value New value of the input element
+     */
+    public function set_value($value)
+    {
+        // Intentionally do nothing
     }
 
     /**
@@ -264,7 +278,7 @@ class Form extends Element implements IHtmlInput
 
     public function validate_post(string $name, array $post): array
     {
-        $logger            = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger            = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $validation_errors = [];
 
         // Perform data validation
@@ -275,7 +289,7 @@ class Form extends Element implements IHtmlInput
 
     public function cleanse_data($raw)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $cleansed = null;
 

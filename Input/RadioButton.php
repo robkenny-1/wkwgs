@@ -27,6 +27,7 @@ include_once('Input.php');
 
 class RadioButton extends InputElement
 {
+
     const Tag_Type             = 'input';
     const Attributes_Default   = [
         'type' => 'radio',
@@ -40,7 +41,7 @@ class RadioButton extends InputElement
 
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         if (gettype($desc) !== 'array')
         {
@@ -86,7 +87,7 @@ class RadioButton extends InputElement
      */
     public function get_html_core(): string
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $html = '';
 
@@ -128,6 +129,28 @@ class RadioButton extends InputElement
     }
 
     /* ------------------------------------------------------------------------- */
+    /* IHtmlInput routines */
+    /* ------------------------------------------------------------------------- */
+
+    /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute. This routine, given the value returned
+     * by get_value(), sets the appropriate attribute.
+     *
+     * @param type $value New value of the input element
+     */
+    public function set_value($value)
+    {
+        $choices = $this->get_attribute('choices');
+
+        if (in_array($value, $choices))
+        {
+            $this->set_attribute('selected', $value);
+        }
+    }
+
+    /* ------------------------------------------------------------------------- */
     /* InputElement routines */
     /* ------------------------------------------------------------------------- */
 
@@ -138,7 +161,7 @@ class RadioButton extends InputElement
      */
     public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $ve     = [];
 
         // Perform data validation
@@ -168,7 +191,7 @@ class RadioButton extends InputElement
 
     public function cleanse_data($raw)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $cleansed = null;
 

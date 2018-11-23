@@ -25,9 +25,10 @@ defined('ABSPATH') || exit;
 
 class Wkwgs_Logger
 {
+
     public static $Log_File_Name = __DIR__ . '/../../../wkwgs.log';
     public static $Disable       = True;
-    protected static $Indent = 0;
+    protected static $Indent     = 0;
 
     public static function indent()
     {
@@ -70,6 +71,9 @@ class Wkwgs_Logger
 
     public static function log_value(string $var_name, $var, string $prefix = 'Variable')
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         $var     = self::var_to_text($var);
         $message = "----- $prefix $var_name = $var";
         self::log_internal($message);
@@ -77,23 +81,35 @@ class Wkwgs_Logger
 
     public static function log_var(string $var_name, $var)
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         //self::log_value( $var_name, $var, 'Variable' );
         self::log_value($var_name, $var, '');
     }
 
     public static function log_param(string $var_name, $var)
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         self::log_value($var_name, $var, 'Param');
     }
 
     public static function log_msg(string $message)
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         $message = "------ $message";
         self::log_internal($message);
     }
 
     public static function log(string $message)
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         self::log_internal($message);
     }
 
@@ -148,20 +164,37 @@ class Wkwgs_Logger
 
 class Wkwgs_Function_Logger extends Wkwgs_Logger
 {
-    private $function_name = '';
-    private $function_return;
 
-    public function __construct(string $func, $params = null, string $class = '')
+    protected $class_name    = '';
+    protected $function_name = '';
+    protected $function_return;
+
+    public function __construct(string $func, $params = null)
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         Wkwgs_Logger::$Indent += 2;
 
-        $this->function_name = empty($class) ? $func : "$class::$func";
+        $split = explode('::', $func);
+        if (count($split) === 2)
+        {
+            $this->class_name    = $split[0];
+            $this->function_name = $split[1];
+        }
+        else
+        {
+            $this->function_name = $func;
+        }
 
-        $this->log_function($params, $class);
+        $this->log_function($params);
     }
 
     public function __destruct()
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         $message = '===== Exit ' . $this->function_name;
 
         if (isset($this->function_return))
@@ -174,15 +207,20 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
         Wkwgs_Logger::$Indent -= 2;
     }
 
-    protected function get_param_names(string $class = ''): array
+    public function get_name(): string
+    {
+        return empty($this->class_name) ? $this->function_name : $this->class_name . '::' . $this->function_name;
+    }
+
+    protected function get_param_names(): array
     {
         $paramNames = [];
 
         try
         {
-            if (!empty($class))
+            if (!empty($this->class_name))
             {
-                $reflection = new \ReflectionMethod($class, $this->function_name);
+                $reflection = new \ReflectionMethod($this->class_name, $this->function_name);
             }
             else
             {
@@ -204,14 +242,17 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
         return $paramNames;
     }
 
-    public function log_function($params = null, string $class = '')
+    public function log_function($params = null)
     {
-        $message = '===== Enter ' . ( empty($class) ? $this->function_name : "$class::$this->function_name" );
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
+        $message = '===== Enter ' . $this->get_name();
         self::log_internal($message);
 
         if (!empty($params))
         {
-            $param_names = self::get_param_names($this->function_name, $class);
+            $param_names = self::get_param_names();
 
             $i = 0;
             foreach ($params as $param)
@@ -226,6 +267,9 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
     public function log_return($value)
     {
+        if (Wkwgs_Logger::$Disable == True)
+            return;
+
         $this->function_return = $value;
     }
 

@@ -37,13 +37,14 @@ include_once('Input.php');
 
 class Element implements IHtmlElement
 {
+
     protected $tag;                 // string
     protected $attributes;          // Attribute
     protected $children;            // ElementList
 
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         if (gettype($desc) === 'string')
         {
@@ -68,8 +69,8 @@ class Element implements IHtmlElement
         $this->tag      = $tag;
         $this->children = new ElementList($children);
 
-        $default           = $this->define_attribute_default();
-        $compound          = $this->define_attribute_seconday();
+        $default          = $this->define_attribute_default();
+        $compound         = $this->define_attribute_seconday();
         $this->attributes = new Attributes($attributes, $default, $compound);
     }
 
@@ -93,7 +94,7 @@ class Element implements IHtmlElement
      */
     public function get_html(): string
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $tag = $this->tag;
         $tag = htmlspecialchars($tag);
@@ -287,6 +288,7 @@ class Element implements IHtmlElement
 
 abstract class InputElement extends Element implements IHtmlInput
 {
+
     const Attributes_Default   = [
         'type'          => 'text',
         'container-tag' => 'div',
@@ -333,7 +335,7 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_html(): string
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $logger->log_var('tag', $this->tag);
         $logger->log_var('type', $this->get_type());
 
@@ -345,16 +347,27 @@ abstract class InputElement extends Element implements IHtmlInput
         $logger->log_var('$label_attributes', $label_attributes);
         $logger->log_var('$container_attributes', $container_attributes);
 
-        if (!empty($label_text) && Helper::is_true($this->get_attributes('required')))
-        {
-            $label_text .= '<abbr class="required" title="required">&nbsp;*</abbr>';
-        }
-
         $label_contents = [];
+
         if (!empty($label_text))
         {
+            $required = $this->get_attribute('required');
+
             $label_contents[] = new HtmlText($label_text);
+
+            if (Helper::is_true($required))
+            {
+                $label_contents[] = new Element([
+                    'tag'        => 'abbr',
+                    'attributes' => [
+                        'class' => 'required',
+                        'title' => 'required',
+                    ],
+                    'contents'   => [new HtmlSnippet('&nbsp;*')],
+                ]);
+            }
         }
+
         $label_contents[] = new \Input\Callback([$this, 'get_html_core']);
 
         $compound = new Element([
@@ -409,7 +422,7 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function validate(array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $name     = $this->get_name();
         $raw      = $post[$name] ?? '';
@@ -469,7 +482,7 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_value(array $post)
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args(), __CLASS__ );
 
         $cleansed = null;
         $name     = $this->get_name();
@@ -481,6 +494,19 @@ abstract class InputElement extends Element implements IHtmlInput
         }
 
         return $cleansed;
+    }
+
+    /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute. This routine, given the value returned
+     * by get_value(), sets the appropriate attribute.
+     *
+     * @param type $value New value of the input element
+     */
+    public function set_value($value)
+    {
+        $this->set_attribute('value', $value);
     }
 
     /**

@@ -53,8 +53,8 @@ class Email extends Text
      */
     public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-        $ve     = [];
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
+        $ve = [];
 
         // Perform data validation
 

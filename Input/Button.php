@@ -42,9 +42,9 @@ class Button extends Element
 
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-
-        if (gettype($desc) !== 'array')
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
+        
+        if ( gettype( $desc ) !== 'array' )
         {
             $logger->log_var('$desc is not an array', $desc);
             return;
@@ -93,7 +93,7 @@ class Button extends Element
      */
     public function get_html(): string
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $remaining = $this->get_attributes();
         $label     = $this->get_attribute_secondary('label-text');
@@ -137,7 +137,7 @@ class Button extends Element
      */
     public function validate_post(string $name, array $post): array
     {
-        $logger            = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $validation_errors = [];
 
         // The button should only return 'value'

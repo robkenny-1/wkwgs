@@ -48,7 +48,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      */
     protected function set_children(array $children)
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $this->children = [];
 
@@ -85,7 +85,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      */
     public function get_html(): string
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         //$logger->log_var( '$this', $this );
 
         $html = '';
@@ -116,7 +116,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
      */
     public function add_child(IHtmlPrinter $child)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         if (!is_null($child))
         {
@@ -145,7 +145,7 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
     }
 
     /* ------------------------------------------------------------------------- */
-    /* \Iterator routines */
+    /* \Iterator routines (from IHtmlPrinterList) */
     /* ------------------------------------------------------------------------- */
 
     function rewind()
@@ -181,28 +181,40 @@ class ElementList implements IHtmlPrinter, IHtmlPrinterList
 
 class HtmlText implements IHtmlPrinter
 {
+
     protected $text;
+
+    public function __construct(string $text)
+    {
+        $this->text = htmlspecialchars($text);
+    }
+
+    public function get_html(): string
+    {
+        return $this->text;
+    }
+
+}
+
+class HtmlSnippet extends HtmlText
+{
 
     public function __construct(string $text)
     {
         $this->text = $text;
     }
 
-    public function get_html(): string
-    {
-        return htmlspecialchars($this->text);
-    }
-
 }
 
 class Callback implements IHtmlPrinter
 {
+
     protected $callback = '';
     protected $params   = null;
 
     public function __construct(callable $callback, ?array $params = null)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $this->callback = $callback;
         $this->params   = $params;
@@ -219,7 +231,7 @@ class Callback implements IHtmlPrinter
      */
     public function get_html(): string
     {
-        //$logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args(), get_class() );
+        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $html = '';
 

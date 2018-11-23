@@ -27,11 +27,12 @@ include_once('Input.php');
 
 class Telephone extends Text
 {
+
     const Input_Type         = 'tel';
     const Attributes_Default = array(
         'type'    => self::Input_Type,
         //'pattern'           => '^(?:(?:(\s*\(?([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\)?\s*(?:[.-]\s*)?)([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})$',
-        'pattern' => '^\+?(\(?[0-9]{3}\)?|[0-9]{3})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
+        'pattern' => '^\+?[1]*[-\.\s]?(\(?[0-9]{3}\)?|[0-9]{3})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$',
     );
 
     /* ------------------------------------------------------------------------- */
@@ -55,7 +56,7 @@ class Telephone extends Text
      */
     public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $ve     = [];
 
         // Perform data validation

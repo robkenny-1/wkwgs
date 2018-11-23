@@ -36,9 +36,9 @@ class Text extends InputElement
 
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-
-        if (gettype($desc) !== 'array')
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
+        
+        if ( gettype( $desc ) !== 'array' )
         {
             $logger->log_var('$desc is not an array', $desc);
             return;
@@ -79,8 +79,8 @@ class Text extends InputElement
      */
     public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
-        $ve     = [];
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
+        $ve = [];
 
         // Perform data validation
         // None
@@ -91,7 +91,7 @@ class Text extends InputElement
 
     public function cleanse_data($raw)
     {
-        $logger = new \Wkwgs_Function_Logger(__FUNCTION__, func_get_args(), get_class());
+        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $cleansed = null;
 
