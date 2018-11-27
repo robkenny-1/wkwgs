@@ -16,14 +16,6 @@
 
         include_once( '..\Input.php' );
 
-        if (!function_exists('is_countable'))
-        {
-
-            function is_countable($var)
-            {
-                return (is_array($var) || $var instanceof Countable);
-            }
-        }
         Wkwgs_Logger::clear();
         Wkwgs_Logger::$Disable = False;
         $logger                = new \Wkwgs_Function_Logger(__METHOD__, null);
@@ -40,9 +32,9 @@
              * Skills constructor.
              * @param array $data
              */
-            public function __construct(array $data)
+            public function __construct($data)
             {
-                $this->data = $data;
+                $this->data = is_array($data) ? $data : [$data];
             }
 
             /**
@@ -110,7 +102,7 @@
             public function hasChildren()
             {
                 $current = $this->current();
-                return is_countable($current);
+                return $current instanceof RecursiveIterator;
             }
 
             /**
@@ -124,7 +116,7 @@
                 if ($this->hasChildren())
                 {
                     $current = $this->current();
-                    return new self($current);
+                    return $current;
                 }
             }
         }
@@ -137,10 +129,25 @@
              * Skills constructor.
              * @param array $data
              */
-            public function __construct(array $data)
+            public function __construct($data)
             {
-                $this->data = $data;
+                $this->data = is_array($data) ? $data : [$data];
                 parent::__construct($this->data);
+            }
+        }
+
+        class Skill
+        {
+            protected $name;
+
+            public function __construct(string $name)
+            {
+                $this->name = $name;
+            }
+
+            public function get_name(): string
+            {
+                return $this->name;
             }
         }
 
@@ -169,17 +176,33 @@
                 $rii = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::LEAVES_ONLY);
                 foreach ($rii as $value)
                 {
-                    echo "<br>$value";
+                    if ($value instanceof Skill)
+                    {
+                        echo $value->get_name();
+                    }
+                    else if ($value instanceof Skills)
+                    {
+                        echo 'Skipping Skills';
+                    }
+                    else if (gettype($value) === 'string')
+                    {
+                        echo $value;
+                    }
+                    else
+                    {
+                        echo 'Skipping unknown type: ' . gettype($value);
+                    }
+                    echo '<br>';
                 }
             }
         }
 
-        $skills = new Skills2([
+        $skills = new Skills([
             // Languages
             'javascripts',
             'php',
             'ruby',
-            new Skills2([
+            new Skills([
                 // Frameworks
                 'jquery',
                 'css',
@@ -188,18 +211,18 @@
                 'symfony',
                 'zend framework'
                     ]),
-            [
+            new Skills([
                 // OS
                 'ubuntu',
                 'debian',
                 'centos',
-                [
+                new Skills([
                     // Cloud
-                    'amazon ws',
-                    'google cloud',
-                    'microsoft azure'
-                ]
-            ]
+                    new Skill('amazon ws'),
+                    new Skill('google cloud'),
+                    new Skill('microsoft azure'),
+                        ])
+                    ])
         ]);
 
         //CollectionsIterator::iterate($skills);
