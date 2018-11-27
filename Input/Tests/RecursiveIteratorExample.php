@@ -23,7 +23,7 @@
         /**
          * Class Skills
          */
-        class Skills implements RecursiveIterator
+        class Skills implements \RecursiveIterator
         {
             protected $data;
             protected $position;
@@ -54,7 +54,7 @@
              * @return void Any returned value is ignored.
              * @since 5.0.0
              */
-            public function next()
+            public function next(): void
             {
                 ++$this->position;
             }
@@ -77,7 +77,7 @@
              * Returns true on success or false on failure.
              * @since 5.0.0
              */
-            public function valid()
+            public function valid(): bool
             {
                 return isset($this->data[$this->position]);
             }
@@ -88,7 +88,7 @@
              * @return void Any returned value is ignored.
              * @since 5.0.0
              */
-            public function rewind()
+            public function rewind(): void
             {
                 $this->position = 0;
             }
@@ -99,7 +99,7 @@
              * @return bool true if the current entry can be iterated over, otherwise returns false.
              * @since 5.1.0
              */
-            public function hasChildren()
+            public function hasChildren(): bool
             {
                 $current = $this->current();
                 return $current instanceof RecursiveIterator;
@@ -111,7 +111,7 @@
              * @return RecursiveIterator An iterator for the current entry.
              * @since 5.1.0
              */
-            public function getChildren()
+            public function getChildren(): \RecursiveIterator
             {
                 if ($this->hasChildren())
                 {
