@@ -1,29 +1,28 @@
 <?php
 
 /*
-  Input Copyright (C) 2018 Rob Kenny
-
-  Input is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  Input is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Contact Form to Database Extension.
-  If not, see http://www.gnu.org/licenses/gpl-3.0.html
+ * Input Copyright (C) 2018 Rob Kenny
+ *
+ * Input is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Input is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Contact Form to Database Extension.
+ * If not, see http://www.gnu.org/licenses/gpl-3.0.html
  */
-
 namespace Input;
 
 // Exit if accessed directly
-defined('ABSPATH') || exit;
+defined('ABSPATH') || exit();
 
-include_once('Input.php');
+include_once ('Input.php');
 
 /* ------------------------------------------------------------------------- */
 /* Classes */
@@ -34,29 +33,31 @@ include_once('Input.php');
  * current get_attributes() should be renamed get_attributes_handler()
  * similar for IHtmlPrinterList
  */
-
-class Element implements IHtmlElement
+class Element extends ElementList implements IHtmlElement
 {
 
-    protected $tag;                 // string
-    protected $attributes;          // Attribute
-    protected $children;            // ElementList
+    // string
+    protected $tag;
 
+    // [ string ]
+    protected $attributes;
+
+    // ElementList
     public function __construct($desc)
     {
         $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         if (gettype($desc) === 'string')
         {
-            $tag        = $desc;
+            $tag = $desc;
             $attributes = [];
-            $children   = [];
+            $children = [];
         }
         else
         {
-            $tag        = $desc['tag'] ?? '';
+            $tag = $desc['tag'] ?? '';
             $attributes = $desc['attributes'] ?? [];
-            $children   = $desc['contents'] ?? [];
+            $children = $desc['contents'] ?? [];
         }
 
         if (empty($tag))
@@ -66,18 +67,16 @@ class Element implements IHtmlElement
             throw new \Exception($msg);
         }
 
-        $this->tag      = $tag;
-        $this->children = new ElementList($children);
-
-        $default          = $this->define_attribute_default();
-        $compound         = $this->define_attribute_seconday();
+        $this->tag = $tag;
+        $default = $this->define_attribute_default();
+        $compound = $this->define_attribute_seconday();
         $this->attributes = new Attributes($attributes, $default, $compound);
+        parent::__construct($children);
     }
 
     /* ------------------------------------------------------------------------- */
     /* IHtmlElement routines */
     /* ------------------------------------------------------------------------- */
-
     public function get_tag(): string
     {
         return $this->tag;
@@ -102,55 +101,19 @@ class Element implements IHtmlElement
 
         $html = '';
 
+        $is_void = Helper::is_void_element($this->tag);
+
         $html .= "<$tag";
         $html .= $this->attributes->get_html();
         $html .= '>';
-        if (!Helper::is_void_element($this->tag))
+        if (! $is_void)
         {
-            $html .= $this->children->get_html();
+            $html .= parent::get_html();
             $html .= "</$tag>";
         }
 
         $logger->log_return($html);
         return $html;
-    }
-
-    /* ------------------------------------------------------------------------- */
-    /* IHtmlPrinterList routines */
-    /* ------------------------------------------------------------------------- */
-
-    public function add_child($child)
-    {
-        $this->children->add_child($child);
-    }
-
-    /* ------------------------------------------------------------------------- */
-    /* Iterator routines */
-    /* ------------------------------------------------------------------------- */
-
-    function rewind()
-    {
-        return $this->children->rewind();
-    }
-
-    function current()
-    {
-        return $this->children->current();
-    }
-
-    function key()
-    {
-        return $this->children->key();
-    }
-
-    function next()
-    {
-        return $this->children->next();
-    }
-
-    function valid()
-    {
-        return $this->children->valid();
     }
 
     /* ------------------------------------------------------------------------- */
@@ -160,7 +123,8 @@ class Element implements IHtmlElement
     /**
      * Set the attributes of both types
      *
-     * @param array $attributes associative array of attribute name/value
+     * @param array $attributes
+     *            associative array of attribute name/value
      * @return null
      */
     public function set_attributes(array $attributes, array $default = [])
@@ -205,7 +169,7 @@ class Element implements IHtmlElement
     /**
      * Get the attributes that are in $compound
      *
-     * @return indexed array of the alternate values
+     * @return array indexed array of the alternate values
      */
     public function get_attributes_seconday(): array
     {
@@ -229,8 +193,9 @@ class Element implements IHtmlElement
     /**
      * Define attributes that belong to compound elements
      *
-     * @param array $compound non-associative array of attribute names
-     * that exist for the compound elements
+     * @param array $compound
+     *            non-associative array of attribute names
+     *            that exist for the compound elements
      * @return null
      */
     public function set_attribute_seconday(array $compound)
@@ -241,7 +206,6 @@ class Element implements IHtmlElement
     /* ------------------------------------------------------------------------- */
     /* IAttributeProvider routines */
     /* ------------------------------------------------------------------------- */
-
     public function define_attribute_default(): array
     {
         return [];
@@ -250,7 +214,6 @@ class Element implements IHtmlElement
     /* ------------------------------------------------------------------------- */
     /* IAttributeSecondayProvider routines */
     /* ------------------------------------------------------------------------- */
-
     public function define_attribute_seconday(): array
     {
         return [];
@@ -270,27 +233,24 @@ class Element implements IHtmlElement
         $html = $this->get_html();
         echo $html;
     }
-
 }
 
 /*
  * The InputElement Class
  *
  * Layout of the input element
- *  <div class="container-class">
- *     <label class="label-class">
- *       Label Text
- *       <input type='text' />
- *     </label>
- *  </div>
+ * <div class="container-class">
+ * <label class="label-class">
+ * Label Text
+ * <input type='text' />
+ * </label>
+ * </div>
  *
  */
-
 abstract class InputElement extends Element implements IHtmlInput
 {
-
-    const Attributes_Default   = [
-        'type'          => 'text',
+    const Attributes_Default = [
+        'type' => 'text',
         'container-tag' => 'div',
     ];
     const Attributes_Secondary = [
@@ -301,7 +261,6 @@ abstract class InputElement extends Element implements IHtmlInput
     /* ------------------------------------------------------------------------- */
     /* IAttributeProvider routines */
     /* ------------------------------------------------------------------------- */
-
     public function define_attribute_default(): array
     {
         return self::Attributes_Default;
@@ -310,7 +269,6 @@ abstract class InputElement extends Element implements IHtmlInput
     /* ------------------------------------------------------------------------- */
     /* IAttributeSecondayProvider routines */
     /* ------------------------------------------------------------------------- */
-
     public function define_attribute_seconday(): array
     {
         return self::Attributes_Secondary;
@@ -324,12 +282,12 @@ abstract class InputElement extends Element implements IHtmlInput
      * Get the HTML that represents the current Attributes
      *
      * Layout of the output field
-     *  <div class="container-class">
-     *     <label class="css-label">
-     *       Label Text
-     *       <input class="class" />
-     *     </label>
-     *  </div>
+     * <div class="container-class">
+     * <label class="css-label">
+     * Label Text
+     * <input class="class" />
+     * </label>
+     * </div>
      *
      * @return string
      */
@@ -339,17 +297,17 @@ abstract class InputElement extends Element implements IHtmlInput
         $logger->log_var('tag', $this->tag);
         $logger->log_var('type', $this->get_type());
 
-        $label_attributes     = $this->get_attributes_seconday()['label'];
+        $label_attributes = $this->get_attributes_seconday()['label'];
         $container_attributes = $this->get_attributes_seconday()['container'];
-        $container_tag        = Attributes::get_attribute_and_remove('tag', $container_attributes);
-        $label_text           = Attributes::get_attribute_and_remove('text', $label_attributes);
+        $container_tag = Attributes::get_attribute_and_remove('tag', $container_attributes);
+        $label_text = Attributes::get_attribute_and_remove('text', $label_attributes);
 
         $logger->log_var('$label_attributes', $label_attributes);
         $logger->log_var('$container_attributes', $container_attributes);
 
         $label_contents = [];
 
-        if (!empty($label_text))
+        if (! empty($label_text))
         {
             $required = $this->get_attribute('required');
 
@@ -358,27 +316,32 @@ abstract class InputElement extends Element implements IHtmlInput
             if (Helper::is_true($required))
             {
                 $label_contents[] = new Element([
-                    'tag'        => 'abbr',
+                    'tag' => 'abbr',
                     'attributes' => [
                         'class' => 'required',
                         'title' => 'required',
                     ],
-                    'contents'   => [new HtmlSnippet('&nbsp;*')],
+                    'contents' => [
+                        new HtmlSnippet('&nbsp;*')
+                    ],
                 ]);
             }
         }
 
-        $label_contents[] = new \Input\Callback([$this, 'get_html_core']);
+        $label_contents[] = new \Input\Callback([
+            $this,
+            'get_html_core'
+        ]);
 
         $compound = new Element([
-            'tag'        => $container_tag,
+            'tag' => $container_tag,
             'attributes' => $container_attributes,
-            'contents'   => [
+            'contents' => [
                 new Element([
-                    'tag'        => 'label',
+                    'tag' => 'label',
                     'attributes' => $label_attributes,
-                    'contents'   => $label_contents
-                        ])
+                    'contents' => $label_contents
+                ])
             ]
         ]);
 
@@ -395,7 +358,7 @@ abstract class InputElement extends Element implements IHtmlInput
     /**
      * Get the type of Input
      *
-     * @return  string Input type
+     * @return string Input type
      */
     public function get_type(): string
     {
@@ -424,50 +387,42 @@ abstract class InputElement extends Element implements IHtmlInput
     {
         $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
-        $name     = $this->get_name();
-        $raw      = $post[$name] ?? '';
+        $name = $this->get_name();
+        $raw = $post[$name] ?? '';
         $required = Helper::is_true($this->get_attribute('required'));
-        $pattern  = $this->get_attribute('pattern');
+        $pattern = $this->get_attribute('pattern');
 
         $validation_errors = [];
 
         // These first three errors preclude all others
         if (empty($name))
         {
-            $validation_errors[] = new HtmlValidateError(
-                    '$name is empty', $name, $this
-            );
+            $validation_errors[] = new HtmlValidateError('$name is empty', $name, $this);
         }
         else if (empty($post))
         {
-            $validation_errors[] = new HtmlValidateError(
-                    '$post is empty', $name, $this
-            );
+            $validation_errors[] = new HtmlValidateError('$post is empty', $name, $this);
         }
         else if ($required && empty($raw))
         {
-            $validation_errors[] = new HtmlValidateError(
-                    '$post missing required data', $name, $this
-            );
+            $validation_errors[] = new HtmlValidateError('$post missing required data', $name, $this);
         }
         else
         {
-            if (!empty($pattern) && !empty($raw))
+            if (! empty($pattern) && ! empty($raw))
             {
-                $delim   = '#';
+                $delim = '#';
                 $pattern = $delim . addcslashes($pattern, $delim) . $delim;
 
                 if (preg_match($pattern, $raw) !== 1)
                 {
                     $logger->log_msg('$raw does not match pattern');
 
-                    $validation_errors[] = new HtmlValidateError(
-                            'value does not match defined pattern', $name, $this
-                    );
+                    $validation_errors[] = new HtmlValidateError('value does not match defined pattern', $name, $this);
                 }
             }
 
-            $ve                = $this->validate_post($name, $post);
+            $ve = $this->validate_post($name, $post);
             $validation_errors = array_merge($validation_errors, $ve);
         }
 
@@ -482,13 +437,11 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_value(array $post)
     {
-        //$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args(), __CLASS__ );
-
+        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args(), __CLASS__ );
         $cleansed = null;
-        $name     = $this->get_name();
+        $name = $this->get_name();
 
-        if (isset($post[$name]) &&
-                empty($this->validate($post)))
+        if (isset($post[$name]) && empty($this->validate($post)))
         {
             $cleansed = $this->cleanse_data($post[$name]);
         }
@@ -499,10 +452,12 @@ abstract class InputElement extends Element implements IHtmlInput
     /**
      * Set the contents of the input element
      * Some input elements, such as the checkbox, do not store their current
-     * contents in the value attribute. This routine, given the value returned
+     * contents in the value attribute.
+     * This routine, given the value returned
      * by get_value(), sets the appropriate attribute.
      *
-     * @param type $value New value of the input element
+     * @param mixed $value
+     *            New value of the input element
      */
     public function set_value($value)
     {
@@ -559,5 +514,4 @@ abstract class InputElement extends Element implements IHtmlInput
     {
         return parent::get_html();
     }
-
 }

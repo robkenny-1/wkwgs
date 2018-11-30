@@ -1,42 +1,39 @@
 <?php
 
 /*
-  Input Copyright (C) 2018 Rob Kenny
-
-  WordPress Plugin Template is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  WordPress Plugin Template is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Contact Form to Database Extension.
-  If not, see http://www.gnu.org/licenses/gpl-3.0.html
+ * Input Copyright (C) 2018 Rob Kenny
+ *
+ * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * WordPress Plugin Template is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Contact Form to Database Extension.
+ * If not, see http://www.gnu.org/licenses/gpl-3.0.html
  */
-
 namespace Input;
 
 // Exit if accessed directly
-defined('ABSPATH') || exit;
+defined('ABSPATH') || exit();
 
-include_once('Input.php');
+include_once ('Input.php');
 
 class Form extends Element implements IHtmlInput
 {
-
-    const Tag_Type             = 'form';
-    const Attributes_Default   = [
-        'name'    => 'form0',
-        'action'  => '#', // submit data to same page
-        'method'  => 'post',
+    const Tag_Type = 'form';
+    const Attributes_Default = [
+        'name' => 'form0',
+        'action' => '#', // submit data to same page
+        'method' => 'post',
         'enctype' => 'multipart/form-data',
     ];
-    const Attributes_Secondary = [
-    ];
+    const Attributes_Secondary = [];
 
     public function __construct($desc)
     {
@@ -63,7 +60,7 @@ class Form extends Element implements IHtmlInput
 
         $submit = [];
 
-        $form_name     = $this->get_name();
+        $form_name = $this->get_name();
         $submit_method = $this->get_attribute('method');
         switch ($submit_method)
         {
@@ -93,7 +90,7 @@ class Form extends Element implements IHtmlInput
 
         $existing_names = [];
 
-        foreach ($this as $child)
+        foreach ($this->get_RecursiveIteratorIterator() as $child)
         {
             // Only IHtmlInput need to have unique names
             if ($child instanceof IHtmlInput)
@@ -118,7 +115,6 @@ class Form extends Element implements IHtmlInput
     /* ------------------------------------------------------------------------- */
     /* IAttributeProvider routines */
     /* ------------------------------------------------------------------------- */
-
     public function define_attribute_default(): array
     {
         $parent = parent::define_attribute_default();
@@ -128,7 +124,6 @@ class Form extends Element implements IHtmlInput
     /* ------------------------------------------------------------------------- */
     /* IAttributeSecondayProvider routines */
     /* ------------------------------------------------------------------------- */
-
     public function define_attribute_seconday(): array
     {
         $parent = parent::define_attribute_seconday();
@@ -142,7 +137,7 @@ class Form extends Element implements IHtmlInput
     /**
      * Get the type of Input
      *
-     * @return  string Input type
+     * @return string Input type
      */
     public function get_type(): string
     {
@@ -177,24 +172,20 @@ class Form extends Element implements IHtmlInput
 
         if (empty($post))
         {
-            $validation_errors[] = new HtmlValidateError(
-                    '$post is empty', $name, $this
-            );
+            $validation_errors[] = new HtmlValidateError('$post is empty', $name, $this);
         }
         else if ($this->has_duplicate_names())
         {
-            $validation_errors[] = new HtmlValidateError(
-                    'input objects do not all have unique names', $name, $this
-            );
+            $validation_errors[] = new HtmlValidateError('input objects do not all have unique names', $name, $this);
         }
         else
         {
-            foreach ($this as $child)
+            foreach ($this->get_RecursiveIteratorIterator() as $child)
             {
                 if ($child instanceof IHtmlInput)
                 {
                     $errors = $child->validate($post);
-                    if (!empty($errors))
+                    if (! empty($errors))
                     {
                         $validation_errors = array_merge($validation_errors, $errors);
                     }
@@ -217,18 +208,18 @@ class Form extends Element implements IHtmlInput
 
         $values = [];
 
-        if (!empty($post))
+        if (! empty($post))
         {
-            foreach ($this as $child)
+            foreach ($this->get_RecursiveIteratorIterator() as $child)
             {
                 $logger->log_var('$child', $child);
 
                 if ($child instanceof IHtmlInput)
                 {
                     $name = $child->get_attribute('name');
-                    if (!empty($name))
+                    if (! empty($name))
                     {
-                        $value         = $child->get_value($post);
+                        $value = $child->get_value($post);
                         $values[$name] = $value;
                     }
                 }
@@ -242,10 +233,12 @@ class Form extends Element implements IHtmlInput
     /**
      * Set the contents of the input element
      * Some input elements, such as the checkbox, do not store their current
-     * contents in the value attribute. This routine, given the value returned
+     * contents in the value attribute.
+     * This routine, given the value returned
      * by get_value(), sets the appropriate attribute.
      *
-     * @param type $value New value of the input element
+     * @param mixed $value
+     *            New value of the input element
      */
     public function set_value($value)
     {
@@ -275,10 +268,9 @@ class Form extends Element implements IHtmlInput
     /* ------------------------------------------------------------------------- */
     /* InputElement routines */
     /* ------------------------------------------------------------------------- */
-
     public function validate_post(string $name, array $post): array
     {
-        $logger            = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $validation_errors = [];
 
         // Perform data validation
@@ -299,7 +291,6 @@ class Form extends Element implements IHtmlInput
         $logger->log_return($cleansed);
         return $cleansed;
     }
-
 }
 
 ?>

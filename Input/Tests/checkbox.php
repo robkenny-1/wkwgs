@@ -1,92 +1,80 @@
 ﻿<?php
-
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 </head>
 <body>
-<h1 id="logo">
+<h1>
 Checkbox Unit Tests
 </h1>
 
 <?php
 ini_set('display_errors', 1);
-error_reporting(E_ALL|E_STRICT);
+error_reporting(E_ALL | E_STRICT);
 
-define( 'ABSPATH', '1');
+define('ABSPATH', '1');
 
 session_start();
-include_once( '..\Input.php' );
-include_once( 'TestFramework.php' );
+include_once ('..\Input.php');
+include_once ('TestFramework.php');
 
 Wkwgs_Logger::clear();
 
-$form = new Input\Form([
-    'attributes'        => [
-        'name'          => 'checkbox_test_form',
+/* -------------------------------------------------------------------------------- */
+
+$form = new Input\Form([]);
+
+/* -------------------------------------------------------------------------------- */
+
+$form->add_child(new Input\Checkbox([
+    'attributes' => [
+        'name' => 'name_only',
     ],
-    'contents'          => [],
-]);
+    'contents' => [],
+]));
 
-$form->add_child(
-    new Input\Checkbox([
-        'attributes'        => [
-            'name'          => 'name_only',
-        ],
-        'contents'          => [],
-    ])
-);
+$form->add_child(new Input\Checkbox([
+    'attributes' => [
+        'name' => 'checkbox_with_label',
+        'label-text' => 'checkbox with label',
+    ],
+    'contents' => [],
+]));
 
-$form->add_child(
-    new Input\Checkbox([
-        'attributes'        => [
-            'name'          => 'checkbox_with_label',
-            'label-text'    => 'checkbox with label',
-        ],
-        'contents'          => [],
-    ])
-);
+$form->add_child(new Input\Checkbox([
+    'attributes' => [
+        'name' => 'checkbox_required',
+        'label-text' => 'Value Required',
+        'required' => 'True',
+    ],
+    'contents' => [],
+]));
 
-$form->add_child(
-    new Input\Checkbox([
-        'attributes'        => [
-            'name'          => 'checkbox_required',
-            'label-text'    => 'Value Required',
-            'required'      => 'True',
-        ],
-        'contents'          => [],
-    ])
-);
+$form->add_child(new Input\Checkbox([
+    'attributes' => [
+        'name' => 'checkbox_enabled',
+        'label-text' => 'checkbox_enabled',
+        'checked' => True,
+        'value' => 'Has Been Checked',
+    ],
+    'contents' => [],
+]));
 
-$form->add_child(
-    new Input\Checkbox([
-        'attributes'        => [
-            'name'          => 'checkbox_enabled',
-            'label-text'    => 'checkbox_enabled',
-            'checked'       => True,
-            'value'         => 'Has Been Checked',
-        ],
-        'contents'          => [],
-    ])
-);
-
-$form->add_child(
-    new Input\Checkbox([
-        'attributes'        => [
-            'name'          => 'html_and_special_chars',
-            'label-text'    => '< html & special chars >',
-            'help'          => 'This checkbox contains special HTML chars like <, >, &',
-        ],
-        'contents'          => [],
-    ])
-);
+$form->add_child(new Input\Checkbox([
+    'attributes' => [
+        'name' => 'html_and_special_chars',
+        'label-text' => '< html & special chars >',
+        'help' => 'This checkbox contains special HTML chars like <, >, &',
+    ],
+    'contents' => [],
+]));
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation
-function falsify_post( $post )
+function falsify_post($post)
 {
-    $post[ 'checkbox_enabled' ] = 'does not match';
+    $post['checkbox_enabled'] = 'does not match';
 
     return $post;
 }

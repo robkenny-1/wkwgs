@@ -1,140 +1,207 @@
-<?php
-
-?>
+<?php ?>
 <!DOCTYPE html>
 <html>
-<head>
-<style>
+    <head>
+    </head>
+    <body>
+        <h1 id="logo">
+            Stub Tests
+        </h1>
 
-body {
-  font  : 21px sans-serif;
-  padding : 2em;
-  margin  : 0;
-  background : #eeeeee;
-}
-form {
-  margin: 2em 0;
-  background : #dddddd;
-}
- form input {
-   border: 2px solid #555555;
- }
+        <?php
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL | E_STRICT);
 
-/*-----Tool tip-----*/
-.tooltip-special {
-  position:relative;
-  display:inline-block;
-  padding:5px;
-  background-color : steelblue;
-}
-[data-tooltip] {
-  cursor:help;
-  background-color : lightyellow;
-}
-[data-tooltip]:after{
-  visibility:hidden;
-  opacity:0;
-  position:absolute;
-  content:attr(data-tooltip);
-  background-color:white;
-  box-shadow: 0 0px 1px 0px rgba(0, 0, 0, .1);
-  border-bottom: 1px solid rgba(0, 0, 0, .15);
-  border-radius:3px;
-  width:320px;
-  padding:10px;
-  text-align:justify;
-  margin-top:10px;
-  margin-left:-10px;
-  left:100%;
-  transition: all .2s linear;
-}
-[data-tooltip]:hover:after, [data-tooltip] + input {
-  visibility:visible;
-  opacity:1;
-}
+        define('ABSPATH', '1');
 
-<!-- Style to put label text on right -->
-.text-input-label-right {
-  position: relative;
-  background: orange;
-  box-sizing: border-box;
-  padding: 5px;
-}
+        include_once( '..\Input.php' );
 
-.text-input-label-right input {
-  float: left;
-  background: green;
-}
-.text-input-label-right label {
-  margin-left: 5px;
-}
-</style>
-</head>
-<body>
-<h1 id="logo">
-Stub Tests
-</h1>
+        Wkwgs_Logger::clear();
+        Wkwgs_Logger::$Disable = False;
+        $logger                = new \Wkwgs_Function_Logger(__METHOD__, null);
 
-<?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL|E_STRICT);
-
-define( 'ABSPATH', '1');
-
-include_once( '..\Input.php' );
-
-Wkwgs_Logger::clear();
-Wkwgs_Logger::$Disable = False;
-
-function dumpstr( string $str)
-{
-    echo '<br>';
-    echo $str;
-    echo '<br>';
-
-    $first = True;
-    $len = strlen($str);
-    for ($i = 0; $i < $len; $i += 1)
-    {
-        if (!$first)
+        class TT implements RecursiveIterator
         {
-            echo '|';
+            protected $name;
+            protected $var = [];
+            protected $position;
+
+            public function __construct(string $name)
+            {
+                $this->name = $name;
+            }
+
+            public function add(TT $tt)
+            {
+                $this->var[] = $tt;
+            }
+
+            public function get_name(): string
+            {
+                return $this->name;
+            }
+
+            /**
+             * Return the current element
+             * @link http://php.net/manual/en/iterator.current.php
+             * @return mixed Can return any type.
+             * @since 5.0.0
+             */
+            public function current()
+            {
+                return $this->data[$this->position];
+            }
+
+            /**
+             * Move forward to next element
+             * @link http://php.net/manual/en/iterator.next.php
+             * @return void Any returned value is ignored.
+             * @since 5.0.0
+             */
+            public function next()
+            {
+                ++$this->position;
+            }
+
+            /**
+             * Return the key of the current element
+             * @link http://php.net/manual/en/iterator.key.php
+             * @return mixed scalar on success, or null on failure.
+             * @since 5.0.0
+             */
+            public function key()
+            {
+                return $this->position;
+            }
+
+            /**
+             * Checks if current position is valid
+             * @link http://php.net/manual/en/iterator.valid.php
+             * @return boolean The return value will be casted to boolean and then evaluated.
+             * Returns true on success or false on failure.
+             * @since 5.0.0
+             */
+            public function valid()
+            {
+                return isset($this->data[$this->position]);
+            }
+
+            /**
+             * Rewind the Iterator to the first element
+             * @link http://php.net/manual/en/iterator.rewind.php
+             * @return void Any returned value is ignored.
+             * @since 5.0.0
+             */
+            public function rewind()
+            {
+                $this->position = 0;
+            }
+
+            /**
+             * Returns if an iterator can be created for the current entry.
+             * @link http://php.net/manual/en/recursiveiterator.haschildren.php
+             * @return bool true if the current entry can be iterated over, otherwise returns false.
+             * @since 5.1.0
+             */
+            public function hasChildren()
+            {
+                $current = $this->current();
+                return is_countable($current);
+            }
+
+            /**
+             * Returns an iterator for the current entry.
+             * @link http://php.net/manual/en/recursiveiterator.getchildren.php
+             * @return RecursiveIterator An iterator for the current entry.
+             * @since 5.1.0
+             */
+            public function getChildren()
+            {
+                if ($this->hasChildren())
+                {
+                    $current = $this->current();
+                    return new self($current);
+                }
+            }
         }
-        $first = False;
-        echo $str[$i];
-    }
 
-    echo '<br>';
-}
-function test()
-{
-    $logger = new \Wkwgs_Function_Logger( __FUNCTION__, func_get_args() );
+        $t1 = new TT('t1');
+        $t2 = new TT('t2');
+        $t3 = new TT('t3');
+        $t1->add($t2);
+        $t2->add(new TT('t2-1'));
+        $t2->add($t3);
+        $t3->add(new TT('t3-1'));
+        $t3->add(new TT('t3-2'));
+        $t3->add(new TT('t3-3'));
 
-    $raw = '4257800901';
-    $pattern = '^\+?(\(?[0-9]{3}\)?|[0-9]{3})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$';
-    $delim = '#';
-    $logger->log_var( '$raw', $raw );
-    $logger->log_var( '$pattern', $pattern );
+        echo '<h3>RecursiveIteratorIterator</h3>';
+        $rii = new \RecursiveIteratorIterator($t1, \RecursiveIteratorIterator::LEAVES_ONLY);
+        foreach ($rii as $value)
+        {
+            echo "<br>$value";
+        }
 
-    $regex = $delim . preg_quote( $pattern, $delim ) . $delim;
-    $matches  = preg_match($regex, $raw);
-    $logger->log_var( '$regex', $regex );
-    $logger->log_var( '$matches', $matches );
+        /*
+          $path = 'C:\xampp\htdocs\WordPress\wp-content\plugins\wkwgs\Input';
+          $dir  = new DirectoryIterator($path);
+          echo '<h3>DirectoryIterator</h3>';
+          echo "[$path]<br>";
+          foreach ($dir as $file)
+          {
+          echo " ├ $file<br>";
+          }
 
-    $regex = $delim . addcslashes($regex, '#') . $delim;
-    $matches  = preg_match($regex, $raw);
-    $logger->log_var( '$regex', $regex );
-    $logger->log_var( '$matches', $matches );
+          $files = new IteratorIterator($dir);
+          echo '<h3>IteratorIterator</h3>';
+          echo "[$path]<br>";
+          foreach ($files as $file)
+          {
+          echo " ├ $file<br>";
+          }
 
-    $str = '# \# \\#';
-    dumpstr($str);
-    dumpstr(addcslashes($str, '#'));
-}
+          $dir = new RecursiveDirectoryIterator($path);
+          echo '<h3>RecursiveDirectoryIterator</h3>';
+          echo "[$path]<br>";
+          foreach ($dir as $file)
+          {
+          echo " ├ $file<br>";
+          }
 
+          $files = new RecursiveIteratorIterator($dir);
+          echo '<h3>RecursiveIteratorIterator</h3>';
+          echo "[$path]<br>";
+          foreach ($files as $file)
+          {
+          echo " ├ $file<br>";
+          }
 
-test();
+          echo '<h3>Nicely Formatted Directory Listing</h3>';
+          $unicodeTreePrefix = function(RecursiveTreeIterator $tree) {
+          $prefixParts = [
+          RecursiveTreeIterator::PREFIX_LEFT         => ' ',
+          RecursiveTreeIterator::PREFIX_MID_HAS_NEXT => '│ ',
+          RecursiveTreeIterator::PREFIX_END_HAS_NEXT => '├ ',
+          RecursiveTreeIterator::PREFIX_END_LAST     => '└ '
+          ];
+          foreach ($prefixParts as $part => $string)
+          {
+          $tree->setPrefixPart($part, $string);
+          }
+          };
+          $dir  = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::KEY_AS_FILENAME | RecursiveDirectoryIterator::SKIP_DOTS);
+          $tree = new RecursiveTreeIterator($dir);
+          $unicodeTreePrefix($tree);
 
-?>
-
-</body>
+          echo "[$path]<br>";
+          foreach ($tree as $filename => $line)
+          {
+          echo $tree->getPrefix(), $filename, "<br>";
+          }
+         */
+        ?>
+        <h1>
+            Done
+        </h1>
+    </body>
 </html>

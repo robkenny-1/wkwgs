@@ -1,5 +1,4 @@
 <?php
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -78,117 +77,137 @@ Text Unit Tests
 
 <?php
 ini_set('display_errors', 1);
-error_reporting(E_ALL|E_STRICT);
+error_reporting(E_ALL | E_STRICT);
 
-define( 'ABSPATH', '1');
+define('ABSPATH', '1');
 
 session_start();
-include_once( '..\Input.php' );
-include_once( 'TestFramework.php' );
+include_once ('..\Input.php');
+include_once ('TestFramework.php');
 
-//Wkwgs_Logger::clear();
+// Wkwgs_Logger::clear();
 
-$form = new Input\Form( [] );
+$form = new Input\Form([]);
 
-$form->add_child(
-    new Input\Text( [
-        'attributes'                => [
-            'class'                 => 'color-steelblue',
-            'label-text'            => 'I do not have a name, therefore no input results'
-        ],
-        'contents'                  => [],
-    ])
-);
+$form->add_child(new Input\Text([
+    'attributes' => [
+        'class' => 'color-steelblue',
+        'label-text' => 'I do not have a name, therefore no input results'
+    ],
+    'contents' => [],
+]));
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(
-    new Input\Text( [
-        'attributes'                => [
-            'name'                  => 'tooltip',
-            'label-text'            => 'input with tooltip',
-            'label-data-tooltip'    => 'This is a tooltip message',
-            'container-class'       => 'tooltip-special'
-        ],
-    ])
-);
+$form->add_child(new Input\Text([
+    'attributes' => [
+        'name' => 'tooltip',
+        'label-text' => 'input with tooltip',
+        'label-data-tooltip' => 'This is a tooltip message',
+        'container-class' => 'tooltip-special'
+    ],
+]));
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(
-    new Input\Text( [
-        'attributes'                => [
-            'name'                  => 'text_on_right',
-            'label-text'            => "I'm on the right",
-            'container-class'       => 'text-input-label-right'
-        ],
-    ])
-);
+$form->add_child(new Input\Text([
+    'attributes' => [
+        'name' => 'text_on_right',
+        'label-text' => "I'm on the right",
+        'container-class' => 'text-input-label-right'
+    ],
+]));
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(
-    new Input\Element( [
-        'tag'                       => 'h3',
-        'contents'                  => [ new Input\HtmlText('<h1>HTML Chars (this should be an h3 not an h1)') ]
-    ])
-);
+$form->add_child(new Input\Element([
+    'tag' => 'h3',
+    'contents' => [
+        new Input\HtmlText('<h1>HTML Chars (this should be an h3 not an h1)')
+    ]
+]));
 
-$form->add_child(
-    new Input\Text( [
-        'attributes'                => [
-            'name'                  => '&gt;<angles>&lt;',
-            'label-text'            => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
-            'value'                 => '&&amp;&gt;h1&lt;',
-        ],
-    ])
-);
+$form->add_child(new Input\Text([
+    'attributes' => [
+        'name' => '&gt;<angles>&lt;',
+        'label-text' => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
+        'value' => '&&amp;&gt;h1&lt;',
+    ],
+]));
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(
-    new Input\Element( [
-        'tag'                       => 'h3',
-        'contents'                  => [ new Input\HtmlText('Email input') ]
-    ])
-);
+$form->add_child(new Input\Element([
+    'tag' => 'h3',
+    'contents' => [
+        new Input\HtmlText('Email input')
+    ]
+]));
 
-$form->add_child(
-    new Input\Email( [
-        'attributes'                => [
-            'name'                  => 'email',
-            'label-text'            => 'email address',
-            'required'              => 'yes',
-            'value'                 => 'abc@xyz.com',
-        ],
-    ])
-);
+$form->add_child(new Input\Email([
+    'attributes' => [
+        'name' => 'email',
+        'label-text' => 'email address',
+        'required' => 'yes',
+        'value' => 'abc@xyz.com',
+    ],
+]));
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(
-    new Input\Element( [
-        'tag'                       => 'h3',
-        'contents'                  => [ new Input\HtmlText('Telephone input') ],
-    ])
-);
+$form->add_child(new Input\Element([
+    'tag' => 'h3',
+    'contents' => [
+        new Input\HtmlText('Telephone input')
+    ],
+]));
 
-$form->add_child(
-    new Input\Telephone( [
-        'attributes'                => [
-            'name'                  => 'telephone',
-            'label-text'            => 'Phone number',
-            'placeholder'           => '999-555-1212',
-        ],
-    ])
-);
+$form->add_child(new Input\Telephone([
+    'attributes' => [
+        'name' => 'telephone',
+        'label-text' => 'Phone number',
+        'placeholder' => '999-555-1212',
+    ],
+]));
+
+echo '<h3>RecursiveIterator</h3>';
+foreach ($form as $child)
+{
+
+    if ($child instanceof \Input\InputElement)
+    {
+        echo $child->get_tag() . ' - ' . htmlspecialchars($child->get_name());
+        echo '<br>';
+    }
+    else if ($child instanceof \Input\Element)
+    {
+        echo $child->get_tag();
+        echo '<br>';
+    }
+}
+
+echo '<h3>RecursiveIteratorIterator</h3>';
+$rii = $form->get_RecursiveIteratorIterator();
+foreach ($rii as $child)
+{
+    if ($child instanceof \Input\InputElement)
+    {
+        echo $child->get_tag() . ' - ' . htmlspecialchars($child->get_name());
+        echo '<br>';
+    }
+    else if ($child instanceof \Input\Element)
+    {
+        echo $child->get_tag();
+        echo '<br>';
+    }
+}
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation
-function falsify_post( $post )
+function falsify_post($post)
 {
-    $post[ 'email' ]     = 'this-is-not-a-valid-email-address <&>';
-    $post[ 'telephone' ] = '123abc';
+    $post['email'] = 'this-is-not-a-valid-email-address <&>';
+    $post['telephone'] = '123abc';
 
     return $post;
 }

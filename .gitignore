@@ -20,3 +20,4 @@ wp-content/plugins/hello.php
 *.suo
 /.vs
 /.project
+/vendor/

@@ -1,34 +1,36 @@
 <?php
 
 /*
-  "WordPress Plugin Template" Copyright (C) 2018 Michael Simpson  (email : michael.d.simpson@gmail.com)
-
-  This following part of this file is part of WordPress Plugin Template for WordPress.
-
-  WordPress Plugin Template is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  WordPress Plugin Template is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with Contact Form to Database Extension.
-  If not, see http://www.gnu.org/licenses/gpl-3.0.html
+ * "WordPress Plugin Template" Copyright (C) 2018 Michael Simpson (email : michael.d.simpson@gmail.com)
+ *
+ * This following part of this file is part of WordPress Plugin Template for WordPress.
+ *
+ * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * WordPress Plugin Template is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Contact Form to Database Extension.
+ * If not, see http://www.gnu.org/licenses/gpl-3.0.html
  */
 
 // Exit if accessed directly
-defined('ABSPATH') || exit;
+defined('ABSPATH') || exit();
 
 class Wkwgs_Logger
 {
 
     public static $Log_File_Name = __DIR__ . '/../../../wkwgs.log';
-    public static $Disable       = True;
-    protected static $Indent     = 0;
+
+    public static $Disable = True;
+
+    protected static $Indent = 0;
 
     public static function indent()
     {
@@ -37,7 +39,7 @@ class Wkwgs_Logger
 
     public static function ends_with_eol(string $text)
     {
-        return substr($text, -1) === PHP_EOL;
+        return substr($text, - 1) === PHP_EOL;
     }
 
     public static function clear()
@@ -74,7 +76,7 @@ class Wkwgs_Logger
         if (Wkwgs_Logger::$Disable == True)
             return;
 
-        $var     = self::var_to_text($var);
+        $var = self::var_to_text($var);
         $message = "----- $prefix $var_name = $var";
         self::log_internal($message);
     }
@@ -84,7 +86,7 @@ class Wkwgs_Logger
         if (Wkwgs_Logger::$Disable == True)
             return;
 
-        //self::log_value( $var_name, $var, 'Variable' );
+        // self::log_value( $var_name, $var, 'Variable' );
         self::log_value($var_name, $var, '');
     }
 
@@ -128,7 +130,7 @@ class Wkwgs_Logger
         $full_msg = '';
         foreach (explode(PHP_EOL, $message) as $text)
         {
-            if (!empty($text))
+            if (! empty($text))
             {
                 $full_msg .= self::indent() . $text . PHP_EOL;
             }
@@ -138,7 +140,7 @@ class Wkwgs_Logger
 
     protected static function save_text_to_file($text)
     {
-        if (!empty($text))
+        if (! empty($text))
         {
             file_put_contents(Wkwgs_Logger::$Log_File_Name, $text, FILE_APPEND);
         }
@@ -159,14 +161,15 @@ class Wkwgs_Logger
         self::log_var('error_get_last()', error_get_last());
         return False;
     }
-
 }
 
 class Wkwgs_Function_Logger extends Wkwgs_Logger
 {
 
-    protected $class_name    = '';
+    protected $class_name = '';
+
     protected $function_name = '';
+
     protected $function_return;
 
     public function __construct(string $func, $params = null)
@@ -179,7 +182,7 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
         $split = explode('::', $func);
         if (count($split) === 2)
         {
-            $this->class_name    = $split[0];
+            $this->class_name = $split[0];
             $this->function_name = $split[1];
         }
         else
@@ -218,7 +221,7 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
         try
         {
-            if (!empty($this->class_name))
+            if (! empty($this->class_name))
             {
                 $reflection = new \ReflectionMethod($this->class_name, $this->function_name);
             }
@@ -227,16 +230,13 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
                 $reflection = new \ReflectionFunction($this->function_name);
             }
 
-            $params     = $reflection->getParameters();
-            $paramNames = array_map(
-                    function( $item ) {
+            $params = $reflection->getParameters();
+            $paramNames = array_map(function ($item) {
                 return $item->getName();
-            }, $params
-            );
+            }, $params);
         }
         catch (Exception $e)
         {
-
         }
 
         return $paramNames;
@@ -250,7 +250,7 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
         $message = '===== Enter ' . $this->get_name();
         self::log_internal($message);
 
-        if (!empty($params))
+        if (! empty($params))
         {
             $param_names = self::get_param_names();
 
@@ -272,5 +272,4 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
         $this->function_return = $value;
     }
-
 }
