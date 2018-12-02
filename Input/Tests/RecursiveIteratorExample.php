@@ -17,9 +17,10 @@
 
         include_once ('..\Input.php');
 
-        Wkwgs_Logger::clear();
-        Wkwgs_Logger::$Disable = False;
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, null);
+        // Wkwgs_Logger::clear();
+        // Wkwgs_Logger::$Disable = False;
+
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, null);
 
         /**
          * Class Skills

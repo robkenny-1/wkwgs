@@ -21,21 +21,22 @@
 // Exit if accessed directly
 defined('ABSPATH') || exit();
 
-include_once ('Constants.php');
+include_once (__DIR__ . '/Constants.php');
 include_once (__DIR__ . '/../Wkwgs_Logger.php');
 
-include_once ('Helper.php');
-include_once ('Interface.php');
-include_once ('Base.php');
-include_once ('Attributes.php');
-include_once ('HtmlValidateError.php');
+include_once (__DIR__ . '/Helper.php');
+include_once (__DIR__ . '/ArrayObjectIterator.php');
+include_once (__DIR__ . '/Interface.php');
+include_once (__DIR__ . '/Base.php');
+include_once (__DIR__ . '/Attributes.php');
+include_once (__DIR__ . '/HtmlValidateError.php');
 
 // Input types
-include_once ('Element.php');
-include_once ('Form.php');
-include_once ('Text.php');
-include_once ('Button.php');
-include_once ('Checkbox.php');
-include_once ('RadioButton.php');
-include_once ('Email.php');
-include_once ('Telephone.php');
+include_once (__DIR__ . '/Element.php');
+include_once (__DIR__ . '/Form.php');
+include_once (__DIR__ . '/Text.php');
+include_once (__DIR__ . '/Button.php');
+include_once (__DIR__ . '/Checkbox.php');
+include_once (__DIR__ . '/RadioButton.php');
+include_once (__DIR__ . '/Email.php');
+include_once (__DIR__ . '/Telephone.php');

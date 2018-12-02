@@ -38,16 +38,23 @@ interface IHtmlPrinter
     public function get_html(): string;
 }
 
-interface IHtmlPrinterList extends \RecursiveIterator
+interface IHtmlPrinterList extends \Traversable
 {
+
+    /**
+     * Replace all children with the new values
+     *
+     * @return null
+     */
+    public function set_children(?array $children): void;
 
     /**
      * Add a single IHtmlPrinter
      *
-     * @param string|IHtmlPrinter $child
-     *            IHtmlPrinter to add to the list, string are automatically converted to HtmlText class
+     * @param IHtmlPrinter $child
+     *            object to add to the end of the list of children
      */
-    public function add_child(IHtmlPrinter $child);
+    public function add_child(IHtmlPrinter $child): void;
 
     /**
      * Get a RecursiveIteratorIterator
@@ -55,7 +62,7 @@ interface IHtmlPrinterList extends \RecursiveIterator
      * @param
      *            RecursiveIteratorIterator A RecursiveIteratorIterator
      */
-    public function get_RecursiveIteratorIterator(): \RecursiveIteratorIterator;
+    public function get_RecursiveIteratorIterator(int $mode = \RecursiveIteratorIterator::LEAVES_ONLY): \RecursiveIteratorIterator;
 }
 
 /* ------------------------------------------------------------------------- */

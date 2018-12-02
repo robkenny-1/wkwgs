@@ -36,11 +36,11 @@ class Text extends InputElement
 
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
+//$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         
         if ( gettype( $desc ) !== 'array' )
         {
-            $logger->log_var('$desc is not an array', $desc);
+//$logger->log_var('$desc is not an array', $desc);
             return;
         }
 
@@ -79,26 +79,26 @@ class Text extends InputElement
      */
     public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
+//$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $ve = [];
 
         // Perform data validation
         // None
 
-        $logger->log_return($ve);
+//$logger->log_return($ve);
         return $ve;
     }
 
     public function cleanse_data($raw)
     {
-        $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
+//$logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
 
         $cleansed = null;
 
         // No cleansing necessary?
         $cleansed = $raw;
 
-        $logger->log_return($cleansed);
+//$logger->log_return($cleansed);
         return $cleansed;
     }
 

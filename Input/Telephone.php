@@ -56,13 +56,13 @@ class Telephone extends Text
      */
     public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $ve     = [];
 
         // Perform data validation
         // parent class should validate the pattern
 
-        $logger->log_return($ve);
+//$logger->log_return($ve);
         return $ve;
     }
 

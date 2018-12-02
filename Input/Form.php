@@ -37,11 +37,10 @@ class Form extends Element implements IHtmlInput
 
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (gettype($desc) !== 'array')
         {
-            $logger->log_var('$desc is not an array', $desc);
+//$logger->log_var('$desc is not an array', $desc);
             return;
         }
 
@@ -56,8 +55,7 @@ class Form extends Element implements IHtmlInput
      */
     public function get_submit_data(): array
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $submit = [];
 
         $form_name = $this->get_name();
@@ -74,18 +72,17 @@ class Form extends Element implements IHtmlInput
 
             default:
                 $msg = "Form '$form_name': Unknown submit method: '$submit_method'";
-                $logger->log_msg($msg);
+                // $logger->log_msg($msg);
                 throw new \Exception($msg);
         }
 
-        $logger->log_return($submit);
+        // $logger->log_return($submit);
         return $submit;
     }
 
     public function has_duplicate_names(): bool
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $is_duplicate = False;
 
         $existing_names = [];
@@ -96,7 +93,7 @@ class Form extends Element implements IHtmlInput
             if ($child instanceof IHtmlInput)
             {
                 $name = $child->get_name();
-                $logger->log_var('$name', $name);
+                // $logger->log_var('$name', $name);
 
                 if (isset($existing_names[$name]))
                 {
@@ -108,7 +105,7 @@ class Form extends Element implements IHtmlInput
             }
         }
 
-        $logger->log_return($is_duplicate);
+        // $logger->log_return($is_duplicate);
         return $is_duplicate;
     }
 
@@ -164,8 +161,7 @@ class Form extends Element implements IHtmlInput
      */
     public function validate(array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $validation_errors = [];
 
         $name = $this->get_name();
@@ -193,7 +189,7 @@ class Form extends Element implements IHtmlInput
             }
         }
 
-        $logger->log_return($validation_errors);
+        // $logger->log_return($validation_errors);
         return $validation_errors;
     }
 
@@ -204,15 +200,14 @@ class Form extends Element implements IHtmlInput
      */
     public function get_value(array $post)
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $values = [];
 
         if (! empty($post))
         {
             foreach ($this->get_RecursiveIteratorIterator() as $child)
             {
-                $logger->log_var('$child', $child);
+                // $logger->log_var('$child', $child);
 
                 if ($child instanceof IHtmlInput)
                 {
@@ -226,7 +221,7 @@ class Form extends Element implements IHtmlInput
             }
         }
 
-        $logger->log_return($values);
+        // $logger->log_return($values);
         return $values;
     }
 
@@ -270,25 +265,24 @@ class Form extends Element implements IHtmlInput
     /* ------------------------------------------------------------------------- */
     public function validate_post(string $name, array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $validation_errors = [];
 
         // Perform data validation
 
-        $logger->log_return($validation_errors);
+        ////$logger->log_return($validation_errors);
         return $validation_errors;
     }
 
     public function cleanse_data($raw)
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $cleansed = null;
 
         // No cleansing necessary?
         $cleansed = $raw;
 
-        $logger->log_return($cleansed);
+        // $logger->log_return($cleansed);
         return $cleansed;
     }
 }

@@ -17,53 +17,43 @@ trait T_Debug_RecursiveIterator
 
     public function current()
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $val = parent::current();
         return $val;
     }
 
     public function next(): void
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         parent::next();
     }
 
     public function key()
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $val = parent::key();
         return $val;
     }
 
     public function valid(): bool
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $val = parent::valid();
-        $logger->log_return($val);
         return $val;
     }
 
     public function rewind(): void
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         parent::rewind();
     }
 
     public function hasChildren(): bool
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-        $curr = $this->current();
+        // $curr = $this->current();
         $val = parent::hasChildren();
-        $logger->log_return($val);
         return $val;
     }
 
     public function getChildren(): \RecursiveIterator
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-        $curr = $this->current();
+        // $curr = $this->current();
         $val = parent::getChildren();
-        $logger->log_return($val);
         return $val;
     }
 }

@@ -22,7 +22,7 @@ namespace Input;
 // Exit if accessed directly
 defined('ABSPATH') || exit();
 
-include_once ('Input.php');
+include_once (__DIR__ . '/Input.php');
 
 /* ------------------------------------------------------------------------- */
 /* Classes */
@@ -45,8 +45,7 @@ class Element extends ElementList implements IHtmlElement
     // ElementList
     public function __construct($desc)
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (gettype($desc) === 'string')
         {
             $tag = $desc;
@@ -63,7 +62,7 @@ class Element extends ElementList implements IHtmlElement
         if (empty($tag))
         {
             $msg = '$tag is empty';
-            $logger->log_msg($msg);
+//$logger->log_msg($msg);
             throw new \Exception($msg);
         }
 
@@ -93,11 +92,10 @@ class Element extends ElementList implements IHtmlElement
      */
     public function get_html(): string
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $tag = $this->tag;
         $tag = htmlspecialchars($tag);
-        $logger->log_var('tag', $this->tag);
+        // $logger->log_var('tag', $this->tag);
 
         $html = '';
 
@@ -112,7 +110,7 @@ class Element extends ElementList implements IHtmlElement
             $html .= "</$tag>";
         }
 
-        $logger->log_return($html);
+        // $logger->log_return($html);
         return $html;
     }
 
@@ -293,17 +291,17 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_html(): string
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-        $logger->log_var('tag', $this->tag);
-        $logger->log_var('type', $this->get_type());
+//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+//$logger->log_var('tag', $this->tag);
+//$logger->log_var('type', $this->get_type());
 
         $label_attributes = $this->get_attributes_seconday()['label'];
         $container_attributes = $this->get_attributes_seconday()['container'];
         $container_tag = Attributes::get_attribute_and_remove('tag', $container_attributes);
         $label_text = Attributes::get_attribute_and_remove('text', $label_attributes);
 
-        $logger->log_var('$label_attributes', $label_attributes);
-        $logger->log_var('$container_attributes', $container_attributes);
+//$logger->log_var('$label_attributes', $label_attributes);
+//$logger->log_var('$container_attributes', $container_attributes);
 
         $label_contents = [];
 
@@ -347,7 +345,7 @@ abstract class InputElement extends Element implements IHtmlInput
 
         $html = $compound->get_html();
 
-        $logger->log_return($html);
+//$logger->log_return($html);
         return $html;
     }
 
@@ -385,7 +383,7 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function validate(array $post): array
     {
-        $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         $name = $this->get_name();
         $raw = $post[$name] ?? '';
@@ -416,7 +414,7 @@ abstract class InputElement extends Element implements IHtmlInput
 
                 if (preg_match($pattern, $raw) !== 1)
                 {
-                    $logger->log_msg('$raw does not match pattern');
+//$logger->log_msg('$raw does not match pattern');
 
                     $validation_errors[] = new HtmlValidateError('value does not match defined pattern', $name, $this);
                 }
@@ -426,7 +424,7 @@ abstract class InputElement extends Element implements IHtmlInput
             $validation_errors = array_merge($validation_errors, $ve);
         }
 
-        $logger->log_return($validation_errors);
+//$logger->log_return($validation_errors);
         return $validation_errors;
     }
 
