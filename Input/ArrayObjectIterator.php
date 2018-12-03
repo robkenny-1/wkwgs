@@ -24,6 +24,96 @@ defined('ABSPATH') || exit();
 
 include_once (__DIR__ . '/Input.php');
 
+/**
+ * Routines used to assist in debugging of a RecursiveIterator
+ * This trait will store the traversal commands in the $traversal variable
+ *
+ * @author dude
+ *
+ */
+trait T_Debug_RecursiveIterator
+{
+
+    protected $traversal = [];
+
+    public function __construct($data)
+    {
+        $this->traversal[] = [
+            '__construct',
+            $data
+        ];
+        parent::__construct($data);
+    }
+
+    public function current()
+    {
+        $val = parent::current();
+        $this->traversal[] = [
+            'current',
+            $val
+        ];
+        return $val;
+    }
+
+    public function next(): void
+    {
+        $this->traversal[] = [
+            'next'
+        ];
+        parent::next();
+    }
+
+    public function key()
+    {
+        $val = parent::key();
+        $this->traversal[] = [
+            'key',
+            $val
+        ];
+        return $val;
+    }
+
+    public function valid(): bool
+    {
+        $val = parent::valid();
+        $this->traversal[] = [
+            'valid',
+            $val
+        ];
+        return $val;
+    }
+
+    public function rewind(): void
+    {
+        $this->traversal[] = [
+            'rewind'
+        ];
+        parent::rewind();
+    }
+
+    public function hasChildren(): bool
+    {
+        // $curr = $this->current();
+        $val = parent::hasChildren();
+        $this->traversal[] = [
+            'hasChildren',
+            $val
+        ];
+        return $val;
+    }
+
+    public function getChildren(): \RecursiveIterator
+    {
+        // $curr = $this->current();
+        $val = parent::getChildren();
+        $this->traversal[] = [
+            'getChildren',
+            $val
+        ];
+        return $val;
+    }
+}
+
 class MyArrayIterator implements \Iterator
 {
 
@@ -118,15 +208,16 @@ class MyArrayIterator implements \Iterator
  * @author dude
  *
  */
-class ArrayObjectIterator extends MyArrayIterator implements \RecursiveIterator
+class ArrayObjectIterator extends \RecursiveArrayIterator
 {
 
     /* ------------------------------------------------------------------------- */
-    /* \RecursiveIterator routines */
+    /* \RecursiveArrayIterator routines */
     /* ------------------------------------------------------------------------- */
 
     /**
      * Returns if an iterator can be created for the current entry.
+     * RecursiveArrayIterator will return True for all objects, regardless if they implement \Traversable
      *
      * @link http://php.net/manual/en/recursiveiterator.haschildren.php
      * @return bool true if the current entry can be iterated over, otherwise returns false.
@@ -148,17 +239,13 @@ class ArrayObjectIterator extends MyArrayIterator implements \RecursiveIterator
      */
     public function getChildren(): \RecursiveIterator
     {
-        if (! $this->hasChildren())
-        {
-            throw new \Exception(__METHOD__ . ' object does not hasChildren()');
-        }
         $current = $this->current();
-        if ($current instanceof \Traversable)
-        {
-            $retval = $current->getIterator();
-            return $retval;
-        }
-        $retval = new self($current);
+        $retval = $current->getIterator();
         return $retval;
     }
+}
+
+class ArrayObjectIterator_Debug extends ArrayObjectIterator
+{
+    use T_Debug_RecursiveIterator;
 }

@@ -173,12 +173,15 @@ class ElementList implements \IteratorAggregate, IHtmlPrinter, IHtmlPrinterList
     /* ------------------------------------------------------------------------- */
 
     /**
+     * Get an iterator for this object
      *
-     * @return \ArrayIterator
+     * {@inheritdoc}
+     * @see IteratorAggregate::getIterator()
      */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayObjectIterator($this->children);
+        $retval = new ArrayObjectIterator($this->children);
+        return $retval;
     }
 }
 
