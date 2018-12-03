@@ -114,6 +114,10 @@ trait T_Debug_RecursiveIterator
     }
 }
 
+/**
+ * A full implementation of an Iterator.
+ * Basically a reimplemtation of ArrayIterator, used to understance how Iterator works
+ */
 class MyArrayIterator implements \Iterator
 {
 
@@ -201,14 +205,12 @@ class MyArrayIterator implements \Iterator
 }
 
 /**
- * A problem with ArrayIterator is that it treats all objects
- * as having children.
- * Objects with out children as treated as a leaf.
+ * A problem with RecursiveArrayIterator is that it treats all objects as having children.
  *
  * @author dude
  *
  */
-class ArrayObjectIterator extends \RecursiveArrayIterator
+class RecursiveArrayObjectIterator extends \RecursiveArrayIterator
 {
 
     /* ------------------------------------------------------------------------- */
@@ -217,11 +219,10 @@ class ArrayObjectIterator extends \RecursiveArrayIterator
 
     /**
      * Returns if an iterator can be created for the current entry.
-     * RecursiveArrayIterator will return True for all objects, regardless if they implement \Traversable
+     * RecursiveArrayIterator will return True for all objects, regardless if they implement \Traversable,
+     * this implementation only returns True if the current object is actually Traversable
      *
-     * @link http://php.net/manual/en/recursiveiterator.haschildren.php
      * @return bool true if the current entry can be iterated over, otherwise returns false.
-     * @since 5.1.0
      */
     public function hasChildren(): bool
     {
@@ -233,9 +234,7 @@ class ArrayObjectIterator extends \RecursiveArrayIterator
     /**
      * Returns an iterator for the current entry.
      *
-     * @link http://php.net/manual/en/recursiveiterator.getchildren.php
      * @return \RecursiveIterator An iterator for the current entry.
-     * @since 5.1.0
      */
     public function getChildren(): \RecursiveIterator
     {
@@ -245,7 +244,7 @@ class ArrayObjectIterator extends \RecursiveArrayIterator
     }
 }
 
-class ArrayObjectIterator_Debug extends ArrayObjectIterator
+class RecursiveArrayObjectIterator_Debug extends RecursiveArrayObjectIterator
 {
     use T_Debug_RecursiveIterator;
 }

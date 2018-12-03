@@ -180,7 +180,7 @@ class ElementList implements \IteratorAggregate, IHtmlPrinter, IHtmlPrinterList
      */
     public function getIterator(): \ArrayIterator
     {
-        $retval = new ArrayObjectIterator($this->children);
+        $retval = new RecursiveArrayObjectIterator($this->children);
         return $retval;
     }
 }
