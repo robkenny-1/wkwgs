@@ -81,8 +81,8 @@ class RadioButton extends InputElement
      * Set the contents of the input element
      * Some input elements, such as the checkbox, do not store their current
      * contents in the value attribute.
-     * This routine, given the value returned
-     * by get_value(), sets the appropriate attribute.
+     * This routine, given the value returned by get_value(),
+     * sets the appropriate attribute.
      *
      * @param mixed $value
      *            New
