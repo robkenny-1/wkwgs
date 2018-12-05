@@ -403,7 +403,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         }
 
         $item_data[] = array(
-            'key' => __('Dual Member', 'wkwgs'),
+            'key' => __('Second Member', 'wkwgs'),
             'value' => wc_clean($cart_item['wkwgs_dual_membership_email']),
             'display' => '',
         );
