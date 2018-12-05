@@ -81,7 +81,9 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
         $fieldset = new \Input\Element([
             'tag' => 'fieldset',
-            'attributes' => [],
+            'attributes' => [
+                'style' => 'border: black solid 1px; padding: 2px;'
+            ],
             'contents' => [
                 new \Input\Element([
                     'tag' => 'legend',
@@ -96,35 +98,46 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         ]);
         $form->add_child($fieldset);
 
-        $fieldset->add_child(new \Input\Text([
+        $div = new \Input\Element([
+            'tag' => 'div',
             'attributes' => [
-                'name' => 'wkwgs_dual_membership_first',
-                'label-text' => 'First Name',
-                'style' => $css_aligned_input,
+                'class' => 'bg-info',
+                'style' => ''
             ],
-        ]));
-        $fieldset->add_child(new \Input\Text([
-            'attributes' => [
-                'name' => 'wkwgs_dual_membership_last',
-                'label-text' => 'Last Name',
-                'style' => $css_aligned_input,
+            'contents' => [
+                new \Input\Text([
+                    'attributes' => [
+                        'name' => 'wkwgs_dual_membership_first',
+                        'label-text' => 'First Name',
+                        'style' => $css_aligned_input,
+                    ],
+                ]),
+                new \Input\Text([
+                    'attributes' => [
+                        'name' => 'wkwgs_dual_membership_last',
+                        'label-text' => 'Last Name',
+                        'style' => $css_aligned_input,
+                    ],
+                ]),
+                new \Input\Text([
+                    'attributes' => [
+                        'name' => 'wkwgs_dual_membership_email',
+                        'label-text' => 'Email',
+                        'required' => True,
+                        'style' => $css_aligned_input,
+                    ],
+                ]),
+                new \Input\Telephone([
+                    'attributes' => [
+                        'name' => 'wkwgs_dual_membership_phone',
+                        'label-text' => 'Phone',
+                        'style' => $css_aligned_input,
+                    ],
+                ])
             ],
-        ]));
-        $fieldset->add_child(new \Input\Text([
-            'attributes' => [
-                'name' => 'wkwgs_dual_membership_email',
-                'label-text' => 'Email',
-                'required' => True,
-                'style' => $css_aligned_input,
-            ],
-        ]));
-        $fieldset->add_child(new \Input\Telephone([
-            'attributes' => [
-                'name' => 'wkwgs_dual_membership_phone',
-                'label-text' => 'Phone',
-                'style' => $css_aligned_input,
-            ],
-        ]));
+        ]);
+
+        $fieldset->add_child($div);
 
         return $form;
     }

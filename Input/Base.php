@@ -176,7 +176,7 @@ class ElementList implements \IteratorAggregate, IHtmlPrinter, IHtmlPrinterList
      * Get an iterator for this object
      *
      * {@inheritdoc}
-     * @see IteratorAggregate::getIterator()
+     * @see \IteratorAggregate::getIterator()
      */
     public function getIterator(): \ArrayIterator
     {

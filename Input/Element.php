@@ -307,16 +307,12 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_html(): string
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-        // $logger->log_var('tag', $this->tag);
-        // $logger->log_var('type', $this->get_type());
+        $this->enforce_id_attributes();
+
         $label_attributes = $this->get_attributes_secondary()['label'];
         $container_attributes = $this->get_attributes_secondary()['container'];
         $container_tag = Attributes::get_attribute_and_remove('tag', $container_attributes);
         $label_text = Attributes::get_attribute_and_remove('text', $label_attributes);
-
-        // $logger->log_var('$label_attributes', $label_attributes);
-        // $logger->log_var('$container_attributes', $container_attributes);
 
         $label_contents = [];
 
@@ -341,11 +337,6 @@ abstract class InputElement extends Element implements IHtmlInput
             }
         }
 
-        $label_contents[] = new \Input\Callback([
-            $this,
-            'get_html_core'
-        ]);
-
         $compound = new Element([
             'tag' => $container_tag,
             'attributes' => $container_attributes,
@@ -354,13 +345,16 @@ abstract class InputElement extends Element implements IHtmlInput
                     'tag' => 'label',
                     'attributes' => $label_attributes,
                     'contents' => $label_contents
+                ]),
+                new \Input\Callback([
+                    $this,
+                    'get_html_core'
                 ])
             ]
         ]);
 
         $html = $compound->get_html();
 
-        // $logger->log_return($html);
         return $html;
     }
 
@@ -527,7 +521,15 @@ abstract class InputElement extends Element implements IHtmlInput
         return parent::get_html();
     }
 
-    protected function enforce_name_id_attributes(): void
+    /**
+     * Ensure the label's 'for' attribute references the input's 'id' attribute
+     * Will throw if input does not have name
+     * If input 'id' is unset, will use 'name'
+     * Enforces label 'for' attribute to match input 'id'
+     *
+     * @throws \Exception
+     */
+    protected function enforce_id_attributes(): void
     {
         $name = $this->get_attribute('name');
         if (empty($name))
@@ -540,10 +542,25 @@ abstract class InputElement extends Element implements IHtmlInput
         $id = $this->get_attribute('id');
         if (empty($id))
         {
-            // name is only required to be unique
-            $name = $this->get_form_id() . '-' . $name;
+            // name is only required to be unique within the form,
+            // we can make it unique if we prefix it with the form's 'id'
+            $form_id = $this->get_form_id();
+            if (empty($form_id))
+            {
+                $id = $name;
+            }
+            else
+            {
+                $id = $form_id . '-' . $name;
+            }
 
-            $this->set_attribute('id', $name);
+            $this->set_attribute('id', $id);
+        }
+
+        $label_for = $this->get_attribute('label-for');
+        if ($label_for !== $id)
+        {
+            $this->set_attribute('label-for', $id);
         }
     }
 }

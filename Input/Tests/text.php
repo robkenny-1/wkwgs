@@ -19,6 +19,16 @@ form {
    border: 2px solid #555555;
  }
 
+h1 {
+color : red;
+}
+h2 {
+color : blue;
+}
+h3 {
+color : green;
+}
+
 /*-----Tool tip-----*/
 .tooltip-special {
   position:relative;
@@ -89,14 +99,16 @@ include_once ('TestFramework.php');
 
 $form = new Input\Form([]);
 
-$form->add_child(new Input\Text([
-    'attributes' => [
-        'class' => 'color-steelblue',
-        'label-text' => 'I do not have a name, therefore no input results'
-    ],
-    'contents' => [],
-]));
-
+/*
+ * Disable as an exception is now thrown when input is missing name
+ * $form->add_child(new Input\Text([
+ * 'attributes' => [
+ * 'class' => 'color-steelblue',
+ * 'label-text' => 'I do not have a name, therefore no input results'
+ * ],
+ * 'contents' => [],
+ * ]));
+ */
 /* ------------------------------------------------------------------------------------ */
 
 $form->add_child(new Input\Text([
@@ -115,23 +127,6 @@ $form->add_child(new Input\Text([
         'name' => 'text_on_right',
         'label-text' => "I'm on the right",
         'container-class' => 'text-input-label-right'
-    ],
-]));
-
-/* ------------------------------------------------------------------------------------ */
-
-$form->add_child(new Input\Element([
-    'tag' => 'h3',
-    'contents' => [
-        new Input\HtmlText('<h1>HTML Chars (this should be an h3 not an h1)')
-    ]
-]));
-
-$form->add_child(new Input\Text([
-    'attributes' => [
-        'name' => '&gt;<angles>&lt;',
-        'label-text' => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
-        'value' => '&&amp;&gt;h1&lt;',
     ],
 ]));
 
@@ -170,37 +165,24 @@ $form->add_child(new Input\Telephone([
     ],
 ]));
 
-echo '<h3>RecursiveIterator</h3>';
-foreach ($form as $child)
-{
+/* ------------------------------------------------------------------------------------ */
 
-    if ($child instanceof \Input\InputElement)
-    {
-        echo $child->get_tag() . ' - ' . htmlspecialchars($child->get_name());
-        echo '<br>';
-    }
-    else if ($child instanceof \Input\Element)
-    {
-        echo $child->get_tag();
-        echo '<br>';
-    }
-}
+$form->add_child(new Input\Text([
+    'attributes' => [
+        'name' => '&gt;<angles>&lt;',
+        'label-text' => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
+        'value' => '&&amp;&gt;h1&lt;',
+    ],
+]));
 
-echo '<h3>RecursiveIteratorIterator</h3>';
-$rii = $form->get_RecursiveIteratorIterator();
-foreach ($rii as $child)
-{
-    if ($child instanceof \Input\InputElement)
-    {
-        echo $child->get_tag() . ' - ' . htmlspecialchars($child->get_name());
-        echo '<br>';
-    }
-    else if ($child instanceof \Input\Element)
-    {
-        echo $child->get_tag();
-        echo '<br>';
-    }
-}
+$form->add_child(new Input\HtmlSnippet('This <em>word</em> should be emphasized'));
+
+$form->add_child(new Input\Element([
+    'tag' => 'h3',
+    'contents' => [
+        new Input\HtmlText('<h1>HTML Chars (this should be an h3 [green] not an h1)')
+    ]
+]));
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation
