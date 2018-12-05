@@ -26,13 +26,13 @@ include_once ('Input.php');
 /* ------------------------------------------------------------------------- */
 /* Manage a collection of key/value pairs (aka HTML attributes) */
 /* ------------------------------------------------------------------------- */
-class Attributes implements IAttributeSeconday, IHtmlPrinter
+class Attributes implements IAttributeSecondary, IHtmlPrinter
 {
 
-    public function __construct(array $attributes, array $default = [], array $seconday = [])
+    public function __construct(array $attributes, array $default = [], array $secondary = [])
     {
         $this->set_attributes($attributes, $default);
-        $this->set_attribute_seconday($seconday);
+        $this->set_attributes_secondary($secondary);
     }
 
     /* ------------------------------------------------------------------------- */
@@ -97,47 +97,57 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
     }
 
     /* ------------------------------------------------------------------------- */
-    /* IAttributeSeconday routines */
+    /* IAttributeSecondary routines */
     /* ------------------------------------------------------------------------- */
 
     /**
-     * Define attributes that belong to seconday elements
+     * Define attributes that belong to secondary elements
      *
-     * @param array $seconday
+     * @param array $secondary
      *            non-associative array of attribute names
-     *            that exist for the seconday elements
+     *            that exist for the secondary elements
      * @return null
      */
-    public function set_attribute_seconday(array $seconday)
+    public function set_attributes_secondary(array $secondary)
     {
         $this->invalidate_cache();
-        $this->seconday = array_values($seconday) ?? [];
+        $this->secondary = array_values($secondary) ?? [];
     }
 
     /**
-     * Get the seconday attributes for this input object
+     * Get the list of defined secondary attributes
      *
-     * @return array of the seconday values
+     * @return array
      */
-    public function get_attributes_seconday(): array
+    public function get_attributes_secondary_names(): array
+    {
+        return $this->secondary;
+    }
+
+    /**
+     * Get the secondary attributes for this input object
+     *
+     * @return array of the secondary values
+     */
+    public function get_attributes_secondary(): array
     {
         // = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $this->update_cache();
-        $attributes = $this->cached_seconday;
+        $attributes = $this->cached_secondary;
 
         // ->log_return( $attributes );
         return $attributes;
     }
 
     /**
-     * Get the value of a single seconday attribute
+     * Get the value of a single secondary attribute
      *
      * @return mixed, value of $attribute. Empty string if unset
      */
     public function get_attribute_secondary(string $attribute)
     {
         // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
-        $attribute = $this->get_attributes_seconday()[$attribute] ?? '';
+        $attribute = $this->get_attributes_secondary()[$attribute] ?? '';
 
         // $logger->log_return( $attribute );
         return $attribute;
@@ -183,40 +193,40 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
 
     protected $default;
 
-    protected $seconday;
+    protected $secondary;
 
     protected $cached;
 
-    protected $cached_seconday;
+    protected $cached_secondary;
 
     protected function invalidate_cache()
     {
         $this->cached = null;
-        $this->cached_seconday = null;
+        $this->cached_secondary = null;
     }
 
     protected function update_cache()
     {
         // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
-        if (is_null($this->cached) || is_null($this->cached_seconday))
+        if (is_null($this->cached) || is_null($this->cached_secondary))
         {
             $secondary = [];
             $attributes = array_merge($this->default, $this->attributes);
 
-            foreach ($this->seconday as $seconday_value)
+            foreach ($this->secondary as $secondary_value)
             {
-                if (Helper::ends_with($seconday_value, '-'))
+                if (Helper::ends_with($secondary_value, '-'))
                 {
-                    $seconday_name = substr($seconday_value, 0, - 1);
-                    $secondary[$seconday_name] = Attributes::move_values($seconday_value, $attributes);
+                    $secondary_name = substr($secondary_value, 0, - 1);
+                    $secondary[$secondary_name] = Attributes::move_values($secondary_value, $attributes);
                 }
                 else
                 {
-                    if (isset($attributes[$seconday_value]))
+                    if (isset($attributes[$secondary_value]))
                     {
-                        // move $seconday_value from $attributes to $secondary
-                        $secondary[$seconday_value] = $attributes[$seconday_value];
-                        unset($attributes[$seconday_value]);
+                        // move $secondary_value from $attributes to $secondary
+                        $secondary[$secondary_value] = $attributes[$secondary_value];
+                        unset($attributes[$secondary_value]);
                     }
                 }
             }
@@ -226,31 +236,31 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
             // $logger->log_var( '$secondary', $secondary );
 
             $this->cached = $attributes;
-            $this->cached_seconday = $secondary;
+            $this->cached_secondary = $secondary;
         }
         else
         {
-//$logger->log_return('<cache is up to date>');
+            // $logger->log_return('<cache is up to date>');
         }
     }
 
     /*
-     * If $seconday_value ends with a -, move all matching
-     * to a label array in $seconday
+     * If $secondary_value ends with a -, move all matching
+     * to a label array in $secondary
      * Example:
-     * $seconday_value = 'label-';
+     * $secondary_value = 'label-';
      * $attributes = [ 'label-class' => 'aaa', 'style' => 'bbb', 'label-id' => 'ccc' ];
      * returns
      * [ 'class' => 'aaa', 'id' => 'ccc' ]
      * $attributes = [ 'style' => 'bbb' ];
      */
-    public static function move_values(string $seconday_value, array & $attributes): array
+    public static function move_values(string $secondary_value, array & $attributes): array
     {
         // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         // Build the PCRE pattern
         $delim = '#';
-        $pattern = $delim . '^' . preg_quote($seconday_value, $delim) . '(.*)$' . $delim;
+        $pattern = $delim . '^' . preg_quote($secondary_value, $delim) . '(.*)$' . $delim;
 
         $moved = [];
 
@@ -268,7 +278,7 @@ class Attributes implements IAttributeSeconday, IHtmlPrinter
             }
         }
 
-//$logger->log_return($moved);
+        // $logger->log_return($moved);
         return $moved;
     }
 

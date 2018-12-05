@@ -64,11 +64,11 @@ class Checkbox extends InputElement
     }
 
     /* ------------------------------------------------------------------------- */
-    /* IAttributeSecondayProvider routines */
+    /* IAttributeSecondaryProvider routines */
     /* ------------------------------------------------------------------------- */
-    public function define_attribute_seconday(): array
+    public function define_attribute_secondary(): array
     {
-        $parent = parent::define_attribute_seconday();
+        $parent = parent::define_attribute_secondary();
         return array_merge($parent, self::Attributes_Secondary);
     }
 

@@ -42,13 +42,15 @@ $form->add_child(new Input\Element([
 $form->add_child(new Input\RadioButton([
     'attributes' => [
         'name' => 'required_1',
-        'label' => 'Please select a value',
+        'label-text' => 'Please select a value',
         'choices' => array(
-            'choice1' => 'Choice 1',
-            'choice2' => 'Choice 2',
-            'choice3' => 'Choice 3',
+            'choice1',
+            'choice2',
+            'choice3',
         ),
-        'selected' => 'something bogus',
+        'choice1-label-text' => 'Choice 1',
+        'choice2-label-text' => 'Choice 2',
+        'choice3-label-text' => 'Choice 3',
     ],
     'contents' => [],
 ]));
@@ -63,13 +65,16 @@ $form->add_child(new Input\Element([
 $form->add_child(new Input\RadioButton([
     'attributes' => [
         'name' => 'required_2',
-        'label' => '3 choices, required',
+        'label-text' => '3 choices, required',
         'choices' => array(
-            'choice1' => 'Choice 1',
-            'choice2' => 'Choice 2',
-            'choice3' => 'Choice 3',
+            'choice1',
+            'choice2',
+            'choice3',
         ),
-        'selected' => 'choice2',
+        'choice1-label-text' => 'Choice 1',
+        'choice2-label-text' => 'Choice 2',
+        'choice2-checked' => True,
+        'choice3-label-text' => 'Choice 3',
         'required' => 'yes',
     ],
     'contents' => [],
@@ -86,11 +91,16 @@ $form->add_child(new Input\RadioButton([
     'attributes' => [
         'name' => 'required_3',
         'choices' => array(
-            'choice1' => 'Choice 1',
-            'choice2' => 'Choice 2',
-            'choice3' => 'Choice 3',
+            'choice1',
+            'choice2',
+            'choice3',
         ),
-        'selected' => 'choice3',
+        'choice1-style' => 'background-color: orange;',
+        'choice1-label-style' => 'background-color: lightsteelblue;',
+        'choice1-label-text' => 'Choice 1',
+        'choice2-label-text' => 'Choice 2',
+        'choice3-label-text' => 'Choice 3',
+        'choice3-checked' => 'True',
     ],
     'contents' => [],
 ]));
