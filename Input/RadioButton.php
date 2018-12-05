@@ -35,6 +35,11 @@ class RadioButton extends InputElement
         // 'container-', // defined in parent class
         'choices',
         'selected',
+
+        // At runtime each choice will be added:
+        // 'choices1-'
+        // 'choices2-'
+        // etc...
     ];
 
     public function __construct($desc)
@@ -60,66 +65,12 @@ class RadioButton extends InputElement
     }
 
     /* ------------------------------------------------------------------------- */
-    /* IAttributeSecondayProvider routines */
+    /* IAttributeSecondaryProvider routines */
     /* ------------------------------------------------------------------------- */
-    public function define_attribute_seconday(): array
+    public function define_attribute_secondary(): array
     {
-        $parent = parent::define_attribute_seconday();
+        $parent = parent::define_attribute_secondary();
         return array_merge($parent, self::Attributes_Secondary);
-    }
-
-    /* ------------------------------------------------------------------------- */
-    /* IHtmlPrinter routines */
-    /* ------------------------------------------------------------------------- */
-
-    /**
-     * Get the HTML for the core (<input>) object
-     * Since a radio button is actually multiple <input type='radio'> elements
-     * we override InputElement::get_html_core to provide the HTML
-     * for all elements
-     *
-     * @return string HTML of the <input> element
-     */
-    public function get_html_core(): string
-    {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-        $html = '';
-
-        $attributes = $this->get_attributes();
-        $choices = $this->get_attribute_secondary('choices');
-        $selected = $this->get_attribute_secondary('selected');
-        // $logger->log_var('$attributes', $attributes);
-        // $logger->log_var('$choices', $choices);
-        // $logger->log_var('$selected', $selected);
-
-        if (empty($choices))
-        {
-//$logger->log_msg('RadioButton rendering single button');
-
-            // Render the simple (single) RadioButton <input type='radio'> element
-            $html .= parent::get_html_core();
-        }
-        else
-        {
-            // For each radio button defined in choices, we create
-            // a simple (single) RadioButton to render
-            foreach ($choices as $value => $label)
-            {
-                $attributes['value'] = $value;
-                $attributes['label-text'] = $label;
-                $attributes['checked'] = $value === $selected;
-                // $logger->log_var('new RadioButton attributes', $attributes);
-
-                $rb = new RadioButton([
-                    'attributes' => $attributes,
-                ]);
-
-                $html .= $rb->get_html();
-            }
-        }
-
-        // $logger->log_return($html);
-        return $html;
     }
 
     /* ------------------------------------------------------------------------- */
@@ -184,14 +135,132 @@ class RadioButton extends InputElement
 
     public function cleanse_data($raw)
     {
-//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $cleansed = null;
 
         // No cleansing necessary?
         $cleansed = $raw;
 
-//$logger->log_return($cleansed);
+        // $logger->log_return($cleansed);
         return $cleansed;
+    }
+
+    /**
+     * Get the HTML for the core (<input>) object
+     * Since a radio button is actually multiple <input type='radio'> elements
+     * we override InputElement::get_html_core to provide the HTML
+     * for all elements
+     *
+     * @return string HTML of the <input> element
+     */
+    public function get_html_core(): string
+    {
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
+        $html = '';
+
+        $choices = $this->get_attribute_secondary('choices');
+        // $logger->log_var('$choices', $choices);
+
+        if (empty($choices))
+        {
+            // $logger->log_msg('RadioButton rendering single button');
+
+            // Render the simple (single) RadioButton <input type='radio'> element
+            $html .= parent::get_html_core();
+        }
+        else
+        {
+            // Define each radio selection as a secondary attribute
+            $this->set_secondary_attribute_for_radiobuttons($choices);
+
+            $attributes = $this->get_attributes();
+            $secondary = $this->get_attributes_secondary();
+            $selected = $this->get_attribute_secondary('selected');
+
+            // For each radio button defined in choices:
+            // create a single RadioButton to render
+            foreach ($choices as $value)
+            {
+                $rb_attributes = $attributes;
+                if (isset($secondary[$value]))
+                {
+                    $rb_attributes = array_merge($rb_attributes, $secondary[$value]);
+                }
+                // Force the radio button's value to match value specified in choices
+                $rb_attributes['value'] = $value;
+
+                $rb = new RadioButton([
+                    'attributes' => $rb_attributes,
+                ]);
+
+                $html .= $rb->get_html();
+            }
+        }
+
+        // $logger->log_return($html);
+        return $html;
+    }
+
+    /* ------------------------------------------------------------------------- */
+    /* InputElement routines */
+    /* ------------------------------------------------------------------------- */
+
+    /**
+     * Get a list of radio button names that are not allowed,
+     * as these values would conflict with the attribute extraction
+     * example of forbidden names: label, or container
+     *
+     * @return array
+     */
+    protected function get_forbidden_secondary_names(): array
+    {
+        $forbidden = [];
+
+        foreach ($this->define_attribute_secondary() as $sec)
+        {
+            if (Helper::ends_with($sec, '-'))
+            {
+                $forbidden[] = $sec;
+            }
+        }
+        return $forbidden;
+    }
+
+    /**
+     * Ensure that $name will not conflict with the resource extraction routines.
+     *
+     * @param string $name
+     * @throws \Exception
+     */
+    protected function verify_valid_secondary_name(string $name)
+    {
+        if (Helper::ends_with($name, '-') || in_array($name, self::get_forbidden_secondary_names()))
+        {
+            $msg = self::class . ': cannot use "' . $name . '" for the name attribute.';
+            throw new \Exception($msg);
+        }
+    }
+
+    /**
+     * To enable attributes to be specified for each individual radio button
+     * we use the button's value a the identity of a resource group
+     *
+     * @param array $choices
+     * @throws \Exception
+     */
+    protected function set_secondary_attribute_for_radiobuttons(array $choices): void
+    {
+        $all_secondary = $this->get_attributes_secondary_names();
+
+        foreach ($choices as $value)
+        {
+            $this->verify_valid_secondary_name($value);
+
+            if (! isset($all_secondary[$value]))
+            {
+                $all_secondary[] = $value . '-';
+            }
+        }
+        $this->set_attributes_secondary($all_secondary);
     }
 }
