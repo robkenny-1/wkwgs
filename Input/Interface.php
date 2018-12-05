@@ -165,15 +165,8 @@ interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList, IAttributeSeconda
 }
 
 /* ------------------------------------------------------------------------- */
-interface IHtmlInput
+interface IHtmlInputValue
 {
-
-    /**
-     * Get the type of Input
-     *
-     * @return string Input type
-     */
-    public function get_type(): string;
 
     /**
      * Get the name of the HTML input element,
@@ -184,11 +177,23 @@ interface IHtmlInput
     public function get_name(): string;
 
     /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute.
+     * This routine, given the value returned by get_value(),
+     * sets the appropriate attribute.
+     *
+     * @param mixed $value
+     *            New value of the input element
+     */
+    public function set_value($value);
+
+    /**
      * Verify that this object's data in $post is valid
      * This validation should be similar, if not exact, to the client side validation
      * This minimizes attacks that call POST directly
      *
-     * @return array | list of validation errors or null if good
+     * @return array Validation errors, will be empty if good
      */
     public function validate(array $post): array;
 
@@ -198,18 +203,17 @@ interface IHtmlInput
      * @return array,string | string contents of the input object
      */
     public function get_value(array $post);
+}
+
+interface IHtmlInput extends IHtmlInputValue
+{
 
     /**
-     * Set the contents of the input element
-     * Some input elements, such as the checkbox, do not store their current
-     * contents in the value attribute.
-     * This routine, given the value returned
-     * by get_value(), sets the appropriate attribute.
+     * Get the type of Input
      *
-     * @param mixed $value
-     *            New value of the input element
+     * @return string Input type
      */
-    public function set_value($value);
+    public function get_type(): string;
 
     /**
      * Get the assigned form identity

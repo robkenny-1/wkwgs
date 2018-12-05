@@ -40,7 +40,7 @@ class Form extends Element implements IHtmlInput
         // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (gettype($desc) !== 'array')
         {
-//$logger->log_var('$desc is not an array', $desc);
+            // $logger->log_var('$desc is not an array', $desc);
             return;
         }
 
@@ -178,7 +178,7 @@ class Form extends Element implements IHtmlInput
         {
             foreach ($this->get_RecursiveIteratorIterator() as $child)
             {
-                if ($child instanceof IHtmlInput)
+                if ($child instanceof IHtmlInputValue)
                 {
                     $errors = $child->validate($post);
                     if (! empty($errors))
@@ -209,13 +209,16 @@ class Form extends Element implements IHtmlInput
             {
                 // $logger->log_var('$child', $child);
 
-                if ($child instanceof IHtmlInput)
+                if ($child instanceof IHtmlInputValue)
                 {
-                    $name = $child->get_attribute('name');
+                    $name = $this->get_name();
                     if (! empty($name))
                     {
                         $value = $child->get_value($post);
-                        $values[$name] = $value;
+                        if (isset($value))
+                        {
+                            $values[$name] = $value;
+                        }
                     }
                 }
             }
@@ -229,8 +232,8 @@ class Form extends Element implements IHtmlInput
      * Set the contents of the input element
      * Some input elements, such as the checkbox, do not store their current
      * contents in the value attribute.
-     * This routine, given the value returned
-     * by get_value(), sets the appropriate attribute.
+     * This routine, given the value returned by get_value(),
+     * sets the appropriate attribute.
      *
      * @param mixed $value
      *            New value of the input element
@@ -270,7 +273,7 @@ class Form extends Element implements IHtmlInput
 
         // Perform data validation
 
-        ////$logger->log_return($validation_errors);
+        // //$logger->log_return($validation_errors);
         return $validation_errors;
     }
 

@@ -25,7 +25,121 @@ include_once ('Wkwgs_Logger.php');
 
 include_once (WP_PLUGIN_DIR . '/wkwgs/Input/Input.php');
 
-// Wkwgs_Logger::clear();
+class Wkwgs_DualMembership_Nonce implements \Input\IHtmlPrinter, \Input\IHtmlInputValue
+{
+
+    protected $nonce;
+
+    protected $action;
+
+    protected $form;
+
+    protected function generate_random_string(): string
+    {
+        return bin2hex(random_bytes(10)); // 20 chars, only 0-9a-f
+    }
+
+    public function __construct(\Input\Form $form)
+    {
+        $this->form = $form;
+
+        // A nonce provides protection for logged in users only
+        if (! is_user_logged_in())
+        {
+            $this->nonce = '';
+            $this->action = '';
+        }
+        else
+        {
+            // Use random strings for nonce and action, making it much harder to hack
+            $this->nonce = $this->generate_random_string();
+            $this->action = $this->generate_random_string();
+        }
+    }
+
+    /* ------------------------------------------------------------------------- */
+    /* IHtmlPrinter routines */
+    /* ------------------------------------------------------------------------- */
+    public function get_html(): string
+    {
+        $html = '';
+
+        if (! empty($this->nonce))
+        {
+            ob_start();
+            wp_nonce_field($this->action, $this->nonce);
+            $html = ob_get_clean();
+        }
+
+        return $html;
+    }
+
+    /* ------------------------------------------------------------------------- */
+    /* IHtmlInputValue routines */
+    /* ------------------------------------------------------------------------- */
+
+    /**
+     * Get the name of the HTML input element,
+     * this is the index used to retrieve the data from POST
+     *
+     * @return string name of the input element
+     */
+    public function get_name(): string
+    {
+        return $this->nonce;
+    }
+
+    /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute.
+     * This routine, given the value returned by get_value(),
+     * sets the appropriate attribute.
+     *
+     * @param mixed $value
+     *            New value of the input element
+     */
+    public function set_value($value)
+    {
+        // Not allowed,
+    }
+
+    /**
+     * Verify that this object's data in $post is valid
+     * This validation should be similar, if not exact, to the client side validation
+     * This minimizes attacks that call POST directly
+     *
+     * @return array Validation errors, will be empty if good
+     */
+    public function validate(array $post): array
+    {
+        $ve = [];
+
+        if (! empty($this->nonce))
+        {
+            if (! isset($post[$this->nonce]) || ! wp_verify_nonce($post[$this->nonce], $this->action))
+            {
+                $ve[] = new \Input\HtmlValidateError('Nonce did not verify', $this->form->get_name(), $this->form);
+            }
+        }
+        return $ve;
+    }
+
+    /**
+     * Get this object's data in $post
+     *
+     * @return array,string | string contents of the input object
+     */
+    public function get_value(array $post)
+    {
+        // No cleansing necessary for nonce
+        if (isset($post[$this->nonce]))
+        {
+            return $post[$this->nonce];
+        }
+    }
+}
+
 class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 {
 
@@ -83,6 +197,8 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                 'name' => 'unused in ui',
             ],
         ]);
+
+        $form->add_child(new Wkwgs_DualMembership_Nonce($form));
 
         $fieldset = new \Input\Element([
             'tag' => 'fieldset',

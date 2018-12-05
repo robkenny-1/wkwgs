@@ -359,18 +359,8 @@ abstract class InputElement extends Element implements IHtmlInput
     }
 
     /* ------------------------------------------------------------------------- */
-    /* IHtmlInput routines */
+    /* IHtmlInputValue routines */
     /* ------------------------------------------------------------------------- */
-
-    /**
-     * Get the type of Input
-     *
-     * @return string Input type
-     */
-    public function get_type(): string
-    {
-        return $this->get_attribute('type');
-    }
 
     /**
      * Get the name of the HTML input element,
@@ -468,6 +458,20 @@ abstract class InputElement extends Element implements IHtmlInput
     public function set_value($value)
     {
         $this->set_attribute('value', $value);
+    }
+
+    /* ------------------------------------------------------------------------- */
+    /* IHtmlInput routines */
+    /* ------------------------------------------------------------------------- */
+
+    /**
+     * Get the type of Input
+     *
+     * @return string Input type
+     */
+    public function get_type(): string
+    {
+        return $this->get_attribute('type');
     }
 
     /**
