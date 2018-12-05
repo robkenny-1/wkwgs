@@ -21,7 +21,6 @@
 defined('ABSPATH') || exit();
 
 include_once ('PluginCore/Wkwgs_LifeCycle.php');
-include_once ('Wkwgs_Logger.php');
 
 include_once (WP_PLUGIN_DIR . '/wkwgs/Input/Input.php');
 
@@ -271,15 +270,12 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     public function set_form_field_values(\WC_Product $product, \Input\Form $form)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         foreach ($form->get_RecursiveIteratorIterator() as $child)
         {
             if ($child instanceof \Input\IHtmlInput)
             {
                 $name = $child->get_name();
                 $product_meta = $product->get_meta($name, True);
-                // $logger->log_var('$name', $name);
-                // $logger->log_var('$product_meta', $product_meta);
 
                 if (isset($product_meta))
                 {
@@ -348,7 +344,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_show()
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         global $product;
         ?>
         <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
@@ -357,7 +352,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         $form = $this->get_cart_form();
         $this->set_form_field_values($product, $form);
 
-        // Since we do not render the form itself, we just iterate over all it's top-level children
+        // Do not render the form itself, only all it's top-level children
         foreach ($form->getIterator() as $child)
         {
             $html = $child->get_html();
@@ -371,12 +366,10 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     public function product_cart_validation($passed, $product_id, $quantity)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $form = $this->get_cart_form();
         $validation_errors = $form->validate($_POST);
         $passed = empty($validation_errors);
 
-        // $logger->log_return($passed);
         return $passed;
     }
 
@@ -387,17 +380,15 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_save($cart_item_data, $product_id, $variation_id, $quantity)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-        // $product = wc_get_product($variation_id ? $variation_id : $product_id);
         $form = $this->get_cart_form();
         $form_values = $form->get_value($_POST);
+
         // Save all the values to the cart
         foreach ($form_values as $key => $value)
         {
             $cart_item_data[$key] = $value;
         }
 
-        // $logger->log_return($cart_item_data);
         return $cart_item_data;
     }
 
@@ -406,7 +397,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_cart_item_data($item_data, $cart_item)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (empty($cart_item['wkwgs_dual_membership_email']))
         {
             return $item_data;
@@ -418,7 +408,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             'display' => '',
         );
 
-        // $logger->log_return($item_data);
         return $item_data;
     }
 
@@ -458,7 +447,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_admin_show()
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         // global $thepostid, $product_object;
         ?>
@@ -467,7 +455,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         // Render the children only
         foreach ($this->get_admin_form() as $field)
         {
-            // $logger->log_var('$field', $field);
             $field->render();
         }
         ?>
@@ -484,10 +471,10 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
      */
     public function product_admin_save($post_id)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $product = wc_get_product($post_id);
 
         $form = $this->get_cart_form();
+
         // Save all the values to the cart
         foreach ($form->get_value($_POST) as $key => $value)
         {
