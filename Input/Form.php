@@ -211,7 +211,7 @@ class Form extends Element implements IHtmlInput
 
                 if ($child instanceof IHtmlInputValue)
                 {
-                    $name = $this->get_name();
+                    $name = $child->get_name();
                     if (! empty($name))
                     {
                         $value = $child->get_value($post);
