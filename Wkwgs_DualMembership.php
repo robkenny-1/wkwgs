@@ -71,7 +71,12 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
     protected function get_cart_form(): \Input\Form
     {
-        $css_aligned_input = 'margin-left:5px';
+        // Styles for the input elements
+        $fieldset_style = 'border-color: #77a464; border: solid 2px; padding: 2px';
+        $legend_style = 'margin-bottom: 0px;';
+        $container_style = 'margin: 5px;display: flex;';
+        $label_style = 'flex: 2;';
+        $style = 'flex: 5;';
 
         $form = new \Input\Form([
             'attributes' => [
@@ -82,13 +87,14 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         $fieldset = new \Input\Element([
             'tag' => 'fieldset',
             'attributes' => [
-                'style' => 'border: black solid 1px; padding: 2px;'
+                'style' => $fieldset_style,
+                'class' => 'bg-info',
             ],
             'contents' => [
                 new \Input\Element([
                     'tag' => 'legend',
                     'attributes' => [
-                        'style' => '',
+                        'style' => $legend_style,
                     ],
                     'contents' => [
                         new \Input\HtmlText('Second Member Registration'),
@@ -100,23 +106,24 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
         $div = new \Input\Element([
             'tag' => 'div',
-            'attributes' => [
-                'class' => 'bg-info',
-                'style' => ''
-            ],
+            'attributes' => [],
             'contents' => [
                 new \Input\Text([
                     'attributes' => [
                         'name' => 'wkwgs_dual_membership_first',
                         'label-text' => 'First Name',
-                        'style' => $css_aligned_input,
+                        'container-style' => $container_style,
+                        'label-style' => $label_style,
+                        'style' => $style,
                     ],
                 ]),
                 new \Input\Text([
                     'attributes' => [
                         'name' => 'wkwgs_dual_membership_last',
                         'label-text' => 'Last Name',
-                        'style' => $css_aligned_input,
+                        'container-style' => $container_style,
+                        'label-style' => $label_style,
+                        'style' => $style,
                     ],
                 ]),
                 new \Input\Text([
@@ -124,14 +131,18 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         'name' => 'wkwgs_dual_membership_email',
                         'label-text' => 'Email',
                         'required' => True,
-                        'style' => $css_aligned_input,
+                        'container-style' => $container_style,
+                        'label-style' => $label_style,
+                        'style' => $style,
                     ],
                 ]),
                 new \Input\Telephone([
                     'attributes' => [
                         'name' => 'wkwgs_dual_membership_phone',
                         'label-text' => 'Phone',
-                        'style' => $css_aligned_input,
+                        'container-style' => $container_style,
+                        'label-style' => $label_style,
+                        'style' => $style,
                     ],
                 ])
             ],
