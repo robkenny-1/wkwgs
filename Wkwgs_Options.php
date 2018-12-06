@@ -23,7 +23,7 @@ namespace Wkwgs;
 // Exit if accessed directly
 defined('ABSPATH') || exit();
 
-include_once ('PluginCore/Wkwgs_LifeCycle.php');
+include_once ('Plugin/Wkwgs_LifeCycle.php');
 
 class Wkwgs_Options extends \Wkwgs\Plugin\Wkwgs_LifeCycle
 {

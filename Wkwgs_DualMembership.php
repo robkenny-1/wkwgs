@@ -21,9 +21,9 @@ namespace Wkwgs;
 // Exit if accessed directly
 defined('ABSPATH') || exit();
 
-include_once ('PluginCore/Wkwgs_LifeCycle.php');
+include_once ('Plugin/Wkwgs_LifeCycle.php');
 
-include_once (WP_PLUGIN_DIR . '/wkwgs/Input/Input.php');
+include_once ('Input/Input.php');
 
 class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter, \Wkwgs\Input\IHtmlInputValue
 {
