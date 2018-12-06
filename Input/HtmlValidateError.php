@@ -19,7 +19,7 @@
  */
 
 
-namespace Input;
+namespace Wkwgs\Input;
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;

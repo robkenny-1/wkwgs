@@ -16,6 +16,7 @@
  * along with Contact Form to Database Extension.
  * If not, see http://www.gnu.org/licenses/gpl-3.0.html
  */
+namespace Wkwgs;
 
 // Exit if accessed directly
 defined('ABSPATH') || exit();
@@ -24,7 +25,7 @@ include_once ('PluginCore/Wkwgs_LifeCycle.php');
 
 include_once (WP_PLUGIN_DIR . '/wkwgs/Input/Input.php');
 
-class Wkwgs_DualMembership_Nonce implements \Input\IHtmlPrinter, \Input\IHtmlInputValue
+class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter, \Wkwgs\Input\IHtmlInputValue
 {
 
     protected $nonce;
@@ -38,7 +39,7 @@ class Wkwgs_DualMembership_Nonce implements \Input\IHtmlPrinter, \Input\IHtmlInp
         return bin2hex(random_bytes(10)); // 20 chars, only 0-9a-f
     }
 
-    public function __construct(\Input\Form $form)
+    public function __construct(\Wkwgs\Input\Form $form)
     {
         $this->form = $form;
 
@@ -118,7 +119,7 @@ class Wkwgs_DualMembership_Nonce implements \Input\IHtmlPrinter, \Input\IHtmlInp
         {
             if (! isset($post[$this->nonce]) || ! wp_verify_nonce($post[$this->nonce], $this->action))
             {
-                $ve[] = new \Input\HtmlValidateError('Nonce did not verify', $this->form->get_name(), $this->form);
+                $ve[] = new \Wkwgs\Input\HtmlValidateError('Nonce did not verify', $this->form->get_name(), $this->form);
             }
         }
         return $ve;
@@ -139,31 +140,31 @@ class Wkwgs_DualMembership_Nonce implements \Input\IHtmlPrinter, \Input\IHtmlInp
     }
 }
 
-class Wkwgs_DualMembership extends Wkwgs_LifeCycle
+class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
 {
 
-    protected function get_admin_form(): \Input\Form
+    protected function get_admin_form(): \Wkwgs\Input\Form
     {
-        $form = new \Input\Form([
+        $form = new \Wkwgs\Input\Form([
             'attributes' => [
                 'name' => 'unused in ui',
             ],
             'contents' => []
         ]);
 
-        $fieldset = new \Input\Element([
+        $fieldset = new \Wkwgs\Input\Element([
             'tag' => 'fieldset',
             'attributes' => [],
             'contents' => [],
         ]);
 
-        $checkbox = new \Input\Element([
+        $checkbox = new \Wkwgs\Input\Element([
             'tag' => 'div',
             'attributes' => [
                 'class' => 'options_group',
             ],
             'contents' => [
-                new \Input\Checkbox([
+                new \Wkwgs\Input\Checkbox([
                     'attributes' => [
                         'container-tag' => 'p',
                         'container-class' => 'form-field',
@@ -182,7 +183,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         return $form;
     }
 
-    protected function get_cart_form(): \Input\Form
+    protected function get_cart_form(): \Wkwgs\Input\Form
     {
         // Styles for the input elements
         $fieldset_style = 'border-color: #77a464; border: solid 2px; padding: 2px; margin-bottom: 10px;';
@@ -191,7 +192,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         $label_style = 'flex: 2;';
         $style = 'flex: 5;';
 
-        $form = new \Input\Form([
+        $form = new \Wkwgs\Input\Form([
             'attributes' => [
                 'name' => 'unused in ui',
             ],
@@ -199,31 +200,31 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
 
         $form->add_child(new Wkwgs_DualMembership_Nonce($form));
 
-        $fieldset = new \Input\Element([
+        $fieldset = new \Wkwgs\Input\Element([
             'tag' => 'fieldset',
             'attributes' => [
                 'style' => $fieldset_style,
                 'class' => 'bg-info',
             ],
             'contents' => [
-                new \Input\Element([
+                new \Wkwgs\Input\Element([
                     'tag' => 'legend',
                     'attributes' => [
                         'style' => $legend_style,
                     ],
                     'contents' => [
-                        new \Input\HtmlText('Second Member Registration'),
+                        new \Wkwgs\Input\HtmlText('Second Member Registration'),
                     ],
                 ])
             ],
         ]);
         $form->add_child($fieldset);
 
-        $div = new \Input\Element([
+        $div = new \Wkwgs\Input\Element([
             'tag' => 'div',
             'attributes' => [],
             'contents' => [
-                new \Input\Text([
+                new \Wkwgs\Input\Text([
                     'attributes' => [
                         'name' => 'wkwgs_dual_membership_first',
                         'label-text' => 'First Name',
@@ -232,7 +233,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         'style' => $style,
                     ],
                 ]),
-                new \Input\Text([
+                new \Wkwgs\Input\Text([
                     'attributes' => [
                         'name' => 'wkwgs_dual_membership_last',
                         'label-text' => 'Last Name',
@@ -241,7 +242,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         'style' => $style,
                     ],
                 ]),
-                new \Input\Text([
+                new \Wkwgs\Input\Text([
                     'attributes' => [
                         'name' => 'wkwgs_dual_membership_email',
                         'label-text' => 'Email',
@@ -251,7 +252,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
                         'style' => $style,
                     ],
                 ]),
-                new \Input\Telephone([
+                new \Wkwgs\Input\Telephone([
                     'attributes' => [
                         'name' => 'wkwgs_dual_membership_phone',
                         'label-text' => 'Phone',
@@ -268,11 +269,11 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
         return $form;
     }
 
-    public function set_form_field_values(\WC_Product $product, \Input\Form $form)
+    public function set_form_field_values(\WC_Product $product, \Wkwgs\Input\Form $form)
     {
         foreach ($form->get_RecursiveIteratorIterator() as $child)
         {
-            if ($child instanceof \Input\IHtmlInput)
+            if ($child instanceof \Wkwgs\Input\IHtmlInput)
             {
                 $name = $child->get_name();
                 $product_meta = $product->get_meta($name, True);

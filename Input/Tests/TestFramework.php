@@ -16,7 +16,7 @@
  * along with Contact Form to Database Extension.
  * If not, see http://www.gnu.org/licenses/gpl-3.0.html
  */
-namespace Input\Test;
+namespace Wkwgs\Input\Test;
 
 class TestFramework
 {
@@ -30,7 +30,7 @@ class TestFramework
         $this->falsify_callback = $falsify_callback;
     }
 
-    public function test_form(\Input\Form $form)
+    public function test_form(\Wkwgs\Input\Form $form)
     {
         $this->form = $form;
 
@@ -50,11 +50,10 @@ class TestFramework
     /* ------------------------------------------------------------------------- */
     public function handle_post(array $post)
     {
-//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (! empty($post))
         {
-//$logger->log_var('$post[\'submit\']', $post['submit']);
+            // $logger->log_var('$post[\'submit\']', $post['submit']);
 
             $this->session_erase();
 
@@ -78,8 +77,7 @@ class TestFramework
 
     public function session_display()
     {
-//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (isset($_SESSION['post_orig']))
         {
             echo '<h2>$_POST (Original)</h2>';
@@ -95,7 +93,7 @@ class TestFramework
         // Print out any validation errors stored in the session
         if (isset($_SESSION['form_errors']))
         {
-//$logger->log_msg('test_common_submit: $_SESSION["form_errors"] is set');
+            // $logger->log_msg('test_common_submit: $_SESSION["form_errors"] is set');
 
             echo '<div>';
             echo '<h1>Validation Errors</h1>';
@@ -103,7 +101,7 @@ class TestFramework
             $errors = unserialize($_SESSION['form_errors']);
             foreach ($errors as $error)
             {
-                if ($error instanceof \Input\IHtmlValidateError)
+                if ($error instanceof \Wkwgs\Input\IHtmlValidateError)
                 {
                     $error_html = htmlspecialchars($error->get_error());
                     $name_html = htmlspecialchars($error->get_name());
@@ -127,7 +125,7 @@ class TestFramework
         // Print out any results stored in the session
         if (isset($_SESSION['form_values']))
         {
-//$logger->log_msg('test_common_submit: $_SESSION["form_values"] is set');
+            // $logger->log_msg('test_common_submit: $_SESSION["form_values"] is set');
 
             echo '<div>';
             echo '<h1>Submit Values</h1>';
@@ -146,7 +144,7 @@ class TestFramework
         // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $button_name = 'submit';
 
-        $submit = new \Input\Button([
+        $submit = new \Wkwgs\Input\Button([
             'attributes' => [
                 'type' => 'submit',
                 'name' => $button_name,
@@ -155,7 +153,7 @@ class TestFramework
             ],
         ]);
 
-        $mock = new \Input\Button([
+        $mock = new \Wkwgs\Input\Button([
             'attributes' => [
                 'type' => 'submit',
                 'name' => $button_name,
@@ -164,7 +162,7 @@ class TestFramework
             ],
         ]);
 
-        $clear = new \Input\Button([
+        $clear = new \Wkwgs\Input\Button([
             'attributes' => [
                 'type' => 'submit',
                 'name' => $button_name,
@@ -173,10 +171,10 @@ class TestFramework
             ],
         ]);
 
-        $this->form->add_child(new \Input\Element([
+        $this->form->add_child(new \Wkwgs\Input\Element([
             'tag' => 'span',
             'contents' => [
-                new \Input\HtmlText('Form Buttons'),
+                new \Wkwgs\Input\HtmlText('Form Buttons'),
                 $submit,
                 $mock,
                 $clear
@@ -203,8 +201,7 @@ class TestFramework
 
     protected function session_validate(array $post)
     {
-//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
+        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $_SESSION['post'] = $post;
 
         // Validate data and store results

@@ -17,7 +17,7 @@
  * along with Contact Form to Database Extension.
  * If not, see http://www.gnu.org/licenses/gpl-3.0.html
  */
-namespace Input;
+namespace Wkwgs\Input;
 
 // Exit if accessed directly
 defined('ABSPATH') || exit();
@@ -135,7 +135,7 @@ abstract class InputElement extends Element implements IHtmlInput
                     'attributes' => $label_attributes,
                     'contents' => $label_contents
                 ]),
-                new \Input\Callback([
+                new \Wkwgs\Input\Callback([
                     $this,
                     'get_html_core'
                 ])

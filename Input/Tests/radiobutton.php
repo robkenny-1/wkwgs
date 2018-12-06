@@ -23,9 +23,9 @@ include_once ('TestFramework.php');
 
 /* -------------------------------------------------------------------------------- */
 
-$form = new Input\Form([]);
+$form = new \Wkwgs\Input\Form([]);
 
-$form->add_child(new Input\Checkbox([
+$form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'checkbox_with_label',
         'label-text' => 'checkbox with label',
@@ -34,12 +34,12 @@ $form->add_child(new Input\Checkbox([
 ]));
 /* -------------------------------------------------------------------------------- */
 
-$form->add_child(new Input\Element([
+$form->add_child(new \Wkwgs\Input\Element([
     'tag' => 'h3',
     'contents' => 'no selected value',
 ]));
 
-$form->add_child(new Input\RadioButton([
+$form->add_child(new \Wkwgs\Input\RadioButton([
     'attributes' => [
         'name' => 'required_1',
         'label-text' => 'Please select a value',
@@ -57,12 +57,12 @@ $form->add_child(new Input\RadioButton([
 
 /* -------------------------------------------------------------------------------- */
 
-$form->add_child(new Input\Element([
+$form->add_child(new \Wkwgs\Input\Element([
     'tag' => 'h3',
     'contents' => 'Required, Choice 2 should be selected',
 ]));
 
-$form->add_child(new Input\RadioButton([
+$form->add_child(new \Wkwgs\Input\RadioButton([
     'attributes' => [
         'name' => 'required_2',
         'label-text' => '3 choices, required',
@@ -82,12 +82,12 @@ $form->add_child(new Input\RadioButton([
 
 /* -------------------------------------------------------------------------------- */
 
-$form->add_child(new Input\Element([
+$form->add_child(new \Wkwgs\Input\Element([
     'tag' => 'h3',
     'contents' => 'No label, Choice 3 should be selected',
 ]));
 
-$form->add_child(new Input\RadioButton([
+$form->add_child(new \Wkwgs\Input\RadioButton([
     'attributes' => [
         'name' => 'required_3',
         'choices' => array(
@@ -116,7 +116,7 @@ function falsify_post($post)
     return $post;
 }
 
-$test = new \Input\Test\TestFramework('falsify_post');
+$test = new \Wkwgs\Input\Test\TestFramework('falsify_post');
 $test->test_form($form);
 
 ?>

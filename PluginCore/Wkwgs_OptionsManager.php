@@ -1,23 +1,24 @@
 <?php
 /*
-    "WordPress Plugin Template" Copyright (C) 2018 Michael Simpson  (email : michael.d.simpson@gmail.com)
-
-    This file is part of WordPress Plugin Template for WordPress.
-
-    WordPress Plugin Template is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    WordPress Plugin Template is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Contact Form to Database Extension.
-    If not, see http://www.gnu.org/licenses/gpl-3.0.html
-*/
+ * "WordPress Plugin Template" Copyright (C) 2018 Michael Simpson (email : michael.d.simpson@gmail.com)
+ *
+ * This file is part of WordPress Plugin Template for WordPress.
+ *
+ * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * WordPress Plugin Template is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Contact Form to Database Extension.
+ * If not, see http://www.gnu.org/licenses/gpl-3.0.html
+ */
+namespace Wkwgs\Plugin;
 
 class Wkwgs_OptionsManager
 {
@@ -27,22 +28,22 @@ class Wkwgs_OptionsManager
         return get_class($this) . '_';
     }
 
-
     /**
      * Define your options meta data here as an array, where each element in the array
+     *
      * @return array of key=>display-name and/or key=>array(display-name, choice1, choice2, ...)
-     * key: an option name for the key (this name will be given a prefix when stored in
-     * the database to ensure it does not conflict with other plugin options)
-     * value: can be one of two things:
-     *   (1) string display name for displaying the name of the option to the user on a web page
-     *   (2) array where the first element is a display name (as above) and the rest of
-     *       the elements are choices of values that the user can select
-     * e.g.
-     * array(
-     *   'item' => 'Item:',             // key => display-name
-     *   'rating' => array(             // key => array ( display-name, choice1, choice2, ...)
-     *       'CanDoOperationX' => array('Can do Operation X', 'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber'),
-     *       'Rating:', 'Excellent', 'Good', 'Fair', 'Poor')
+     *         key: an option name for the key (this name will be given a prefix when stored in
+     *         the database to ensure it does not conflict with other plugin options)
+     *         value: can be one of two things:
+     *         (1) string display name for displaying the name of the option to the user on a web page
+     *         (2) array where the first element is a display name (as above) and the rest of
+     *         the elements are choices of values that the user can select
+     *         e.g.
+     *         array(
+     *         'item' => 'Item:', // key => display-name
+     *         'rating' => array( // key => array ( display-name, choice1, choice2, ...)
+     *         'CanDoOperationX' => array('Can do Operation X', 'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber'),
+     *         'Rating:', 'Excellent', 'Good', 'Fair', 'Poor')
      */
     public function getOptionMetaData()
     {
@@ -50,6 +51,7 @@ class Wkwgs_OptionsManager
     }
 
     /**
+     *
      * @return array of string name of options
      */
     public function getOptionNames()
@@ -59,6 +61,7 @@ class Wkwgs_OptionsManager
 
     /**
      * Override this method to initialize options to default values and save to the database with add_option
+     *
      * @return void
      */
     protected function initOptions()
@@ -67,6 +70,7 @@ class Wkwgs_OptionsManager
 
     /**
      * Cleanup: remove all options from the DB
+     *
      * @return void
      */
     protected function deleteSavedOptions()
@@ -83,8 +87,9 @@ class Wkwgs_OptionsManager
     }
 
     /**
+     *
      * @return string display name of the plugin to show as a name/title in HTML.
-     * Just returns the class name. Override this method to return something more readable
+     *         Just returns the class name. Override this method to return something more readable
      */
     public function getPluginDisplayName()
     {
@@ -94,7 +99,9 @@ class Wkwgs_OptionsManager
     /**
      * Get the prefixed version input $name suitable for storing in WP options
      * Idempotent: if $optionName is already prefixed, it is not prefixed again, it is returned without change
-     * @param  $name string option name to prefix. Defined in settings.php and set as keys of $this->optionMetaData
+     *
+     * @param $name string
+     *            option name to prefix. Defined in settings.php and set as keys of $this->optionMetaData
      * @return string
      */
     public function prefix($name)
@@ -110,7 +117,8 @@ class Wkwgs_OptionsManager
     /**
      * Remove the prefix from the input $name.
      * Idempotent: If no prefix found, just returns what was input.
-     * @param  $name string
+     *
+     * @param $name string
      * @return string $optionName without the prefix.
      */
     public function &unPrefix($name)
@@ -126,16 +134,19 @@ class Wkwgs_OptionsManager
     /**
      * A wrapper function delegating to WP get_option() but it prefixes the input $optionName
      * to enforce "scoping" the options in the WP options table thereby avoiding name conflicts
-     * @param $optionName string defined in settings.php and set as keys of $this->optionMetaData
-     * @param $default string default value to return if the option is not set
+     *
+     * @param $optionName string
+     *            defined in settings.php and set as keys of $this->optionMetaData
+     * @param $default string
+     *            default value to return if the option is not set
      * @return string the value from delegated call to get_option(), or optional default value
-     * if option is not set.
+     *         if option is not set.
      */
     public function getOption($optionName, $default = null)
     {
         $prefixedOptionName = $this->prefix($optionName); // how it is stored in DB
         $retVal = get_option($prefixedOptionName);
-        if (!$retVal && $default)
+        if (! $retVal && $default)
         {
             $retVal = $default;
         }
@@ -145,7 +156,9 @@ class Wkwgs_OptionsManager
     /**
      * A wrapper function delegating to WP delete_option() but it prefixes the input $optionName
      * to enforce "scoping" the options in the WP options table thereby avoiding name conflicts
-     * @param  $optionName string defined in settings.php and set as keys of $this->optionMetaData
+     *
+     * @param $optionName string
+     *            defined in settings.php and set as keys of $this->optionMetaData
      * @return bool from delegated call to delete_option()
      */
     public function deleteOption($optionName)
@@ -157,8 +170,11 @@ class Wkwgs_OptionsManager
     /**
      * A wrapper function delegating to WP add_option() but it prefixes the input $optionName
      * to enforce "scoping" the options in the WP options table thereby avoiding name conflicts
-     * @param  $optionName string defined in settings.php and set as keys of $this->optionMetaData
-     * @param  $value mixed the new value
+     *
+     * @param $optionName string
+     *            defined in settings.php and set as keys of $this->optionMetaData
+     * @param $value mixed
+     *            the new value
      * @return null from delegated call to delete_option()
      */
     public function addOption($optionName, $value)
@@ -170,8 +186,11 @@ class Wkwgs_OptionsManager
     /**
      * A wrapper function delegating to WP add_option() but it prefixes the input $optionName
      * to enforce "scoping" the options in the WP options table thereby avoiding name conflicts
-     * @param  $optionName string defined in settings.php and set as keys of $this->optionMetaData
-     * @param  $value mixed the new value
+     *
+     * @param $optionName string
+     *            defined in settings.php and set as keys of $this->optionMetaData
+     * @param $value mixed
+     *            the new value
      * @return null from delegated call to delete_option()
      */
     public function updateOption($optionName, $value)
@@ -187,13 +206,15 @@ class Wkwgs_OptionsManager
      * So if a Role Option 'CanDoOperationX' is set to 'Editor' then users which role 'Editor' or above should be
      * able to do Operation X.
      * Also see: canUserDoRoleOption()
-     * @param  $optionName
+     *
+     * @param
+     *            $optionName
      * @return string role name
      */
     public function getRoleOption($optionName)
     {
         $roleAllowed = $this->getOption($optionName);
-        if (!$roleAllowed || $roleAllowed == '')
+        if (! $roleAllowed || $roleAllowed == '')
         {
             $roleAllowed = 'Administrator';
         }
@@ -203,7 +224,9 @@ class Wkwgs_OptionsManager
     /**
      * Given a WP role name, return a WP capability which only that role and roles above it have
      * http://codex.wordpress.org/Roles_and_Capabilities
-     * @param  $roleName
+     *
+     * @param
+     *            $roleName
      * @return string a WP capability or '' if unknown input role
      */
     protected function roleToCapability($roleName)
@@ -229,7 +252,9 @@ class Wkwgs_OptionsManager
     }
 
     /**
-     * @param $roleName string a standard WP role name like 'Administrator'
+     *
+     * @param $roleName string
+     *            a standard WP role name like 'Administrator'
      * @return bool
      */
     public function isUserRoleEqualOrBetterThan($roleName)
@@ -243,7 +268,9 @@ class Wkwgs_OptionsManager
     }
 
     /**
-     * @param  $optionName string name of a Role option (see comments in getRoleOption())
+     *
+     * @param $optionName string
+     *            name of a Role option (see comments in getRoleOption())
      * @return bool indicates if the user has adequate permissions
      */
     public function canUserDoRoleOption($optionName)
@@ -258,21 +285,24 @@ class Wkwgs_OptionsManager
 
     /**
      * see: http://codex.wordpress.org/Creating_Options_Pages
+     *
      * @return void
      */
     public function createSettingsMenu()
     {
         $pluginName = $this->getPluginDisplayName();
-        //create new top-level menu
-        add_menu_page($pluginName . ' Plugin Settings',
-                      $pluginName,
-                      'administrator',
-                      get_class($this),
-                      array(&$this, 'settingsPage')
-        /*,plugins_url('/images/icon.png', __FILE__)*/); // if you call 'plugins_url; be sure to "require_once" it
+        // create new top-level menu
+        add_menu_page($pluginName . ' Plugin Settings', $pluginName, 'administrator', get_class($this), array(
+            &$this,
+            'settingsPage'
+        ) /* ,plugins_url('/images/icon.png', __FILE__) */
+        ); // if you call 'plugins_url; be sure to "require_once" it
 
-        //call register settings function
-        add_action('admin_init', array(&$this, 'registerSettings'));
+        // call register settings function
+        add_action('admin_init', array(
+            &$this,
+            'registerSettings'
+        ));
     }
 
     public function registerSettings()
@@ -288,11 +318,12 @@ class Wkwgs_OptionsManager
     /**
      * Creates HTML for the Administration page to set options for this plugin.
      * Override this method to create a customized page.
+     *
      * @return void
      */
     public function settingsPage()
     {
-        if (!current_user_can('manage_options'))
+        if (! current_user_can('manage_options'))
         {
             wp_die(__('You do not have sufficient permissions to access this page.', 'wkwgs'));
         }
@@ -315,39 +346,67 @@ class Wkwgs_OptionsManager
         $settingsGroup = get_class($this) . '-settings-group';
         ?>
         <div class="wrap">
-            <h2><?php _e('System Settings', 'wkwgs'); ?></h2>
+            <h2><?php
+
+_e('System Settings', 'wkwgs');
+        ?></h2>
             <table cellspacing="1" cellpadding="2"><tbody>
-            <tr><td><?php _e('System', 'wkwgs'); ?></td><td><?php echo php_uname(); ?></td></tr>
-            <tr><td><?php _e('PHP Version', 'wkwgs'); ?></td>
-                <td><?php echo phpversion(); ?>
+            <tr><td><?php
+
+_e('System', 'wkwgs');
+        ?></td><td><?php
+
+echo php_uname();
+        ?></td></tr>
+            <tr><td><?php
+
+_e('PHP Version', 'wkwgs');
+        ?></td>
+                <td><?php
+
+echo phpversion();
+        ?>
                 <?php
-                if (version_compare('5.2', phpversion()) > 0)
+        if (version_compare('5.2', phpversion()) > 0)
         {
-                    echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
-                    _e('(WARNING: This plugin may not work properly with versions earlier than PHP 5.2)', 'wkwgs');
-                    echo '</span>';
-                }
-                ?>
+            echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
+            _e('(WARNING: This plugin may not work properly with versions earlier than PHP 5.2)', 'wkwgs');
+            echo '</span>';
+        }
+        ?>
                 </td>
             </tr>
-            <tr><td><?php _e('MySQL Version', 'wkwgs'); ?></td>
-                <td><?php echo $this->getMySqlVersion() ?>
+            <tr><td><?php
+
+_e('MySQL Version', 'wkwgs');
+        ?></td>
+                <td><?php
+
+echo $this->getMySqlVersion()?>
                     <?php
-                    echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
-                    if (version_compare('5.0', $this->getMySqlVersion()) > 0)
-            {
-                        _e('(WARNING: This plugin may not work properly with versions earlier than MySQL 5.0)', 'wkwgs');
-                    }
-                    echo '</span>';
-                    ?>
+        echo '&nbsp;&nbsp;&nbsp;<span style="background-color: #ffcc00;">';
+        if (version_compare('5.0', $this->getMySqlVersion()) > 0)
+        {
+            _e('(WARNING: This plugin may not work properly with versions earlier than MySQL 5.0)', 'wkwgs');
+        }
+        echo '</span>';
+        ?>
                 </td>
             </tr>
             </tbody></table>
 
-            <h2><?php echo $this->getPluginDisplayName(); echo ' '; _e('Settings', 'wkwgs'); ?></h2>
+            <h2><?php
+
+echo $this->getPluginDisplayName();
+        echo ' ';
+        _e('Settings', 'wkwgs');
+        ?></h2>
 
             <form method="post" action="">
-            <?php settings_fields($settingsGroup); ?>
+            <?php
+
+settings_fields($settingsGroup);
+        ?>
                 <style type="text/css">
                     table.plugin-options-table {width: 100%; padding: 0;}
                     table.plugin-options-table tr:nth-child(even) {background: #f9f9f9}
@@ -359,67 +418,93 @@ class Wkwgs_OptionsManager
                 </style>
                 <table class="plugin-options-table"><tbody>
                 <?php
-                if ($optionMetaData != null)
+        if ($optionMetaData != null)
         {
-                    foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
+            foreach ($optionMetaData as $aOptionKey => $aOptionMeta)
             {
-                        $displayText = is_array($aOptionMeta) ? $aOptionMeta[0] : $aOptionMeta;
-                        ?>
+                $displayText = is_array($aOptionMeta) ? $aOptionMeta[0] : $aOptionMeta;
+                ?>
                             <tr valign="top">
-                                <th scope="row"><p><label for="<?php echo $aOptionKey ?>"><?php echo $displayText ?></label></p></th>
+                                <th scope="row"><p><label for="<?php
+
+echo $aOptionKey?>"><?php
+
+echo $displayText?></label></p></th>
                                 <td>
-                                <?php $this->createFormControl($aOptionKey, $aOptionMeta, $this->getOption($aOptionKey)); ?>
+                                <?php
+
+$this->createFormControl($aOptionKey, $aOptionMeta, $this->getOption($aOptionKey));
+                ?>
                                 </td>
                             </tr>
                         <?php
-                    }
-                }
-                ?>
+            }
+        }
+        ?>
                 </tbody></table>
                 <p class="submit">
                     <input type="submit" class="button-primary"
-                           value="<?php _e('Save Changes', 'wkwgs') ?>"/>
+                           value="<?php
+
+_e('Save Changes', 'wkwgs')?>"/>
                 </p>
             </form>
         </div>
         <?php
-
     }
 
     /**
      * Helper-function outputs the correct form element (input tag, select tag) for the given item
-     * @param  $aOptionKey string name of the option (un-prefixed)
-     * @param  $aOptionMeta mixed meta-data for $aOptionKey (either a string display-name or an array(display-name, option1, option2, ...)
-     * @param  $savedOptionValue string current value for $aOptionKey
+     *
+     * @param $aOptionKey string
+     *            name of the option (un-prefixed)
+     * @param $aOptionMeta mixed
+     *            meta-data for $aOptionKey (either a string display-name or an array(display-name, option1, option2, ...)
+     * @param $savedOptionValue string
+     *            current value for $aOptionKey
      * @return void
      */
     protected function createFormControl($aOptionKey, $aOptionMeta, $savedOptionValue)
     {
         if (is_array($aOptionMeta) && count($aOptionMeta) >= 2)
-    { // Drop-down list
+        { // Drop-down list
             $choices = array_slice($aOptionMeta, 1);
             ?>
-            <p><select name="<?php echo $aOptionKey ?>" id="<?php echo $aOptionKey ?>">
+            <p><select name="<?php
+
+echo $aOptionKey?>" id="<?php
+
+echo $aOptionKey?>">
             <?php
-                            foreach ($choices as $aChoice)
-                {
+            foreach ($choices as $aChoice)
+            {
                 $selected = ($aChoice == $savedOptionValue) ? 'selected' : '';
                 ?>
-                    <option value="<?php echo $aChoice ?>" <?php echo $selected ?>><?php echo $this->getOptionValueI18nString($aChoice) ?></option>
+                    <option value="<?php
+
+echo $aChoice?>" <?php
+
+echo $selected?>><?php
+
+echo $this->getOptionValueI18nString($aChoice)?></option>
                 <?php
             }
             ?>
             </select></p>
             <?php
-
         }
         else
         { // Simple input field
             ?>
-            <p><input type="text" name="<?php echo $aOptionKey ?>" id="<?php echo $aOptionKey ?>"
-                      value="<?php echo esc_attr($savedOptionValue) ?>" size="50"/></p>
-            <?php
+            <p><input type="text" name="<?php
 
+echo $aOptionKey?>" id="<?php
+
+echo $aOptionKey?>"
+                      value="<?php
+
+echo esc_attr($savedOptionValue)?>" size="50"/></p>
+            <?php
         }
     }
 
@@ -434,7 +519,8 @@ class Wkwgs_OptionsManager
      * To do this, follow the convention of defining option values in getOptionMetaData() as canonical names
      * (what you want them to literally be, like 'true') and then add each one to the switch statement in this
      * function, returning the "__()" i18n name of that string.
-     * @param  $optionValue string
+     *
+     * @param $optionValue string
      * @return string __($optionValue) if it is listed in this method, otherwise just returns $optionValue
      */
     protected function getOptionValueI18nString($optionValue)
@@ -464,15 +550,16 @@ class Wkwgs_OptionsManager
 
     /**
      * Query MySQL DB for its version
+     *
      * @return string|false
      */
     protected function getMySqlVersion()
     {
         global $wpdb;
         $rows = $wpdb->get_results('select version() as mysqlversion');
-        if (!empty($rows))
+        if (! empty($rows))
         {
-             return $rows[0]->mysqlversion;
+            return $rows[0]->mysqlversion;
         }
         return false;
     }
@@ -480,9 +567,10 @@ class Wkwgs_OptionsManager
     /**
      * If you want to generate an email address like "no-reply@your-site.com" then
      * you can use this to get the domain name part.
-     * E.g.  'no-reply@' . $this->getEmailDomain();
+     * E.g. 'no-reply@' . $this->getEmailDomain();
      * This code was stolen from the wp_mail function, where it generates a default
      * from "wordpress@your-site.com"
+     *
      * @return string domain name
      */
     public function getEmailDomain()

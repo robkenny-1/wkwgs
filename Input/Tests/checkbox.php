@@ -23,18 +23,18 @@ include_once ('TestFramework.php');
 
 /* -------------------------------------------------------------------------------- */
 
-$form = new Input\Form([]);
+$form = new \Wkwgs\Input\Form([]);
 
 /* -------------------------------------------------------------------------------- */
 
-$form->add_child(new Input\Checkbox([
+$form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'name_only',
     ],
     'contents' => [],
 ]));
 
-$form->add_child(new Input\Checkbox([
+$form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'checkbox_with_label',
         'label-text' => 'checkbox with label',
@@ -42,7 +42,7 @@ $form->add_child(new Input\Checkbox([
     'contents' => [],
 ]));
 
-$form->add_child(new Input\Checkbox([
+$form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'checkbox_required',
         'label-text' => 'Value Required',
@@ -51,7 +51,7 @@ $form->add_child(new Input\Checkbox([
     'contents' => [],
 ]));
 
-$form->add_child(new Input\Checkbox([
+$form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'checkbox_enabled',
         'label-text' => 'checkbox_enabled',
@@ -61,7 +61,7 @@ $form->add_child(new Input\Checkbox([
     'contents' => [],
 ]));
 
-$form->add_child(new Input\Checkbox([
+$form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'html_and_special_chars',
         'label-text' => '< html & special chars >',
@@ -79,7 +79,7 @@ function falsify_post($post)
     return $post;
 }
 
-$test = new \Input\Test\TestFramework('falsify_post');
+$test = new \Wkwgs\Input\Test\TestFramework('falsify_post');
 $test->test_form($form);
 
 ?>

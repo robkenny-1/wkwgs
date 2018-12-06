@@ -27,7 +27,7 @@ function test_ElementList_iterator(string $name, int $expected, $data, int $mode
 {
     if (is_array($data))
     {
-        $data = new \Input\Element([
+        $data = new \Wkwgs\Input\Element([
             'tag' => '$name',
             'attributes' => [],
             'contents' => $data,
@@ -40,43 +40,43 @@ function test_ElementList_iterator(string $name, int $expected, $data, int $mode
 /* -------------------------------------------------------------------------------- */
 // Test iteration
 
-$h1 = new \Input\Element([
+$h1 = new \Wkwgs\Input\Element([
     'tag' => 'h1',
     'attributes' => [],
     'contents' => [],
 ]);
 
-$h2 = new \Input\Element([
+$h2 = new \Wkwgs\Input\Element([
     'tag' => 'h2',
     'attributes' => [],
     'contents' => [],
 ]);
 
-$h3 = new \Input\Element([
+$h3 = new \Wkwgs\Input\Element([
     'tag' => 'h3',
     'attributes' => [],
     'contents' => [],
 ]);
 
-$h4 = new \Input\Element([
+$h4 = new \Wkwgs\Input\Element([
     'tag' => 'h4',
     'attributes' => [],
     'contents' => [],
 ]);
 
-$h5 = new \Input\Element([
+$h5 = new \Wkwgs\Input\Element([
     'tag' => 'h5',
     'attributes' => [],
     'contents' => [],
 ]);
 
-$h6 = new \Input\Element([
+$h6 = new \Wkwgs\Input\Element([
     'tag' => 'h6',
     'attributes' => [],
     'contents' => [],
 ]);
 
-$h7 = new \Input\Element([
+$h7 = new \Wkwgs\Input\Element([
     'tag' => 'h7',
     'attributes' => [],
     'contents' => [],
@@ -120,48 +120,48 @@ test_ElementList_iterator('heirarchy', 6, $h1);
 test_ElementList_iterator('hierarchy, LEAVES_ONLY', 0, $h1, \RecursiveIteratorIterator::LEAVES_ONLY);
 
 /* -------------------------------------------------------------------------------- */
-function get_cart_form(): \Input\Form
+function get_cart_form(): \Wkwgs\Input\Form
 {
     $css_aligned_input = 'margin-left:5px';
 
-    $form = new \Input\Form([
+    $form = new \Wkwgs\Input\Form([
         'attributes' => [
             'name' => 'unused in ui',
         ],
     ]);
 
-    $fieldset = new \Input\Element([
+    $fieldset = new \Wkwgs\Input\Element([
         'tag' => 'fieldset',
         'attributes' => [],
         'contents' => [
-            new \Input\Element([
+            new \Wkwgs\Input\Element([
                 'tag' => 'legend',
                 'attributes' => [
                     'style' => '',
                 ],
                 'contents' => [
-                    new \Input\HtmlText('Second Member Registration'),
+                    new \Wkwgs\Input\HtmlText('Second Member Registration'),
                 ],
             ])
         ],
     ]);
     $form->add_child($fieldset);
 
-    $fieldset->add_child(new \Input\Text([
+    $fieldset->add_child(new \Wkwgs\Input\Text([
         'attributes' => [
             'name' => 'wkwgs_dual_membership_first',
             'label-text' => 'First Name',
             'style' => $css_aligned_input,
         ],
     ]));
-    $fieldset->add_child(new \Input\Text([
+    $fieldset->add_child(new \Wkwgs\Input\Text([
         'attributes' => [
             'name' => 'wkwgs_dual_membership_last',
             'label-text' => 'Last Name',
             'style' => $css_aligned_input,
         ],
     ]));
-    $fieldset->add_child(new \Input\Text([
+    $fieldset->add_child(new \Wkwgs\Input\Text([
         'attributes' => [
             'name' => 'wkwgs_dual_membership_email',
             'label-text' => 'Email',
@@ -169,7 +169,7 @@ function get_cart_form(): \Input\Form
             'style' => $css_aligned_input,
         ],
     ]));
-    $fieldset->add_child(new \Input\Telephone([
+    $fieldset->add_child(new \Wkwgs\Input\Telephone([
         'attributes' => [
             'name' => 'wkwgs_dual_membership_phone',
             'label-text' => 'Phone',

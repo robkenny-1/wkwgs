@@ -97,11 +97,11 @@ include_once ('TestFramework.php');
 
 // Wkwgs_Logger::clear();
 
-$form = new Input\Form([]);
+$form = new \Wkwgs\Input\Form([]);
 
 /*
  * Disable as an exception is now thrown when input is missing name
- * $form->add_child(new Input\Text([
+ * $form->add_child(new \Wkwgs\Input\Text([
  * 'attributes' => [
  * 'class' => 'color-steelblue',
  * 'label-text' => 'I do not have a name, therefore no input results'
@@ -111,7 +111,7 @@ $form = new Input\Form([]);
  */
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(new Input\Text([
+$form->add_child(new \Wkwgs\Input\Text([
     'attributes' => [
         'name' => 'tooltip',
         'label-text' => 'input with tooltip',
@@ -122,7 +122,7 @@ $form->add_child(new Input\Text([
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(new Input\Text([
+$form->add_child(new \Wkwgs\Input\Text([
     'attributes' => [
         'name' => 'text_on_right',
         'label-text' => "I'm on the right",
@@ -132,14 +132,14 @@ $form->add_child(new Input\Text([
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(new Input\Element([
+$form->add_child(new \Wkwgs\Input\Element([
     'tag' => 'h3',
     'contents' => [
-        new Input\HtmlText('Email input')
+        new \Wkwgs\Input\HtmlText('Email input')
     ]
 ]));
 
-$form->add_child(new Input\Email([
+$form->add_child(new \Wkwgs\Input\Email([
     'attributes' => [
         'name' => 'email',
         'label-text' => 'email address',
@@ -150,14 +150,14 @@ $form->add_child(new Input\Email([
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(new Input\Element([
+$form->add_child(new \Wkwgs\Input\Element([
     'tag' => 'h3',
     'contents' => [
-        new Input\HtmlText('Telephone input')
+        new \Wkwgs\Input\HtmlText('Telephone input')
     ],
 ]));
 
-$form->add_child(new Input\Telephone([
+$form->add_child(new \Wkwgs\Input\Telephone([
     'attributes' => [
         'name' => 'telephone',
         'label-text' => 'Phone number',
@@ -167,7 +167,7 @@ $form->add_child(new Input\Telephone([
 
 /* ------------------------------------------------------------------------------------ */
 
-$form->add_child(new Input\Text([
+$form->add_child(new \Wkwgs\Input\Text([
     'attributes' => [
         'name' => '&gt;<angles>&lt;',
         'label-text' => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
@@ -175,12 +175,12 @@ $form->add_child(new Input\Text([
     ],
 ]));
 
-$form->add_child(new Input\HtmlSnippet('This <em>word</em> should be emphasized'));
+$form->add_child(new \Wkwgs\Input\HtmlSnippet('This <em>word</em> should be emphasized'));
 
-$form->add_child(new Input\Element([
+$form->add_child(new \Wkwgs\Input\Element([
     'tag' => 'h3',
     'contents' => [
-        new Input\HtmlText('<h1>HTML Chars (this should be an h3 [green] not an h1)')
+        new \Wkwgs\Input\HtmlText('<h1>HTML Chars (this should be an h3 [green] not an h1)')
     ]
 ]));
 
@@ -194,7 +194,7 @@ function falsify_post($post)
     return $post;
 }
 
-$test = new \Input\Test\TestFramework('falsify_post');
+$test = new \Wkwgs\Input\Test\TestFramework('falsify_post');
 $test->test_form($form);
 
 ?>

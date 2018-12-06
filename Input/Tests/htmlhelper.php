@@ -39,7 +39,7 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'h1'
 ]);
 $e1->render();
@@ -50,7 +50,7 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'h1',
     'attributes' => [
         'class' => 'color-steelblue'
@@ -65,7 +65,7 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'h2',
     'attributes' => [
         'class' => 'color-red'
@@ -80,7 +80,7 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'h2',
     'attributes' => [
         'class' => 'color-red'
@@ -99,7 +99,7 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'h2',
     'contents' => "using default class, should be steel-blue"
 ]);
@@ -115,25 +115,25 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e3 = new Input\Element([
+$e3 = new \Wkwgs\Input\Element([
     'tag' => 'p',
     'contents' => [
-        new Input\HtmlText('line 1'),
-        new Input\Element('br'),
-        new Input\HtmlText('line 2'),
-        new Input\Element('br'),
-        new Input\HtmlText('line 3'),
+        new \Wkwgs\Input\HtmlText('line 1'),
+        new \Wkwgs\Input\Element('br'),
+        new \Wkwgs\Input\HtmlText('line 2'),
+        new \Wkwgs\Input\Element('br'),
+        new \Wkwgs\Input\HtmlText('line 3'),
     ]
 ]);
-$e2 = new Input\Element([
+$e2 = new \Wkwgs\Input\Element([
     'tag' => 'p',
     'contents' => [
-        new Input\HtmlText('text before'),
+        new \Wkwgs\Input\HtmlText('text before'),
         $e3,
-        new Input\HtmlText('text after')
+        new \Wkwgs\Input\HtmlText('text after')
     ]
 ]);
-$e1 = new Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'p',
     'contents' => [
         $e2
@@ -175,10 +175,10 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new \Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'p',
     'contents' => [
-        new \Input\Callback('callback_test1'),
+        new \Wkwgs\Input\Callback('callback_test1'),
     ]
 ]);
 $e1->render();
@@ -189,12 +189,12 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new \Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'p',
     'contents' => [
-        new \Input\HtmlText('Calling static method on class'),
-        new \Input\Element('br'),
-        new \Input\Callback([
+        new \Wkwgs\Input\HtmlText('Calling static method on class'),
+        new \Wkwgs\Input\Element('br'),
+        new \Wkwgs\Input\Callback([
             $cb,
             'callback_static'
         ]),
@@ -208,12 +208,12 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new \Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'p',
     'contents' => [
-        new \Input\HtmlText('Calling static method on class'),
-        new \Input\Element('br'),
-        new \Input\Callback([
+        new \Wkwgs\Input\HtmlText('Calling static method on class'),
+        new \Wkwgs\Input\Element('br'),
+        new \Wkwgs\Input\Callback([
             $cb,
             'callback_noparam'
         ]),
@@ -227,12 +227,12 @@ $test_msg = "#### Test $test ####";
 // \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
-$e1 = new \Input\Element([
+$e1 = new \Wkwgs\Input\Element([
     'tag' => 'p',
     'contents' => [
-        new \Input\HtmlText('Calling static method on class'),
-        new \Input\Element('br'),
-        new \Input\Callback([
+        new \Wkwgs\Input\HtmlText('Calling static method on class'),
+        new \Wkwgs\Input\Element('br'),
+        new \Wkwgs\Input\Callback([
             $cb,
             'callback_param'
         ], [

@@ -18,7 +18,7 @@
   If not, see http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace Input;
+namespace Wkwgs\Input;
 
 // Exit if accessed directly
 defined('ABSPATH') || exit;
