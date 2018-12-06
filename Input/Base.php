@@ -62,7 +62,6 @@ class Callback implements IHtmlPrinter
 
     public function __construct(callable $callback, ?array $params = null)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $this->callback = $callback;
         $this->params = $params;
     }
@@ -78,7 +77,6 @@ class Callback implements IHtmlPrinter
      */
     public function get_html(): string
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $html = '';
 
         if (! empty($this->params))
@@ -90,7 +88,6 @@ class Callback implements IHtmlPrinter
             $html .= call_user_func($this->callback);
         }
 
-        // $logger->log_return( $html );
         return $html;
     }
 }

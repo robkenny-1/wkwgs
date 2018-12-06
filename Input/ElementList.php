@@ -62,21 +62,16 @@ class ElementList implements \IteratorAggregate, IHtmlPrinter, IHtmlPrinterList
      */
     public function get_html(): string
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
-        // $logger->log_var( '$this', $this );
         $html = '';
 
         foreach ($this->children as $child)
         {
-            // $logger->log_var( '$child', $child );
 
             $child_html = $child->get_html();
-            // $logger->log_var( '$child_html', $child_html );
 
             $html .= $child_html;
         }
 
-        // $logger->log_return( $html );
         return $html;
     }
 
@@ -92,7 +87,6 @@ class ElementList implements \IteratorAggregate, IHtmlPrinter, IHtmlPrinterList
      */
     public function set_children(?array $children): void
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $this->children = [];
 
         if ($children instanceof IHtmlPrinterList)
@@ -113,8 +107,6 @@ class ElementList implements \IteratorAggregate, IHtmlPrinter, IHtmlPrinterList
         {
             $this->add_child($children);
         }
-
-        // $logger->log_return( $this->children );
     }
 
     /**
@@ -124,32 +116,26 @@ class ElementList implements \IteratorAggregate, IHtmlPrinter, IHtmlPrinterList
      */
     public function add_child(IHtmlPrinter $child): void
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (! is_null($child))
         {
             // Automatically convert strings to a HtmlText()
             if (gettype($child) === 'string')
             {
                 throw new Exception(__METHOD__ . 'passed a string for $child');
-                // $logger->log_msg('Converting to HtmlText()');
-                // $child = new HtmlText($child);
             }
 
             // Only allow IHtmlPrinter as children
             if ($child instanceof IHtmlPrinter)
             {
-                // $logger->log_msg('adding $child');
                 $this->children[] = $child;
             }
             else
             {
-                // $logger->log_msg('$child is not IHtmlPrinter');
                 throw new \Exception(__METHOD__ . 'Attempting to add non IhtmlPrinter');
             }
         }
         else
         {
-            // $logger->log_msg('$child is null');
             throw new \Exception(__METHOD__ . '$child is null');
         }
     }

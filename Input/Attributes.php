@@ -61,7 +61,6 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
      */
     public function get_attributes(): array
     {
-        // = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $this->update_cache();
         $attributes = $this->cached;
 
@@ -76,10 +75,8 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
      */
     public function get_attribute(string $attribute)
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $attribute = $this->get_attributes()[$attribute] ?? '';
 
-        // $logger->log_return( $attribute );
         return $attribute;
     }
 
@@ -90,7 +87,6 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
      */
     public function set_attribute(string $attribute, $value)
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $this->invalidate_cache();
 
         $this->attributes[$attribute] = $value;
@@ -131,7 +127,6 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
      */
     public function get_attributes_secondary(): array
     {
-        // = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $this->update_cache();
         $attributes = $this->cached_secondary;
 
@@ -146,10 +141,8 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
      */
     public function get_attribute_secondary(string $attribute)
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $attribute = $this->get_attributes_secondary()[$attribute] ?? '';
 
-        // $logger->log_return( $attribute );
         return $attribute;
     }
 
@@ -164,7 +157,6 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
      */
     public function get_html(): string
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $attributes = $this->get_attributes();
 
         $html = '';
@@ -179,7 +171,6 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
             }
         }
 
-        // $logger->log_return( $html );
         return $html;
     }
 
@@ -207,7 +198,6 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
 
     protected function update_cache()
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         if (is_null($this->cached) || is_null($this->cached_secondary))
         {
             $secondary = [];
@@ -231,16 +221,8 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
                 }
             }
 
-            // $logger->log_msg('UPDATED CACHE');
-            // $logger->log_var( '$attributes', $attributes );
-            // $logger->log_var( '$secondary', $secondary );
-
             $this->cached = $attributes;
             $this->cached_secondary = $secondary;
-        }
-        else
-        {
-            // $logger->log_return('<cache is up to date>');
         }
     }
 
@@ -256,7 +238,6 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
      */
     public static function move_values(string $secondary_value, array & $attributes): array
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
 
         // Build the PCRE pattern
         $delim = '#';
@@ -271,14 +252,12 @@ class Attributes implements IAttributeSecondary, IHtmlPrinter
             if (preg_match($pattern, $rr, $matches) === 1)
             {
                 $new_key = $matches[1];
-                // $logger->log_var('$new_key', $new_key);
 
                 $moved[$new_key] = $rr_value;
                 unset($attributes[$rr]);
             }
         }
 
-        // $logger->log_return($moved);
         return $moved;
     }
 

@@ -39,7 +39,6 @@ class Element extends ElementList implements IHtmlElement
     // ElementList
     public function __construct($desc)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (gettype($desc) === 'string')
         {
             $tag = $desc;
@@ -56,7 +55,6 @@ class Element extends ElementList implements IHtmlElement
         if (empty($tag))
         {
             $msg = '$tag is empty';
-            // $logger->log_msg($msg);
             throw new \Exception($msg);
         }
 
@@ -86,10 +84,8 @@ class Element extends ElementList implements IHtmlElement
      */
     public function get_html(): string
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $tag = $this->tag;
         $tag = htmlspecialchars($tag);
-        // $logger->log_var('tag', $this->tag);
 
         $html = '';
 
@@ -104,7 +100,6 @@ class Element extends ElementList implements IHtmlElement
             $html .= "</$tag>";
         }
 
-        // $logger->log_return($html);
         return $html;
     }
 

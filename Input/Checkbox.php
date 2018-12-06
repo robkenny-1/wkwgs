@@ -43,10 +43,8 @@ class Checkbox extends InputElement
 
     public function __construct($desc)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (gettype($desc) !== 'array')
         {
-//$logger->log_var('$desc is not an array', $desc);
             return;
         }
 
@@ -105,15 +103,12 @@ class Checkbox extends InputElement
      */
     public function validate_post(string $name, array $post): array
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $ve = [];
 
         // Perform data validation
 
         $raw = $post[$name] ?? '';
         $value = $this->get_attribute('value');
-        // $logger->log_var('$raw', $raw);
-        // $logger->log_var('$value', $value);
 
         if (empty($value))
         {
@@ -124,20 +119,16 @@ class Checkbox extends InputElement
             $ve[] = new HtmlValidateError('$post value does not match expected', $name, $this);
         }
 
-        // $logger->log_return($ve);
         return $ve;
     }
 
     public function cleanse_data($raw)
     {
-//$logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
-
         $cleansed = null;
 
         // No cleansing necessary?
         $cleansed = $raw;
 
-//$logger->log_return($cleansed);
         return $cleansed;
     }
 }

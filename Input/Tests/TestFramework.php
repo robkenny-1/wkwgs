@@ -50,10 +50,8 @@ class TestFramework
     /* ------------------------------------------------------------------------- */
     public function handle_post(array $post)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (! empty($post))
         {
-            // $logger->log_var('$post[\'submit\']', $post['submit']);
 
             $this->session_erase();
 
@@ -77,7 +75,6 @@ class TestFramework
 
     public function session_display()
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (isset($_SESSION['post_orig']))
         {
             echo '<h2>$_POST (Original)</h2>';
@@ -93,7 +90,6 @@ class TestFramework
         // Print out any validation errors stored in the session
         if (isset($_SESSION['form_errors']))
         {
-            // $logger->log_msg('test_common_submit: $_SESSION["form_errors"] is set');
 
             echo '<div>';
             echo '<h1>Validation Errors</h1>';
@@ -125,7 +121,6 @@ class TestFramework
         // Print out any results stored in the session
         if (isset($_SESSION['form_values']))
         {
-            // $logger->log_msg('test_common_submit: $_SESSION["form_values"] is set');
 
             echo '<div>';
             echo '<h1>Submit Values</h1>';
@@ -141,7 +136,6 @@ class TestFramework
 
     protected function add_submit_buttons()
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $button_name = 'submit';
 
         $submit = new \Wkwgs\Input\Button([
@@ -184,7 +178,6 @@ class TestFramework
 
     protected function session_erase()
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         unset($_SESSION['post']);
         unset($_SESSION['post_orig']);
         unset($_SESSION['form_values']);
@@ -193,7 +186,6 @@ class TestFramework
 
     protected function session_mock(array & $post)
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $_SESSION['post_orig'] = $post;
 
         $post = falsify_post($post);
@@ -201,7 +193,6 @@ class TestFramework
 
     protected function session_validate(array $post)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $_SESSION['post'] = $post;
 
         // Validate data and store results

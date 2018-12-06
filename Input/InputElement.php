@@ -171,7 +171,6 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function validate(array $post): array
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $name = $this->get_name();
         $raw = $post[$name] ?? '';
         $required = Helper::is_true($this->get_attribute('required'));
@@ -201,7 +200,6 @@ abstract class InputElement extends Element implements IHtmlInput
 
                 if (preg_match($pattern, $raw) !== 1)
                 {
-                    // $logger->log_msg('$raw does not match pattern');
 
                     $validation_errors[] = new HtmlValidateError('value does not match defined pattern', $name, $this);
                 }
@@ -211,7 +209,6 @@ abstract class InputElement extends Element implements IHtmlInput
             $validation_errors = array_merge($validation_errors, $ve);
         }
 
-        // $logger->log_return($validation_errors);
         return $validation_errors;
     }
 
@@ -222,7 +219,6 @@ abstract class InputElement extends Element implements IHtmlInput
      */
     public function get_value(array $post)
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args(), __CLASS__ );
         $cleansed = null;
         $name = $this->get_name();
 

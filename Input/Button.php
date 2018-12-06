@@ -41,10 +41,8 @@ class Button extends Element
 
     public function __construct($desc)
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         if (gettype($desc) !== 'array')
         {
-            // $logger->log_var('$desc is not an array', $desc);
             return;
         }
 
@@ -89,12 +87,8 @@ class Button extends Element
      */
     public function get_html(): string
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $remaining = $this->get_attributes();
         $label = $this->get_attribute_secondary('label-text');
-
-        // $logger->log_var('$remaining', $remaining);
-        // $logger->log_var('$label', $label);
 
         // Buttons can contain (inline only) child elements
         // If label-text was specified we'll over-write all children
@@ -113,7 +107,6 @@ class Button extends Element
         ]);
         $html = $button->get_html();
 
-        // $logger->log_return($html);
         return $html;
     }
 
@@ -128,7 +121,6 @@ class Button extends Element
      */
     public function validate_post(string $name, array $post): array
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $validation_errors = [];
 
         // The button should only return 'value'
@@ -137,7 +129,6 @@ class Button extends Element
             $validation_errors[] = new HtmlValidateError('$post post data does not match expected', $name, $this);
         }
 
-        // $logger->log_return($validation_errors);
         return $validation_errors;
     }
 

@@ -19,8 +19,6 @@ session_start();
 include_once ('..\Input.php');
 include_once ('TestFramework.php');
 
-// Wkwgs_Logger::clear();
-
 /* -------------------------------------------------------------------------------- */
 
 $form = new \Wkwgs\Input\Form([]);

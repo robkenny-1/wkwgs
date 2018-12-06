@@ -29,14 +29,11 @@ define('ABSPATH', '1');
 session_start();
 include_once ('..\Input.php');
 
-// \Wkwgs_Logger::clear();
-
 $test = 0;
 
 /* -------------------------------------------------------------------------------- */
 $test = "h1 element";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -47,7 +44,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "h1 with contents";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -62,7 +58,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "Red h2";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -77,7 +72,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "Default override 1";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -96,7 +90,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "default override 2";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -112,7 +105,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "multiple children";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e3 = new \Wkwgs\Input\Element([
@@ -142,7 +134,6 @@ $e1 = new \Wkwgs\Input\Element([
 $e1->render();
 
 /* -------------------------------------------------------------------------------- */
-// \Wkwgs_Logger::log( '#### Callback ####' );
 function callback_test1()
 {
     return 'this is text from callback_test1';
@@ -172,7 +163,6 @@ $cb = new callback_test_class();
 /* -------------------------------------------------------------------------------- */
 $test = "callback function";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -186,7 +176,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "callback static class";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -205,7 +194,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "callback ojbect method, no params";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([
@@ -224,7 +212,6 @@ $e1->render();
 /* -------------------------------------------------------------------------------- */
 $test = "callback ojbect method, with params";
 $test_msg = "#### Test $test ####";
-// \Wkwgs_Logger::log( $test_msg );
 echo "<h3>{$test_msg}</h3>";
 
 $e1 = new \Wkwgs\Input\Element([

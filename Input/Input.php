@@ -22,7 +22,6 @@
 defined('ABSPATH') || exit();
 
 include_once (__DIR__ . '/Constants.php');
-include_once (__DIR__ . '/../Wkwgs_Logger.php');
 
 include_once (__DIR__ . '/Helper.php');
 include_once (__DIR__ . '/ArrayObjectIterator.php');

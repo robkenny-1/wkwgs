@@ -1,5 +1,4 @@
 <?php
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -18,9 +17,6 @@
 
         include_once ('..\Input.php');
 
-        // Wkwgs_Logger::clear();
-        // Wkwgs_Logger::$Disable = False;
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, null);
         class TT implements RecursiveIterator
         {
 

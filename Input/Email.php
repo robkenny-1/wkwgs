@@ -51,20 +51,17 @@ class Email extends Text
      */
     public function validate_post(string $name, array $post): array
     {
-        // $logger = new \Wkwgs_Function_Logger( __METHOD__, func_get_args() );
         $ve = [];
 
         // Perform data validation
 
         $raw = $post[$name] ?? '';
-        // $logger->log_var('$raw', $raw);
 
         if (! filter_var($raw, FILTER_VALIDATE_EMAIL))
         {
             $ve[] = new HtmlValidateError('not a valid email address', $name, $this);
         }
 
-        // $logger->log_return($ve);
         return $ve;
     }
 }

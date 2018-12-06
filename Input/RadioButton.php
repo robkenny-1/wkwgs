@@ -44,10 +44,8 @@ class RadioButton extends InputElement
 
     public function __construct($desc)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         if (gettype($desc) !== 'array')
         {
-            // $logger->log_var('$desc is not an array', $desc);
             return;
         }
 
@@ -109,7 +107,6 @@ class RadioButton extends InputElement
      */
     public function validate_post(string $name, array $post): array
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $ve = [];
 
         // Perform data validation
@@ -117,8 +114,6 @@ class RadioButton extends InputElement
         $raw = $post[$name] ?? '';
         $choices = $this->get_attribute_secondary('choices');
         $choice_keys = array_keys($choices);
-        // $logger->log_var('$raw', $raw);
-        // $logger->log_var('$choice_keys', $choice_keys);
 
         if (empty($choice_keys))
         {
@@ -129,19 +124,16 @@ class RadioButton extends InputElement
             $ve[] = new HtmlValidateError('$post value does not match expected', $name, $this);
         }
 
-        // $logger->log_return($ve);
         return $ve;
     }
 
     public function cleanse_data($raw)
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $cleansed = null;
 
         // No cleansing necessary?
         $cleansed = $raw;
 
-        // $logger->log_return($cleansed);
         return $cleansed;
     }
 
@@ -155,16 +147,12 @@ class RadioButton extends InputElement
      */
     public function get_html_core(): string
     {
-        // $logger = new \Wkwgs_Function_Logger(__METHOD__, func_get_args());
         $html = '';
 
         $choices = $this->get_attribute_secondary('choices');
-        // $logger->log_var('$choices', $choices);
 
         if (empty($choices))
         {
-            // $logger->log_msg('RadioButton rendering single button');
-
             // Render the simple (single) RadioButton <input type='radio'> element
             $html .= parent::get_html_core();
         }
@@ -175,7 +163,6 @@ class RadioButton extends InputElement
 
             $attributes = $this->get_attributes();
             $secondary = $this->get_attributes_secondary();
-            $selected = $this->get_attribute_secondary('selected');
 
             // For each radio button defined in choices:
             // create a single RadioButton to render
@@ -197,7 +184,6 @@ class RadioButton extends InputElement
             }
         }
 
-        // $logger->log_return($html);
         return $html;
     }
 
