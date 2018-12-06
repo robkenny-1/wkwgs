@@ -27,6 +27,7 @@ include_once (__DIR__ . '/../Wkwgs_Logger.php');
 include_once (__DIR__ . '/Helper.php');
 include_once (__DIR__ . '/ArrayObjectIterator.php');
 include_once (__DIR__ . '/Interface.php');
+include_once (__DIR__ . '/ElementList.php');
 include_once (__DIR__ . '/Base.php');
 include_once (__DIR__ . '/Attributes.php');
 include_once (__DIR__ . '/HtmlValidateError.php');
