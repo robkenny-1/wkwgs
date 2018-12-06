@@ -33,6 +33,7 @@ include_once (__DIR__ . '/HtmlValidateError.php');
 
 // Input types
 include_once (__DIR__ . '/Element.php');
+include_once (__DIR__ . '/InputElement.php');
 include_once (__DIR__ . '/Form.php');
 include_once (__DIR__ . '/Text.php');
 include_once (__DIR__ . '/Button.php');

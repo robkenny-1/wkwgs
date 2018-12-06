@@ -185,7 +185,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     protected function get_cart_form(): \Input\Form
     {
         // Styles for the input elements
-        $fieldset_style = 'border-color: #77a464; border: solid 2px; padding: 2px';
+        $fieldset_style = 'border-color: #77a464; border: solid 2px; padding: 2px; margin-bottom: 10px;';
         $legend_style = 'margin-bottom: 0px;';
         $container_style = 'margin: 5px;display: flex;';
         $label_style = 'flex: 2;';
@@ -345,10 +345,7 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
     public function product_cart_show()
     {
         global $product;
-        ?>
-        <div id='wkwgs_product_panel' class='panel woocommerce_options_panel'>
-            <div class="options_group">
-                <?php
+
         $form = $this->get_cart_form();
         $this->set_form_field_values($product, $form);
 
@@ -358,10 +355,6 @@ class Wkwgs_DualMembership extends Wkwgs_LifeCycle
             $html = $child->get_html();
             echo $html;
         }
-        ?>
-            </div>
-        </div>
-        <?php
     }
 
     public function product_cart_validation($passed, $product_id, $quantity)
