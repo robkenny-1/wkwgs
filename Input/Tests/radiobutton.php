@@ -116,7 +116,7 @@ function falsify_post($post)
     return $post;
 }
 
-$test = new \Wkwgs\Input\Test\TestFramework('falsify_post');
+$test = new Wkwgs\Input\Test\TestFramework('falsify_post');
 $test->test_form($form);
 
 ?>

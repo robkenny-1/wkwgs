@@ -40,7 +40,7 @@ function test_ElementList_iterator(string $name, int $expected, $data, int $mode
 /* -------------------------------------------------------------------------------- */
 // Test iteration
 
-$h1 = new \Wkwgs\Input\Element([
+$h1 = new Wkwgs\Input\Element([
     'tag' => 'h1',
     'attributes' => [],
     'contents' => [],

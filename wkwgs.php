@@ -84,7 +84,7 @@ if (Wkwgs_PhpVersionCheck())
         return;
 
     // Only load and run the init function if we know PHP version can parse it
-    include_once ('PluginCore/wkwgs_init.php');
+    include_once ('Plugin/wkwgs_init.php');
 
     // Load all of the plugins
     // Wkwgs_init(__FILE__, dirname(__FILE__) . '/Wkwgs_Options.php', 'Wkwgs_Options');
