@@ -189,6 +189,13 @@ interface IHtmlInputValue
     public function set_value($value);
 
     /**
+     * Get this object's data in $post
+     *
+     * @return array,string | string contents of the input object
+     */
+    public function get_value(array $post);
+
+    /**
      * Verify that this object's data in $post is valid
      * This validation should be similar, if not exact, to the client side validation
      * This minimizes attacks that call POST directly
@@ -196,13 +203,6 @@ interface IHtmlInputValue
      * @return array Validation errors, will be empty if good
      */
     public function validate(array $post): array;
-
-    /**
-     * Get this object's data in $post
-     *
-     * @return array,string | string contents of the input object
-     */
-    public function get_value(array $post);
 }
 
 interface IHtmlInput extends IHtmlInputValue

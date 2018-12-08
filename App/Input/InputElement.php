@@ -42,34 +42,36 @@ include_once (__DIR__ . '/Input.php');
  */
 abstract class InputElement extends Element implements IHtmlInput
 {
+
     const Attributes_Default = [
         'type' => 'text',
         'container-tag' => 'div',
     ];
+
     const Attributes_Secondary = [
         'label-',
         'container-',
     ];
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* IAttributeProvider routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     public function define_attribute_default(): array
     {
         return self::Attributes_Default;
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* ---------------------------------------------------------------------- */
     /* IAttributeSecondaryProvider routines */
-    /* ------------------------------------------------------------------------- */
+    /* ---------------------------------------------------------------------- */
     public function define_attribute_secondary(): array
     {
         return self::Attributes_Secondary;
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* IHtmlPrinter routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Get the HTML that represents the current Attributes
@@ -100,8 +102,10 @@ abstract class InputElement extends Element implements IHtmlInput
 
         $label_attributes = $this->get_attributes_secondary()['label'];
         $container_attributes = $this->get_attributes_secondary()['container'];
-        $container_tag = Attributes::get_attribute_and_remove('tag', $container_attributes);
-        $label_text = Attributes::get_attribute_and_remove('text', $label_attributes);
+        $container_tag = Attributes::get_attribute_and_remove('tag',
+            $container_attributes);
+        $label_text = Attributes::get_attribute_and_remove('text',
+            $label_attributes);
 
         $label_contents = [];
 
@@ -113,43 +117,46 @@ abstract class InputElement extends Element implements IHtmlInput
 
             if (Helper::is_true($required))
             {
-                $label_contents[] = new Element([
-                    'tag' => 'abbr',
-                    'attributes' => [
-                        'class' => 'required',
-                        'title' => 'required',
-                    ],
-                    'contents' => [
-                        new HtmlSnippet('&nbsp;*')
-                    ],
-                ]);
+                $label_contents[] = new Element(
+                    [
+                        'tag' => 'abbr',
+                        'attributes' => [
+                            'class' => 'required',
+                            'title' => 'required'
+                        ],
+                        'contents' => [
+                            new HtmlSnippet('&nbsp;*')
+                        ]
+                    ]);
             }
         }
 
-        $compound = new Element([
-            'tag' => $container_tag,
-            'attributes' => $container_attributes,
-            'contents' => [
-                new Element([
-                    'tag' => 'label',
-                    'attributes' => $label_attributes,
-                    'contents' => $label_contents
-                ]),
-                new \Wkwgs\Input\Callback([
-                    $this,
-                    'get_html_core'
-                ])
-            ]
-        ]);
+        $compound = new Element(
+            [
+                'tag' => $container_tag,
+                'attributes' => $container_attributes,
+                'contents' => [
+                    new Element(
+                        [
+                            'tag' => 'label',
+                            'attributes' => $label_attributes,
+                            'contents' => $label_contents
+                        ]),
+                    new \Wkwgs\Input\Callback([
+                        $this,
+                        'get_html_core'
+                    ])
+                ]
+            ]);
 
         $html = $compound->get_html();
 
         return $html;
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* IHtmlInputValue routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Get the name of the HTML input element,
@@ -160,56 +167,6 @@ abstract class InputElement extends Element implements IHtmlInput
     public function get_name(): string
     {
         return $this->get_attribute('name');
-    }
-
-    /**
-     * Verify that this object's data in $post is valid
-     * This validation should be similar, if not exact, to the client side validation
-     * This minimizes attacks that call POST directly
-     *
-     * @return array | list of validation errors or null if good
-     */
-    public function validate(array $post): array
-    {
-        $name = $this->get_name();
-        $raw = $post[$name] ?? '';
-        $required = Helper::is_true($this->get_attribute('required'));
-        $pattern = $this->get_attribute('pattern');
-
-        $validation_errors = [];
-
-        // These first three errors preclude all others
-        if (empty($name))
-        {
-            $validation_errors[] = new HtmlValidateError('$name is empty', $name, $this);
-        }
-        else if (empty($post))
-        {
-            $validation_errors[] = new HtmlValidateError('$post is empty', $name, $this);
-        }
-        else if ($required && empty($raw))
-        {
-            $validation_errors[] = new HtmlValidateError('$post missing required data', $name, $this);
-        }
-        else
-        {
-            if (! empty($pattern) && ! empty($raw))
-            {
-                $delim = '#';
-                $pattern = $delim . addcslashes($pattern, $delim) . $delim;
-
-                if (preg_match($pattern, $raw) !== 1)
-                {
-
-                    $validation_errors[] = new HtmlValidateError('value does not match defined pattern', $name, $this);
-                }
-            }
-
-            $ve = $this->validate_post($name, $post);
-            $validation_errors = array_merge($validation_errors, $ve);
-        }
-
-        return $validation_errors;
     }
 
     /**
@@ -245,9 +202,64 @@ abstract class InputElement extends Element implements IHtmlInput
         $this->set_attribute('value', $value);
     }
 
-    /* ------------------------------------------------------------------------- */
+    /**
+     * Verify that this object's data in $post is valid
+     * This validation should be similar, if not exact, to the client side
+     * validation
+     * This minimizes attacks that call POST directly
+     *
+     * @return array | list of validation errors or null if good
+     */
+    public function validate(array $post): array
+    {
+        $name = $this->get_name();
+        $raw = $post[$name] ?? '';
+        $required = Helper::is_true($this->get_attribute('required'));
+        $pattern = $this->get_attribute('pattern');
+
+        $validation_errors = [];
+
+        // These first three errors preclude all others
+        if (empty($name))
+        {
+            $validation_errors[] = new HtmlValidateError('$name is empty', $name,
+                $this);
+        }
+        else if (empty($post))
+        {
+            $validation_errors[] = new HtmlValidateError('$post is empty', $name,
+                $this);
+        }
+        else if ($required && empty($raw))
+        {
+            $validation_errors[] = new HtmlValidateError(
+                '$post missing required data', $name, $this);
+        }
+        else
+        {
+            if (! empty($pattern) && ! empty($raw))
+            {
+                $delim = '#';
+                $pattern = $delim . addcslashes($pattern, $delim) . $delim;
+
+                if (preg_match($pattern, $raw) !== 1)
+                {
+
+                    $validation_errors[] = new HtmlValidateError(
+                        'value does not match defined pattern', $name, $this);
+                }
+            }
+
+            $ve = $this->validate_post($name, $post);
+            $validation_errors = array_merge($validation_errors, $ve);
+        }
+
+        return $validation_errors;
+    }
+
+    /* --------------------------------------------------------------------- */
     /* IHtmlInput routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Get the type of Input
@@ -279,9 +291,9 @@ abstract class InputElement extends Element implements IHtmlInput
         $this->attributes->set_attribute('form', $form_id);
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* InputElement routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Get this object's data in $post
@@ -292,7 +304,8 @@ abstract class InputElement extends Element implements IHtmlInput
 
     /**
      * Verify that this object's data in $post is valid
-     * This validation should be similar, if not exact, to the client side validation
+     * This validation should be similar, if not exact, to the client side
+     * validation
      * This minimizes attacks that call POST directly
      *
      * @return array | list of validation errors or null if good
