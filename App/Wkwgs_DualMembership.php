@@ -2,7 +2,8 @@
 /*
  * "Washington Koi & Water Garden Society" Copyright (C) 2018 Rob Kenny
  *
- * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * WordPress Plugin Template is free software: you can redistribute it and/or
+ * modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -25,13 +26,11 @@ include_once ('Plugin/Wkwgs_LifeCycle.php');
 
 include_once ('Input/Input.php');
 
-class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter, \Wkwgs\Input\IHtmlInputValue
+class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter,
+    \Wkwgs\Input\IHtmlInputValue
 {
-
     protected $nonce;
-
     protected $action;
-
     protected $form;
 
     protected function generate_random_string(): string
@@ -51,15 +50,16 @@ class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter, \Wkwgs\In
         }
         else
         {
-            // Use random strings for nonce and action, making it much harder to hack
+            // Use random strings for nonce and action, making it much harder to
+            // hack
             $this->nonce = $this->generate_random_string();
             $this->action = $this->generate_random_string();
         }
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* IHtmlPrinter routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     public function get_html(): string
     {
         $html = '';
@@ -74,9 +74,9 @@ class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter, \Wkwgs\In
         return $html;
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* IHtmlInputValue routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Get the name of the HTML input element,
@@ -106,7 +106,8 @@ class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter, \Wkwgs\In
 
     /**
      * Verify that this object's data in $post is valid
-     * This validation should be similar, if not exact, to the client side validation
+     * This validation should be similar, if not exact, to the client side
+     * validation
      * This minimizes attacks that call POST directly
      *
      * @return array Validation errors, will be empty if good
@@ -117,9 +118,11 @@ class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter, \Wkwgs\In
 
         if (! empty($this->nonce))
         {
-            if (! isset($post[$this->nonce]) || ! wp_verify_nonce($post[$this->nonce], $this->action))
+            if (! isset($post[$this->nonce]) ||
+                ! wp_verify_nonce($post[$this->nonce], $this->action))
             {
-                $ve[] = new \Wkwgs\Input\HtmlValidateError('Nonce did not verify', $this->form->get_name(), $this->form);
+                $ve[] = new \Wkwgs\Input\HtmlValidateError(
+                    'Nonce did not verify', $this->form->get_name(), $this->form);
             }
         }
         return $ve;
@@ -145,37 +148,41 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
 
     protected function get_admin_form(): \Wkwgs\Input\Form
     {
-        $form = new \Wkwgs\Input\Form([
-            'attributes' => [
-                'name' => 'unused in ui',
-            ],
-            'contents' => []
-        ]);
+        $form = new \Wkwgs\Input\Form(
+            [
+                'attributes' => [
+                    'name' => 'unused in ui'
+                ],
+                'contents' => []
+            ]);
 
-        $fieldset = new \Wkwgs\Input\Element([
-            'tag' => 'fieldset',
-            'attributes' => [],
-            'contents' => [],
-        ]);
+        $fieldset = new \Wkwgs\Input\Element(
+            [
+                'tag' => 'fieldset',
+                'attributes' => [],
+                'contents' => [],
+            ]);
 
-        $checkbox = new \Wkwgs\Input\Element([
-            'tag' => 'div',
-            'attributes' => [
-                'class' => 'options_group',
-            ],
-            'contents' => [
-                new \Wkwgs\Input\Checkbox([
-                    'attributes' => [
-                        'container-tag' => 'p',
-                        'container-class' => 'form-field',
-                        'label-text' => 'Show Dual Membership',
-                        'style' => 'margin-right: 5px !important;',
-                        'name' => 'wkwgs_dual_membership_use',
-                        'class' => 'checkbox',
-                    ],
-                ])
-            ],
-        ]);
+        $checkbox = new \Wkwgs\Input\Element(
+            [
+                'tag' => 'div',
+                'attributes' => [
+                    'class' => 'options_group',
+                ],
+                'contents' => [
+                    new \Wkwgs\Input\Checkbox(
+                        [
+                            'attributes' => [
+                                'container-tag' => 'p',
+                                'container-class' => 'form-field',
+                                'label-text' => 'Show Dual Membership',
+                                'style' => 'margin-right: 5px !important;',
+                                'name' => 'wkwgs_dual_membership_use',
+                                'class' => 'checkbox',
+                            ],
+                        ])
+                ],
+            ]);
 
         $fieldset->add_child($checkbox);
         $form->add_child($fieldset);
@@ -192,84 +199,94 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
         $label_style = 'flex: 2;';
         $style = 'flex: 5;';
 
-        $form = new \Wkwgs\Input\Form([
-            'attributes' => [
-                'name' => 'unused in ui',
-            ],
-        ]);
+        $form = new \Wkwgs\Input\Form(
+            [
+                'attributes' => [
+                    'name' => 'unused in ui',
+                ],
+            ]);
 
         $form->add_child(new Wkwgs_DualMembership_Nonce($form));
 
-        $fieldset = new \Wkwgs\Input\Element([
-            'tag' => 'fieldset',
-            'attributes' => [
-                'style' => $fieldset_style,
-                'class' => 'bg-info',
-            ],
-            'contents' => [
-                new \Wkwgs\Input\Element([
-                    'tag' => 'legend',
-                    'attributes' => [
-                        'style' => $legend_style,
-                    ],
-                    'contents' => [
-                        new \Wkwgs\Input\HtmlText('Second Member Registration'),
-                    ],
-                ])
-            ],
-        ]);
+        $fieldset = new \Wkwgs\Input\Element(
+            [
+                'tag' => 'fieldset',
+                'attributes' => [
+                    'style' => $fieldset_style,
+                    'class' => 'bg-info',
+                ],
+                'contents' => [
+                    new \Wkwgs\Input\Element(
+                        [
+                            'tag' => 'legend',
+                            'attributes' => [
+                                'style' => $legend_style,
+                            ],
+                            'contents' => [
+                                new \Wkwgs\Input\HtmlText(
+                                    'Second Member Registration'),
+                            ],
+                        ])
+                ],
+            ]);
         $form->add_child($fieldset);
 
-        $div = new \Wkwgs\Input\Element([
-            'tag' => 'div',
-            'attributes' => [],
-            'contents' => [
-                new \Wkwgs\Input\Text([
-                    'attributes' => [
-                        'name' => 'wkwgs_dual_membership_first',
-                        'label-text' => 'First Name',
-                        'container-style' => $container_style,
-                        'label-style' => $label_style,
-                        'style' => $style,
-                    ],
-                ]),
-                new \Wkwgs\Input\Text([
-                    'attributes' => [
-                        'name' => 'wkwgs_dual_membership_last',
-                        'label-text' => 'Last Name',
-                        'container-style' => $container_style,
-                        'label-style' => $label_style,
-                        'style' => $style,
-                    ],
-                ]),
-                new \Wkwgs\Input\Text([
-                    'attributes' => [
-                        'name' => 'wkwgs_dual_membership_email',
-                        'label-text' => 'Email',
-                        'required' => True,
-                        'container-style' => $container_style,
-                        'label-style' => $label_style,
-                        'style' => $style,
-                    ],
-                ]),
-                new \Wkwgs\Input\Telephone([
-                    'attributes' => [
-                        'name' => 'wkwgs_dual_membership_phone',
-                        'label-text' => 'Phone',
-                        'container-style' => $container_style,
-                        'label-style' => $label_style,
-                        'style' => $style,
-                    ],
-                ])
-            ],
-        ]);
+        $div = new \Wkwgs\Input\Element(
+            [
+                'tag' => 'div',
+                'attributes' => [],
+                'contents' => [
+                    new \Wkwgs\Input\Text(
+                        [
+                            'attributes' => [
+                                'name' => 'wkwgs_dual_membership_first',
+                                'label-text' => 'First Name',
+                                'container-style' => $container_style,
+                                'label-style' => $label_style,
+                                'style' => $style,
+                            ],
+                        ]),
+                    new \Wkwgs\Input\Text(
+                        [
+                            'attributes' => [
+                                'name' => 'wkwgs_dual_membership_last',
+                                'label-text' => 'Last Name',
+                                'container-style' => $container_style,
+                                'label-style' => $label_style,
+                                'style' => $style,
+                            ],
+                        ]),
+                    new \Wkwgs\Input\Text(
+                        [
+                            'attributes' => [
+                                'name' => 'wkwgs_dual_membership_email',
+                                'label-text' => 'Email',
+                                'required' => True,
+                                'container-style' => $container_style,
+                                'label-style' => $label_style,
+                                'style' => $style,
+                            ],
+                        ]),
+                    new \Wkwgs\Input\Telephone(
+                        [
+                            'attributes' => [
+                                'name' => 'wkwgs_dual_membership_phone',
+                                'label-text' => 'Phone',
+                                'container-style' => $container_style,
+                                'label-style' => $label_style,
+                                'style' => $style,
+                            ],
+                        ])
+                ],
+            ]);
 
         $fieldset->add_child($div);
 
         return $form;
     }
 
-    public function set_form_field_values(\WC_Product $product, \Wkwgs\Input\Form $form)
+    public function set_form_field_values(\WC_Product $product,
+        \Wkwgs\Input\Form $form)
     {
         foreach ($form->get_RecursiveIteratorIterator() as $child)
         {
@@ -306,36 +323,43 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
     public function addActionsAndFilters()
     {
         // Customer
-        add_action('woocommerce_before_add_to_cart_button', array(
-            $this,
-            'product_cart_show'
-        ));
-        add_filter('woocommerce_add_cart_item_data', array(
-            $this,
-            'product_cart_save'
-        ), 10, 4);
-        add_filter('woocommerce_add_to_cart_validation', array(
-            $this,
-            'product_cart_validation'
-        ), 10, 3);
-        add_filter('woocommerce_get_item_data', array(
-            $this,
-            'product_cart_item_data'
-        ), 10, 2);
+        add_action('woocommerce_before_add_to_cart_button',
+            array(
+                $this,
+                'product_cart_show'
+            ));
+        add_filter('woocommerce_add_cart_item_data',
+            array(
+                $this,
+                'product_cart_save'
+            ), 10, 4);
+        add_filter('woocommerce_add_to_cart_validation',
+            array(
+                $this,
+                'product_cart_validation'
+            ), 10, 3);
+        add_filter('woocommerce_get_item_data',
+            array(
+                $this,
+                'product_cart_item_data'
+            ), 10, 2);
 
         // Editor/Administrator
-        add_filter('woocommerce_product_data_tabs', array(
-            $this,
-            'product_admin_tab'
-        ), 10, 1);
-        add_action('woocommerce_product_data_panels', array(
-            $this,
-            'product_admin_show'
-        ));
-        add_action('woocommerce_process_product_meta', array(
-            $this,
-            'product_admin_save'
-        ));
+        add_filter('woocommerce_product_data_tabs',
+            array(
+                $this,
+                'product_admin_tab'
+            ), 10, 1);
+        add_action('woocommerce_product_data_panels',
+            array(
+                $this,
+                'product_admin_show'
+            ));
+        add_action('woocommerce_process_product_meta',
+            array(
+                $this,
+                'product_admin_save'
+            ));
     }
 
     /**
@@ -372,7 +396,8 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
      *
      * @return mixed updated $cart_item_data
      */
-    public function product_cart_save($cart_item_data, $product_id, $variation_id, $quantity)
+    public function product_cart_save($cart_item_data, $product_id, $variation_id,
+        $quantity)
     {
         $form = $this->get_cart_form();
         $form_values = $form->get_value($_POST);
@@ -399,7 +424,7 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
         $item_data[] = array(
             'key' => __('Second Member', 'wkwgs'),
             'value' => wc_clean($cart_item['wkwgs_dual_membership_email']),
-            'display' => '',
+            'display' => ''
         );
 
         return $item_data;
@@ -423,13 +448,17 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
     {
         $tabs['wkwgs'] = array(
             'label' => __('WK & WGS', 'wkwgs'), // The name of your panel
-            'target' => 'wkwgs_product_panel', // Will be used to create an anchor link so needs to be unique
+            'target' => 'wkwgs_product_panel', // Will be used to create an
+                                                // anchor link so needs to be
+                                                // unique
             'css-input' => array(
                 'wkwgs_tab',
                 'show_if_simple',
                 'show_if_variable'
-            ), // Class for your panel tab - helps hide/show depending on product type
-            'priority' => 80, // Where your panel will appear. By default, 70 is last item
+            ), // Class for your panel tab - helps hide/show depending on
+                // product type
+            'priority' => 80, // Where your panel will appear. By default, 70
+                               // is last item
         );
         return $tabs;
     }
@@ -494,13 +523,13 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
         // http://plugin.michael-simpson.com/?page_id=31
         //
         // These are global options
-        return array(
+        return [
             // '_version' => array('Installed Version'), // Leave this one commented-out. Uncomment to test upgrades.
             'enable_debug' => array(
                 __('Enable Debug', 'wkwgs'),
                 'false',
-                'true'
-            ),
+                'true',
+            ]
         );
     }
 
