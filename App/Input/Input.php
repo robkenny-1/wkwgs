@@ -21,8 +21,6 @@
 // Exit if accessed directly
 defined('ABSPATH') || exit();
 
-include_once (__DIR__ . '/Constants.php');
-
 include_once (__DIR__ . '/Helper.php');
 include_once (__DIR__ . '/ArrayObjectIterator.php');
 include_once (__DIR__ . '/Interface.php');
