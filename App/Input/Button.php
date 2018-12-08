@@ -3,7 +3,8 @@
 /*
  * Input Copyright (C) 2018 Rob Kenny
  *
- * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * WordPress Plugin Template is free software: you can redistribute it and/or
+ * modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -29,15 +30,16 @@ include_once ('Input.php');
  *
  * @since 1.0.0
  */
-class Button extends Element
+class Button extends InputElement
 {
+
     const Tag_Type = 'button';
+
     const Attributes_Default = [
-        'type' => 'submit',
+        'type' => 'submit'
     ];
-    const Attributes_Secondary = [
-        'label-text',
-    ];
+
+    const Attributes_Secondary = [];
 
     public function __construct($desc)
     {
@@ -50,27 +52,39 @@ class Button extends Element
         parent::__construct($desc);
     }
 
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
     /* IAttributeProvider routines */
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
     public function define_attribute_default(): array
     {
         $parent = parent::define_attribute_default();
         return array_merge($parent, self::Attributes_Default);
     }
 
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
     /* IAttributeSecondaryProvider routines */
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
     public function define_attribute_secondary(): array
     {
-        $parent = parent::define_attribute_secondary();
-        return array_merge($parent, self::Attributes_Secondary);
+        // We don't use parent's get_html()
+        return self::Attributes_Secondary;
     }
 
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
     /* IHtmlPrinter routines */
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
 
     /**
      * Get the HTML that represents the current Attributes
@@ -88,31 +102,33 @@ class Button extends Element
     public function get_html(): string
     {
         $remaining = $this->get_attributes();
-        $label = $this->get_attribute_secondary('label-text');
+        $label = $this->get_attribute('label-text');
 
         // Buttons can contain (inline only) child elements
-        // If label-text was specified we'll over-write all children
-        // with the text value
-        if (! empty($label))
-        {
-            $this->children = [
-                new HtmlText($label)
-            ];
-        }
+        // Use label-text if none were specifiede
 
-        $button = new Element([
-            'tag' => 'button',
-            'attributes' => $remaining,
-            'contents' => $this->children
-        ]);
+        $children = ! empty($this->children) ? $this->children : [
+            new HtmlText($label)
+        ];
+
+        $button = new Element(
+            [
+                'tag' => 'button',
+                'attributes' => $remaining,
+                'contents' => $children
+            ]);
         $html = $button->get_html();
 
         return $html;
     }
 
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
     /* InputElement routines */
-    /* ------------------------------------------------------------------------- */
+    /*
+     * -------------------------------------------------------------------------
+     */
 
     /**
      * Validate data for a button
@@ -126,7 +142,8 @@ class Button extends Element
         // The button should only return 'value'
         if ($post[$name] !== $this->get_attribute('value'))
         {
-            $validation_errors[] = new HtmlValidateError('$post post data does not match expected', $name, $this);
+            $validation_errors[] = new HtmlValidateError(
+                '$post post data does not match expected', $name, $this);
         }
 
         return $validation_errors;
