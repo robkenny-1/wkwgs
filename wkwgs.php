@@ -84,9 +84,8 @@ if (Wkwgs_PhpVersionCheck())
         return;
 
     // Only load and run the init function if we know PHP version can parse it
-    include_once ('Plugin/wkwgs_init.php');
+    include_once ('App/Plugin/wkwgs_init.php');
 
     // Load all of the plugins
-    // Wkwgs_init(__FILE__, dirname(__FILE__) . '/Wkwgs_Options.php', 'Wkwgs_Options');
-    \Wkwgs\Plugin\Wkwgs_init(__FILE__, dirname(__FILE__) . '/Wkwgs_DualMembership.php', '\Wkwgs\Wkwgs_DualMembership');
+    \Wkwgs\Plugin\Wkwgs_init(__FILE__, dirname(__FILE__) . '/App/Wkwgs_DualMembership.php', '\Wkwgs\Wkwgs_DualMembership');
 }
