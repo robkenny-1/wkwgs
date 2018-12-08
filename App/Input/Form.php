@@ -3,7 +3,8 @@
 /*
  * Input Copyright (C) 2018 Rob Kenny
  *
- * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * WordPress Plugin Template is free software: you can redistribute it and/or
+ * modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -101,37 +102,27 @@ class Form extends Element implements IHtmlInput
         return $is_duplicate;
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* IAttributeProvider routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     public function define_attribute_default(): array
     {
         $parent = parent::define_attribute_default();
         return array_merge($parent, self::Attributes_Default);
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* IAttributeSecondaryProvider routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     public function define_attribute_secondary(): array
     {
         $parent = parent::define_attribute_secondary();
         return array_merge($parent, self::Attributes_Secondary);
     }
 
-    /* ------------------------------------------------------------------------- */
-    /* IHtmlInput routines */
-    /* ------------------------------------------------------------------------- */
-
-    /**
-     * Get the type of Input
-     *
-     * @return string Input type
-     */
-    public function get_type(): string
-    {
-        return $this->get_attribute('type');
-    }
+    /* --------------------------------------------------------------------- */
+    /* IHtmlInputValue routines */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Get the name of the HTML input element,
@@ -145,8 +136,24 @@ class Form extends Element implements IHtmlInput
     }
 
     /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute.
+     * This routine, given the value returned by get_value(),
+     * sets the appropriate attribute.
+     *
+     * @param mixed $value
+     *            New value of the input element
+     */
+    public function set_value($value)
+    {
+        // Intentionally do nothing
+    }
+
+    /**
      * Verify that this object's data in $post is valid
-     * This validation should be similar, if not exact, to the client side validation
+     * This validation should be similar, if not exact, to the client side
+     * validation
      * This minimizes attacks that call POST directly
      *
      * @return array | list of validation errors or null if good
@@ -159,11 +166,13 @@ class Form extends Element implements IHtmlInput
 
         if (empty($post))
         {
-            $validation_errors[] = new HtmlValidateError('$post is empty', $name, $this);
+            $validation_errors[] = new HtmlValidateError('$post is empty', $name,
+                $this);
         }
         else if ($this->has_duplicate_names())
         {
-            $validation_errors[] = new HtmlValidateError('input objects do not all have unique names', $name, $this);
+            $validation_errors[] = new HtmlValidateError(
+                'input objects do not all have unique names', $name, $this);
         }
         else
         {
@@ -174,7 +183,8 @@ class Form extends Element implements IHtmlInput
                     $errors = $child->validate($post);
                     if (! empty($errors))
                     {
-                        $validation_errors = array_merge($validation_errors, $errors);
+                        $validation_errors = array_merge($validation_errors,
+                            $errors);
                     }
                 }
             }
@@ -215,19 +225,18 @@ class Form extends Element implements IHtmlInput
         return $values;
     }
 
+    /* --------------------------------------------------------------------- */
+    /* IHtmlInput routines */
+    /* --------------------------------------------------------------------- */
+
     /**
-     * Set the contents of the input element
-     * Some input elements, such as the checkbox, do not store their current
-     * contents in the value attribute.
-     * This routine, given the value returned by get_value(),
-     * sets the appropriate attribute.
+     * Get the type of Input
      *
-     * @param mixed $value
-     *            New value of the input element
+     * @return string Input type
      */
-    public function set_value($value)
+    public function get_type(): string
     {
-        // Intentionally do nothing
+        return $this->get_attribute('type');
     }
 
     /**
@@ -250,9 +259,9 @@ class Form extends Element implements IHtmlInput
         $this->set_attribute('form', $form_id);
     }
 
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     /* InputElement routines */
-    /* ------------------------------------------------------------------------- */
+    /* --------------------------------------------------------------------- */
     public function validate_post(string $name, array $post): array
     {
         $validation_errors = [];
