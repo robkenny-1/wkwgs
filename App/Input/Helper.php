@@ -22,8 +22,6 @@ namespace Wkwgs\Input;
 // Exit if accessed directly
 defined('ABSPATH') || exit();
 
-include_once ('Constants.php');
-
 /**
  * A collection of HTML goodies/helpers
  *
@@ -649,7 +647,6 @@ class Helper
             "Indicates whether the text should be wrapped."
         ),
     ];
-
     private static $Attribute_boolean = null;
 
     public static function get_boolean_attributes()
