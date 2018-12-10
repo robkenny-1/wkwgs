@@ -121,7 +121,7 @@ class Form extends Element implements IHtmlInput
     }
 
     /* --------------------------------------------------------------------- */
-    /* IHtmlInputValue routines */
+    /* IHtmlInput routines */
     /* --------------------------------------------------------------------- */
 
     /**
@@ -178,7 +178,7 @@ class Form extends Element implements IHtmlInput
         {
             foreach ($this->get_RecursiveIteratorIterator() as $child)
             {
-                if ($child instanceof IHtmlInputValue)
+                if ($child instanceof IHtmlInput)
                 {
                     $errors = $child->validate($post);
                     if (! empty($errors))
@@ -207,7 +207,7 @@ class Form extends Element implements IHtmlInput
             foreach ($this->get_RecursiveIteratorIterator() as $child)
             {
 
-                if ($child instanceof IHtmlInputValue)
+                if ($child instanceof IHtmlInput)
                 {
                     $name = $child->get_name();
                     if (! empty($name))

@@ -3,7 +3,8 @@
 /*
  * Input Copyright (C) 2018 Rob Kenny
  *
- * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * WordPress Plugin Template is free software: you can redistribute it and/or
+ * modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -62,7 +63,8 @@ interface IHtmlPrinterList extends \Traversable
      * @param
      *            RecursiveIteratorIterator A RecursiveIteratorIterator
      */
-    public function get_RecursiveIteratorIterator(int $mode = \RecursiveIteratorIterator::LEAVES_ONLY): \RecursiveIteratorIterator;
+    public function get_RecursiveIteratorIterator(
+        int $mode = \RecursiveIteratorIterator::LEAVES_ONLY): \RecursiveIteratorIterator;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -114,7 +116,8 @@ interface IAttributeProvider
 
 /*
  * Compound attributes are split into two groups
- * The second group is defined by the attributes passed to set_attributes_secondary
+ * The second group is defined by the attributes passed to
+ * set_attributes_secondary
  */
 interface IAttributeSecondary extends IAttribute
 {
@@ -158,15 +161,29 @@ interface IAttributeSecondaryProvider extends IAttributeProvider
 }
 
 /* ------------------------------------------------------------------------- */
-interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList, IAttributeSecondaryProvider, IAttributeSecondary
+interface IHtmlElement extends IHtmlPrinter, IHtmlPrinterList,
+    IAttributeSecondaryProvider, IAttributeSecondary
 {
 
     public function get_tag(): string;
 }
 
 /* ------------------------------------------------------------------------- */
-interface IHtmlInputValue
+/*
+ * There are two different input types in HTML: <input> and <button>
+ * The major difference between the two is that there are many types
+ * of <input> [e.g. get_type()] and you cannot set the pressed state of a button
+ * [e.g. set_value()]
+ */
+interface IHtmlInput
 {
+
+    /**
+     * Get the type of Input
+     *
+     * @return string Input type
+     */
+    public function get_type(): string;
 
     /**
      * Get the name of the HTML input element,
@@ -175,6 +192,13 @@ interface IHtmlInputValue
      * @return string name of the input element
      */
     public function get_name(): string;
+
+    /**
+     * Get this object's data in $post
+     *
+     * @return array,string | string contents of the input object
+     */
+    public function get_value(array $post);
 
     /**
      * Set the contents of the input element
@@ -189,31 +213,14 @@ interface IHtmlInputValue
     public function set_value($value);
 
     /**
-     * Get this object's data in $post
-     *
-     * @return array,string | string contents of the input object
-     */
-    public function get_value(array $post);
-
-    /**
      * Verify that this object's data in $post is valid
-     * This validation should be similar, if not exact, to the client side validation
+     * This validation should be similar, if not exact, to the client side
+     * validation
      * This minimizes attacks that call POST directly
      *
      * @return array Validation errors, will be empty if good
      */
     public function validate(array $post): array;
-}
-
-interface IHtmlInput extends IHtmlInputValue
-{
-
-    /**
-     * Get the type of Input
-     *
-     * @return string Input type
-     */
-    public function get_type(): string;
 
     /**
      * Get the assigned form identity
@@ -229,5 +236,4 @@ interface IHtmlInput extends IHtmlInputValue
      */
     public function set_form_id(string $form_id);
 }
-
 ?>
