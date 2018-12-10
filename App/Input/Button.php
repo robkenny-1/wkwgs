@@ -136,12 +136,9 @@ class Button extends InputElement
     {
         $validation_errors = [];
 
-        // The button should only return 'value'
-        if ($post[$name] !== $this->get_attribute('value'))
-        {
-            $validation_errors[] = new HtmlValidateError(
-                '$post post data does not match expected', $name, $this);
-        }
+        // A form may contain mulitple buttons all with the same name
+        // therefore we cannot verify that the contents of $post matches
+        // our expected value
 
         return $validation_errors;
     }

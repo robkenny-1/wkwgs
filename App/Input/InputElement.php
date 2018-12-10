@@ -51,6 +51,23 @@ abstract class InputElement extends Element implements IHtmlInput
         'container-',
     ];
 
+    public function is_button(): bool
+    {
+        $tag = $this->get_tag();
+        if ($tag === 'button')
+        {
+            return TRUE;
+        }
+
+        $type = $this->get_type();
+        if ($tag === 'input' && $type === 'button')
+        {
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
     /* --------------------------------------------------------------------- */
     /* IAttributeProvider routines */
     /* --------------------------------------------------------------------- */
