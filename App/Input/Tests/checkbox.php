@@ -44,7 +44,7 @@ $form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'checkbox_required',
         'label-text' => 'Value Required',
-        'required' => 'True',
+        'required' => 'TRUE',
     ],
     'contents' => [],
 ]));
@@ -53,7 +53,7 @@ $form->add_child(new \Wkwgs\Input\Checkbox([
     'attributes' => [
         'name' => 'checkbox_enabled',
         'label-text' => 'checkbox_enabled',
-        'checked' => True,
+        'checked' => TRUE,
         'value' => 'Has Been Checked',
     ],
     'contents' => [],

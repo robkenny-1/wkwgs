@@ -78,24 +78,25 @@ class Form extends Element implements IHtmlInput
 
     public function has_duplicate_names(): bool
     {
-        $is_duplicate = False;
+        $is_duplicate = FALSE;
 
         $existing_names = [];
 
         foreach ($this->get_RecursiveIteratorIterator() as $child)
         {
             // Only IHtmlInput need to have unique names
-            if ($child instanceof IHtmlInput)
+            // except for buttons
+            if ($child instanceof IHtmlInput && ! $child->is_button())
             {
                 $name = $child->get_name();
 
                 if (isset($existing_names[$name]))
                 {
-                    $is_duplicate = True;
+                    $is_duplicate = TRUE;
                     break;
                 }
 
-                $existing_names[$name] = True;
+                $existing_names[$name] = TRUE;
             }
         }
 

@@ -723,12 +723,12 @@ class Helper
     }
 
     /**
-     * Does the content of the string equate to a True value
+     * Does the content of the string equate to a TRUE value
      * Does not rely on type conversion,
-     * it uses a whitelist of acceptable values for True,
-     * all other values are False
+     * it uses a whitelist of acceptable values for TRUE,
+     * all other values are FALSE
      *
-     * @return True if $val is a true value
+     * @return TRUE if $val is a true value
      */
     public static function is_true($val)
     {
@@ -742,7 +742,7 @@ class Helper
             return filter_var($val, FILTER_VALIDATE_BOOLEAN);
         }
 
-        return False;
+        return FALSE;
     }
 
     public static function starts_with($haystack, $needle)

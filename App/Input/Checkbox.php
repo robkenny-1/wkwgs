@@ -34,8 +34,8 @@ class Checkbox extends InputElement
     const Tag_Type = 'input';
     const Attributes_Default = [
         'type' => 'checkbox',
-        'checked' => False,
-        'value' => 'True',
+        'checked' => FALSE,
+        'value' => 'TRUE',
     ];
     const Attributes_Secondary = [
         'label',

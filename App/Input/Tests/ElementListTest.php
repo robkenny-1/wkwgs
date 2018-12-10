@@ -194,7 +194,7 @@ function get_cart_form(): \Wkwgs\Input\Form
         'attributes' => [
             'name' => 'wkwgs_dual_membership_email',
             'label-text' => 'Email',
-            'required' => True,
+            'required' => TRUE,
             'style' => $css_aligned_input,
         ],
     ]));

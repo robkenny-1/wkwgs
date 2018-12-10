@@ -119,7 +119,7 @@ class RadioButton extends InputElement
         {
             $ve[] = new HtmlValidateError('RadioButton definition error: choices must not be empty', $name, $this);
         }
-        else if (! empty($raw) && ! in_array($raw, $choice_keys, True))
+        else if (! empty($raw) && ! in_array($raw, $choice_keys, TRUE))
         {
             $ve[] = new HtmlValidateError('$post value does not match expected', $name, $this);
         }

@@ -219,8 +219,8 @@ class RecursiveArrayObjectIterator extends \RecursiveArrayIterator
 
     /**
      * Returns if an iterator can be created for the current entry.
-     * RecursiveArrayIterator will return True for all objects, regardless if they implement \Traversable,
-     * this implementation only returns True if the current object is actually Traversable
+     * RecursiveArrayIterator will return TRUE for all objects, regardless if they implement \Traversable,
+     * this implementation only returns TRUE if the current object is actually Traversable
      *
      * @return bool true if the current entry can be iterated over, otherwise returns false.
      */

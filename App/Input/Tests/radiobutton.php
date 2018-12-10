@@ -71,7 +71,7 @@ $form->add_child(new \Wkwgs\Input\RadioButton([
         ),
         'choice1-label-text' => 'Choice 1',
         'choice2-label-text' => 'Choice 2',
-        'choice2-checked' => True,
+        'choice2-checked' => TRUE,
         'choice3-label-text' => 'Choice 3',
         'required' => 'yes',
     ],
@@ -98,7 +98,7 @@ $form->add_child(new \Wkwgs\Input\RadioButton([
         'choice1-label-text' => 'Choice 1',
         'choice2-label-text' => 'Choice 2',
         'choice3-label-text' => 'Choice 3',
-        'choice3-checked' => 'True',
+        'choice3-checked' => 'TRUE',
     ],
     'contents' => [],
 ]));
