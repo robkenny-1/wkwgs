@@ -42,12 +42,10 @@ include_once (__DIR__ . '/Input.php');
  */
 abstract class InputElement extends Element implements IHtmlInput
 {
-
     const Attributes_Default = [
         'type' => 'text',
         'container-tag' => 'div',
     ];
-
     const Attributes_Secondary = [
         'label-',
         'container-',
@@ -155,8 +153,18 @@ abstract class InputElement extends Element implements IHtmlInput
     }
 
     /* --------------------------------------------------------------------- */
-    /* IHtmlInputValue routines */
+    /* IHtmlInput routines */
     /* --------------------------------------------------------------------- */
+
+    /**
+     * Get the type of Input
+     *
+     * @return string Input type
+     */
+    public function get_type(): string
+    {
+        return $this->get_attribute('type');
+    }
 
     /**
      * Get the name of the HTML input element,
@@ -250,25 +258,18 @@ abstract class InputElement extends Element implements IHtmlInput
                 }
             }
 
+            $maxlength = $this->get_attribute('maxlength');
+            if (! empty($maxlength) && strlen($raw) > $maxlength)
+            {
+                $validation_errors[] = new HtmlValidateError(
+                    'value exceeds maximum length', $name, $this);
+            }
+
             $ve = $this->validate_post($name, $post);
             $validation_errors = array_merge($validation_errors, $ve);
         }
 
         return $validation_errors;
-    }
-
-    /* --------------------------------------------------------------------- */
-    /* IHtmlInput routines */
-    /* --------------------------------------------------------------------- */
-
-    /**
-     * Get the type of Input
-     *
-     * @return string Input type
-     */
-    public function get_type(): string
-    {
-        return $this->get_attribute('type');
     }
 
     /**

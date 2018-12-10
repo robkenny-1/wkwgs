@@ -29,6 +29,8 @@ h3 {
 color : green;
 }
 
+button { margin: 10px; }
+
 /*-----Tool tip-----*/
 .tooltip-special {
   position:relative;
@@ -107,80 +109,118 @@ $form = new \Wkwgs\Input\Form([]);
  * 'contents' => [],
  * ]));
  */
-/* ------------------------------------------------------------------------------------ */
+/*
+ * ------------------------------------------------------------------------------------
+ */
 
-$form->add_child(new \Wkwgs\Input\Text([
-    'attributes' => [
-        'name' => 'tooltip',
-        'label-text' => 'input with tooltip',
-        'label-data-tooltip' => 'This is a tooltip message',
-        'container-class' => 'tooltip-special'
-    ],
-]));
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'tooltip',
+                'label-text' => 'input with tooltip',
+                'label-data-tooltip' => 'This is a tooltip message',
+                'container-class' => 'tooltip-special'
+            ],
+        ]));
 
-/* ------------------------------------------------------------------------------------ */
+/*
+ * ------------------------------------------------------------------------------------
+ */
 
-$form->add_child(new \Wkwgs\Input\Text([
-    'attributes' => [
-        'name' => 'text_on_right',
-        'label-text' => "I'm on the right",
-        'container-class' => 'text-input-label-right'
-    ],
-]));
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'text_on_right',
+                'label-text' => "I'm on the right",
+                'container-class' => 'text-input-label-right'
+            ],
+        ]));
 
-/* ------------------------------------------------------------------------------------ */
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'max3',
+                'label-text' => 'No more than 3 chars',
+                'maxlength' => '3',
+            ],
+        ]));
 
-$form->add_child(new \Wkwgs\Input\Element([
-    'tag' => 'h3',
-    'contents' => [
-        new \Wkwgs\Input\HtmlText('Email input')
-    ]
-]));
+/*
+ * ------------------------------------------------------------------------------------
+ */
 
-$form->add_child(new \Wkwgs\Input\Email([
-    'attributes' => [
-        'name' => 'email',
-        'label-text' => 'email address',
-        'required' => 'yes',
-        'value' => 'abc@xyz.com',
-    ],
-]));
+$form->add_child(
+    new \Wkwgs\Input\Element(
+        [
+            'tag' => 'h3',
+            'contents' => [
+                new \Wkwgs\Input\HtmlText('Email input')
+            ]
+        ]));
 
-/* ------------------------------------------------------------------------------------ */
+$form->add_child(
+    new \Wkwgs\Input\Email(
+        [
+            'attributes' => [
+                'name' => 'email',
+                'label-text' => 'email address',
+                'required' => 'yes',
+                'value' => 'abc@xyz.com',
+            ],
+        ]));
 
-$form->add_child(new \Wkwgs\Input\Element([
-    'tag' => 'h3',
-    'contents' => [
-        new \Wkwgs\Input\HtmlText('Telephone input')
-    ],
-]));
+/*
+ * ------------------------------------------------------------------------------------
+ */
 
-$form->add_child(new \Wkwgs\Input\Telephone([
-    'attributes' => [
-        'name' => 'telephone',
-        'label-text' => 'Phone number',
-        'placeholder' => '999-555-1212',
-    ],
-]));
+$form->add_child(
+    new \Wkwgs\Input\Element(
+        [
+            'tag' => 'h3',
+            'contents' => [
+                new \Wkwgs\Input\HtmlText('Telephone input')
+            ],
+        ]));
 
-/* ------------------------------------------------------------------------------------ */
+$form->add_child(
+    new \Wkwgs\Input\Telephone(
+        [
+            'attributes' => [
+                'name' => 'telephone',
+                'label-text' => 'Phone number',
+                'placeholder' => '999-555-1212',
+            ],
+        ]));
 
-$form->add_child(new \Wkwgs\Input\Text([
-    'attributes' => [
-        'name' => '&gt;<angles>&lt;',
-        'label-text' => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
-        'value' => '&&amp;&gt;h1&lt;',
-    ],
-]));
+/*
+ * ------------------------------------------------------------------------------------
+ */
 
-$form->add_child(new \Wkwgs\Input\HtmlSnippet('This <em>word</em> should be emphasized'));
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => '&gt;<angles>&lt;',
+                'label-text' => '&gt;<angles>&lt;&#62;&#x3e;\u{003e}"',
+                'value' => '&&amp;&gt;h1&lt;',
+            ],
+        ]));
 
-$form->add_child(new \Wkwgs\Input\Element([
-    'tag' => 'h3',
-    'contents' => [
-        new \Wkwgs\Input\HtmlText('<h1>HTML Chars (this should be an h3 [green] not an h1)')
-    ]
-]));
+$form->add_child(
+    new \Wkwgs\Input\HtmlSnippet('This <em>word</em> should be emphasized'));
+
+$form->add_child(
+    new \Wkwgs\Input\Element(
+        [
+            'tag' => 'h3',
+            'contents' => [
+                new \Wkwgs\Input\HtmlText(
+                    '<h1>HTML Chars (this should be an h3 [green] not an h1)')
+            ]
+        ]));
 
 // -------------------------------------------------------------------------------
 // Called if we should muck with the post data to test validation
@@ -188,6 +228,7 @@ function falsify_post($post)
 {
     $post['email'] = 'this-is-not-a-valid-email-address <&>';
     $post['telephone'] = '123abc';
+    $post['max3'] = '1234';
 
     return $post;
 }
