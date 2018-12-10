@@ -29,7 +29,7 @@ h3 {
 color : green;
 }
 
-button { margin: 10px; }
+button { margin: 5px; }
 
 /*-----Tool tip-----*/
 .tooltip-special {
