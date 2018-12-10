@@ -27,7 +27,7 @@ include_once ('Plugin/Wkwgs_LifeCycle.php');
 include_once ('Input/Input.php');
 
 class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter,
-    \Wkwgs\Input\IHtmlInputValue
+    \Wkwgs\Input\IHtmlInput
 {
     protected $nonce;
     protected $action;
@@ -75,8 +75,18 @@ class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter,
     }
 
     /* --------------------------------------------------------------------- */
-    /* IHtmlInputValue routines */
+    /* IHtmlInput routines */
     /* --------------------------------------------------------------------- */
+
+    /**
+     * Get the type of Input
+     *
+     * @return string Input type
+     */
+    public function get_type(): string
+    {
+        return 'hidden';
+    }
 
     /**
      * Get the name of the HTML input element,
@@ -87,45 +97,6 @@ class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter,
     public function get_name(): string
     {
         return $this->nonce;
-    }
-
-    /**
-     * Set the contents of the input element
-     * Some input elements, such as the checkbox, do not store their current
-     * contents in the value attribute.
-     * This routine, given the value returned by get_value(),
-     * sets the appropriate attribute.
-     *
-     * @param mixed $value
-     *            New value of the input element
-     */
-    public function set_value($value)
-    {
-        // Not allowed,
-    }
-
-    /**
-     * Verify that this object's data in $post is valid
-     * This validation should be similar, if not exact, to the client side
-     * validation
-     * This minimizes attacks that call POST directly
-     *
-     * @return array Validation errors, will be empty if good
-     */
-    public function validate(array $post): array
-    {
-        $ve = [];
-
-        if (! empty($this->nonce))
-        {
-            if (! isset($post[$this->nonce]) ||
-                ! wp_verify_nonce($post[$this->nonce], $this->action))
-            {
-                $ve[] = new \Wkwgs\Input\HtmlValidateError(
-                    'Nonce did not verify', $this->form->get_name(), $this->form);
-            }
-        }
-        return $ve;
     }
 
     /**
@@ -140,6 +111,66 @@ class Wkwgs_DualMembership_Nonce implements \Wkwgs\Input\IHtmlPrinter,
         {
             return $post[$this->nonce];
         }
+    }
+
+    /**
+     * Set the contents of the input element
+     * Some input elements, such as the checkbox, do not store their current
+     * contents in the value attribute.
+     * This routine, given the value returned by get_value(),
+     * sets the appropriate attribute.
+     *
+     * @param mixed $value
+     *            New value of the input element
+     */
+    public function set_value($value)
+    {
+        // Intentionally do nothing
+    }
+
+    /**
+     * Verify that this object's data in $post is valid
+     * This validation should be similar, if not exact, to the client side
+     * validation
+     * This minimizes attacks that call POST directly
+     *
+     * @return array Validation errors, will be empty if good
+     */
+    public function validate(array $post): array
+    {
+        $validation_errors = [];
+
+        if (! empty($this->nonce))
+        {
+            if (! isset($post[$this->nonce]) ||
+                ! wp_verify_nonce($post[$this->nonce], $this->action))
+            {
+                $validation_errors[] = new \Input\HtmlValidateError(
+                    'invalid nonce', $name, $this);
+            }
+        }
+
+        return $validation_errors;
+    }
+
+    /**
+     * Get the assigned form identity
+     *
+     * @return string
+     */
+    public function get_form_id(): string
+    {
+        return $this->get_attribute('form');
+    }
+
+    /**
+     * Set the identity of the owning form
+     *
+     * @return string
+     */
+    public function set_form_id(string $form_id)
+    {
+        $this->attributes->set_attribute('form', $form_id);
     }
 }
 
@@ -261,7 +292,7 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
                             'attributes' => [
                                 'name' => 'wkwgs_dual_membership_email',
                                 'label-text' => 'Email',
-                                'required' => True,
+                                'required' => TRUE,
                                 'container-style' => $container_style,
                                 'label-style' => $label_style,
                                 'style' => $style,
@@ -293,7 +324,7 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
             if ($child instanceof \Wkwgs\Input\IHtmlInput)
             {
                 $name = $child->get_name();
-                $product_meta = $product->get_meta($name, True);
+                $product_meta = $product->get_meta($name, TRUE);
 
                 if (isset($product_meta))
                 {
@@ -524,13 +555,14 @@ class Wkwgs_DualMembership extends \Wkwgs\Plugin\Wkwgs_LifeCycle
         //
         // These are global options
         return [
-            // '_version' => array('Installed Version'), // Leave this one commented-out. Uncomment to test upgrades.
-            'enable_debug' => array(
+            // '_version' => array('Installed Version'), // Leave this one
+            // commented-out. Uncomment to test upgrades.
+            'enable_debug' => [
                 __('Enable Debug', 'wkwgs'),
                 'false',
                 'true',
             ]
-        );
+        ];
     }
 
     protected function initOptions()
