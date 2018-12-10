@@ -32,13 +32,10 @@ include_once ('Input.php');
  */
 class Button extends InputElement
 {
-
     const Tag_Type = 'button';
-
     const Attributes_Default = [
         'type' => 'submit'
     ];
-
     const Attributes_Secondary = [];
 
     public function __construct($desc)
@@ -52,22 +49,16 @@ class Button extends InputElement
         parent::__construct($desc);
     }
 
-    /*
-     * -------------------------------------------------------------------------
-     */
+    /* --------------------------------------------------------------------- */
     /* IAttributeProvider routines */
-    /*
-     * -------------------------------------------------------------------------
-     */
+    /* --------------------------------------------------------------------- */
     public function define_attribute_default(): array
     {
         $parent = parent::define_attribute_default();
         return array_merge($parent, self::Attributes_Default);
     }
 
-    /*
-     * -------------------------------------------------------------------------
-     */
+    /* --------------------------------------------------------------------- */
     /* IAttributeSecondaryProvider routines */
     /*
      * -------------------------------------------------------------------------
@@ -78,13 +69,9 @@ class Button extends InputElement
         return self::Attributes_Secondary;
     }
 
-    /*
-     * -------------------------------------------------------------------------
-     */
+    /* --------------------------------------------------------------------- */
     /* IHtmlPrinter routines */
-    /*
-     * -------------------------------------------------------------------------
-     */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Get the HTML that represents the current Attributes
@@ -122,13 +109,23 @@ class Button extends InputElement
         return $html;
     }
 
-    /*
-     * -------------------------------------------------------------------------
+    /* --------------------------------------------------------------------- */
+    /* IHtmlInput routines */
+    /* --------------------------------------------------------------------- */
+
+    /**
+     * Get the type of Input
+     *
+     * @return string Input type
      */
+    public function get_type(): string
+    {
+        return 'button';
+    }
+
+    /* --------------------------------------------------------------------- */
     /* InputElement routines */
-    /*
-     * -------------------------------------------------------------------------
-     */
+    /* --------------------------------------------------------------------- */
 
     /**
      * Validate data for a button
