@@ -29,7 +29,7 @@ class Wkwgs_Logger
 
     public static $Log_File_Name = __DIR__ . '/../../../wkwgs.log';
 
-    public static $Disable = True;
+    public static $Disable = TRUE;
 
     protected static $Indent = 0;
 
@@ -58,7 +58,7 @@ class Wkwgs_Logger
         {
             if (gettype($var) === 'boolean')
             {
-                $var = $var ? 'True' : 'False';
+                $var = $var ? 'TRUE' : 'FALSE';
             }
             else
             {
@@ -74,7 +74,7 @@ class Wkwgs_Logger
 
     public static function log_value(string $var_name, $var, string $prefix = 'Variable')
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         $var = self::var_to_text($var);
@@ -84,7 +84,7 @@ class Wkwgs_Logger
 
     public static function log_var(string $var_name, $var)
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         // self::log_value( $var_name, $var, 'Variable' );
@@ -93,7 +93,7 @@ class Wkwgs_Logger
 
     public static function log_param(string $var_name, $var)
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         self::log_value($var_name, $var, 'Param');
@@ -101,7 +101,7 @@ class Wkwgs_Logger
 
     public static function log_msg(string $message)
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         $message = "------ $message";
@@ -110,7 +110,7 @@ class Wkwgs_Logger
 
     public static function log(string $message)
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         self::log_internal($message);
@@ -118,7 +118,7 @@ class Wkwgs_Logger
 
     protected static function log_internal(string $message)
     {
-        if (is_null($message) || Wkwgs_Logger::$Disable == True)
+        if (is_null($message) || Wkwgs_Logger::$Disable == TRUE)
         {
             return;
         }
@@ -151,7 +151,7 @@ class Wkwgs_Logger
     {
         if (strpos($errstr, 'No such file or directory') !== false)
         {
-            return True;
+            return TRUE;
         }
         self::log_msg('***** ignore_file_not_exist_error');
         self::log_var('$errno', $errno);
@@ -160,7 +160,7 @@ class Wkwgs_Logger
         self::log_var('$errline', $errline);
         self::log_var('$errcontext', $errcontext);
         self::log_var('error_get_last()', error_get_last());
-        return False;
+        return FALSE;
     }
 }
 
@@ -175,7 +175,7 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
     public function __construct(string $func, $params = null)
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         Wkwgs_Logger::$Indent += 2;
@@ -196,7 +196,7 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
     public function __destruct()
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         $message = '===== Exit ' . $this->function_name;
@@ -245,7 +245,7 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
     public function log_function($params = null)
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         $message = '===== Enter ' . $this->get_name();
@@ -268,7 +268,7 @@ class Wkwgs_Function_Logger extends Wkwgs_Logger
 
     public function log_return($value)
     {
-        if (Wkwgs_Logger::$Disable == True)
+        if (Wkwgs_Logger::$Disable == TRUE)
             return;
 
         $this->function_return = $value;
