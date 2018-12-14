@@ -28,6 +28,7 @@ include_once (__DIR__ . '/ElementList.php');
 include_once (__DIR__ . '/Base.php');
 include_once (__DIR__ . '/Attributes.php');
 include_once (__DIR__ . '/HtmlValidateError.php');
+include_once (__DIR__ . '/DataCleanser.php');
 
 // Input types
 include_once (__DIR__ . '/Element.php');

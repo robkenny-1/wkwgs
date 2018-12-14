@@ -200,6 +200,74 @@ $form->add_child(
  */
 
 $form->add_child(
+    new \Wkwgs\Input\Element(
+        [
+            'tag' => 'h3',
+            'contents' => [
+                new \Wkwgs\Input\HtmlText('Data Cleansing')
+            ],
+        ]));
+
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'default',
+                'label-text' => 'default (trim)',
+                'value' => '   aaa   ',
+            ],
+        ]));
+
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'trim',
+                'label-text' => 'trim',
+                'cleanse' => 'trim',
+                'value' => '   trim   ',
+            ],
+        ]));
+
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'slashes',
+                'label-text' => 'slashes',
+                'cleanse' => 'slashes',
+                'value' => '//=/=\=\\=/',
+            ],
+        ]));
+
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'html',
+                'label-text' => 'html',
+                'cleanse' => 'html',
+                'value' => '<h1>',
+            ],
+        ]));
+
+$form->add_child(
+    new \Wkwgs\Input\Text(
+        [
+            'attributes' => [
+                'name' => 'sql',
+                'label-text' => 'sql',
+                'cleanse' => 'sql',
+                'value' => 'delete * from',
+            ],
+        ]));
+
+/*
+ * ------------------------------------------------------------------------------------
+ */
+$form->add_child(new \Wkwgs\Input\Element('br'));
+
+$form->add_child(
     new \Wkwgs\Input\Text(
         [
             'attributes' => [

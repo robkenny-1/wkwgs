@@ -3,7 +3,8 @@
 /*
  * Input Copyright (C) 2018 Rob Kenny
  *
- * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * WordPress Plugin Template is free software: you can redistribute it and/or
+ * modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -117,24 +118,17 @@ class RadioButton extends InputElement
 
         if (empty($choice_keys))
         {
-            $ve[] = new HtmlValidateError('RadioButton definition error: choices must not be empty', $name, $this);
+            $ve[] = new HtmlValidateError(
+                'RadioButton definition error: choices must not be empty', $name,
+                $this);
         }
         else if (! empty($raw) && ! in_array($raw, $choice_keys, TRUE))
         {
-            $ve[] = new HtmlValidateError('$post value does not match expected', $name, $this);
+            $ve[] = new HtmlValidateError('$post value does not match expected',
+                $name, $this);
         }
 
         return $ve;
-    }
-
-    public function cleanse_data($raw)
-    {
-        $cleansed = null;
-
-        // No cleansing necessary?
-        $cleansed = $raw;
-
-        return $cleansed;
     }
 
     /**
@@ -153,7 +147,8 @@ class RadioButton extends InputElement
 
         if (empty($choices))
         {
-            // Render the simple (single) RadioButton <input type='radio'> element
+            // Render the simple (single) RadioButton <input type='radio'>
+            // element
             $html .= parent::get_html_core();
         }
         else
@@ -171,9 +166,11 @@ class RadioButton extends InputElement
                 $rb_attributes = $attributes;
                 if (isset($secondary[$value]))
                 {
-                    $rb_attributes = array_merge($rb_attributes, $secondary[$value]);
+                    $rb_attributes = array_merge($rb_attributes,
+                        $secondary[$value]);
                 }
-                // Force the radio button's value to match value specified in choices
+                // Force the radio button's value to match value specified in
+                // choices
                 $rb_attributes['value'] = $value;
 
                 $rb = new RadioButton([
@@ -213,16 +210,19 @@ class RadioButton extends InputElement
     }
 
     /**
-     * Ensure that $name will not conflict with the resource extraction routines.
+     * Ensure that $name will not conflict with the resource extraction
+     * routines.
      *
      * @param string $name
      * @throws \Exception
      */
     protected function verify_valid_secondary_name(string $name)
     {
-        if (Helper::ends_with($name, '-') || in_array($name, self::get_forbidden_secondary_names()))
+        if (Helper::ends_with($name, '-') ||
+            in_array($name, self::get_forbidden_secondary_names()))
         {
-            $msg = self::class . ': cannot use "' . $name . '" for the name attribute.';
+            $msg = self::class . ': cannot use "' . $name .
+                '" for the name attribute.';
             throw new \Exception($msg);
         }
     }

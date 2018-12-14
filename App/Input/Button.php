@@ -142,15 +142,4 @@ class Button extends InputElement
 
         return $validation_errors;
     }
-
-    /**
-     * Get this object's data in $post
-     *
-     * @return string | string contents of the input object
-     */
-    public function cleanse_data($raw)
-    {
-        // no cleansing necessary
-        return $raw;
-    }
 }

@@ -3,7 +3,8 @@
 /*
  * Input Copyright (C) 2018 Rob Kenny
  *
- * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * WordPress Plugin Template is free software: you can redistribute it and/or
+ * modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -112,23 +113,16 @@ class Checkbox extends InputElement
 
         if (empty($value))
         {
-            $ve[] = new HtmlValidateError('checkbox definition error: value must not be empty', $name, $this);
+            $ve[] = new HtmlValidateError(
+                'checkbox definition error: value must not be empty', $name,
+                $this);
         }
         else if (! empty($raw) && $value !== $raw)
         {
-            $ve[] = new HtmlValidateError('$post value does not match expected', $name, $this);
+            $ve[] = new HtmlValidateError('$post value does not match expected',
+                $name, $this);
         }
 
         return $ve;
-    }
-
-    public function cleanse_data($raw)
-    {
-        $cleansed = null;
-
-        // No cleansing necessary?
-        $cleansed = $raw;
-
-        return $cleansed;
     }
 }

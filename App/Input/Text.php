@@ -3,7 +3,8 @@
 /*
  * Input Copyright (C) 2018 Rob Kenny
  *
- * WordPress Plugin Template is free software: you can redistribute it and/or modify
+ * WordPress Plugin Template is free software: you can redistribute it and/or
+ * modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -78,15 +79,5 @@ class Text extends InputElement
         // None
 
         return $ve;
-    }
-
-    public function cleanse_data($raw)
-    {
-        $cleansed = null;
-
-        // No cleansing necessary?
-        $cleansed = $raw;
-
-        return $cleansed;
     }
 }

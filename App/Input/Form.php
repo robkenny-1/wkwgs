@@ -207,7 +207,6 @@ class Form extends Element implements IHtmlInput
         {
             foreach ($this->get_RecursiveIteratorIterator() as $child)
             {
-
                 if ($child instanceof IHtmlInput)
                 {
                     $name = $child->get_name();
@@ -270,16 +269,6 @@ class Form extends Element implements IHtmlInput
         // Perform data validation
 
         return $validation_errors;
-    }
-
-    public function cleanse_data($raw)
-    {
-        $cleansed = null;
-
-        // No cleansing necessary?
-        $cleansed = $raw;
-
-        return $cleansed;
     }
 }
 

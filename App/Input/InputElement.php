@@ -45,10 +45,12 @@ abstract class InputElement extends Element implements IHtmlInput
     const Attributes_Default = [
         'type' => 'text',
         'container-tag' => 'div',
+        'cleanse' => 'trim',
     ];
     const Attributes_Secondary = [
         'label-',
         'container-',
+        'cleanse',
     ];
 
     public function is_button(): bool
@@ -120,6 +122,8 @@ abstract class InputElement extends Element implements IHtmlInput
         $container_tag = Attributes::get_attribute_and_remove('tag',
             $container_attributes);
         $label_text = Attributes::get_attribute_and_remove('text',
+            $label_attributes);
+        $cleansing = Attributes::get_attribute_and_remove('cleansing',
             $label_attributes);
 
         $label_contents = [];
@@ -314,11 +318,27 @@ abstract class InputElement extends Element implements IHtmlInput
     /* --------------------------------------------------------------------- */
 
     /**
-     * Get this object's data in $post
+     * Apply cleansing rules to the data
      *
-     * @return string | string contents of the input object
+     * @param string $raw
+     *            Uncleansed data
+     * @return string Cleansed version of the data
      */
-    abstract public function cleanse_data($raw);
+    public function cleanse_data(string $raw): string
+    {
+        $cleanser = DataCleanser::Instance();
+        $cleanse_rule = $this->get_attribute_secondary('cleanse');
+
+        if (empty($cleanse_rule))
+        {
+            $cleansed = $raw;
+        }
+        {
+            $cleansed = $cleanser->cleanse($raw, $cleanse_rule);
+        }
+
+        return $cleansed;
+    }
 
     /**
      * Verify that this object's data in $post is valid

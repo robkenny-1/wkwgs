@@ -20,9 +20,7 @@ namespace Wkwgs\Input\Test;
 
 class TestFramework
 {
-
     protected $falsify_callback;
-
     protected $form;
 
     public function __construct(callable $falsify_callback)
@@ -128,7 +126,7 @@ class TestFramework
             $values = $_SESSION['form_values'];
             foreach ($values as $name => $value)
             {
-                echo "$name = $value<br>";
+                echo "<h4 style='margin: 0px;padding: 0px;'>&lt;input name='$name'&gt;</h4><pre style='margin: 0px;padding: 0px;'>|$value|</pre><br>";
             }
             echo '</div>';
         }
@@ -138,42 +136,47 @@ class TestFramework
     {
         $button_name = 'submit';
 
-        $submit = new \Wkwgs\Input\Button([
-            'attributes' => [
-                'type' => 'submit',
-                'name' => $button_name,
-                'value' => 'submit',
-                'label-text' => 'Submit',
-            ],
-        ]);
+        $submit = new \Wkwgs\Input\Button(
+            [
+                'attributes' => [
+                    'type' => 'submit',
+                    'name' => $button_name,
+                    'value' => 'submit',
+                    'label-text' => 'Submit',
+                ],
+            ]);
 
-        $mock = new \Wkwgs\Input\Button([
-            'attributes' => [
-                'type' => 'submit',
-                'name' => $button_name,
-                'value' => 'mock',
-                'label-text' => 'Use mock POST data',
-            ],
-        ]);
+        $mock = new \Wkwgs\Input\Button(
+            [
+                'attributes' => [
+                    'type' => 'submit',
+                    'name' => $button_name,
+                    'value' => 'mock',
+                    'label-text' => 'Use mock POST data',
+                ],
+            ]);
 
-        $clear = new \Wkwgs\Input\Button([
-            'attributes' => [
-                'type' => 'submit',
-                'name' => $button_name,
-                'value' => 'clear',
-                'label-text' => 'Clear Session',
-            ],
-        ]);
+        $clear = new \Wkwgs\Input\Button(
+            [
+                'attributes' => [
+                    'type' => 'submit',
+                    'name' => $button_name,
+                    'value' => 'clear',
+                    'label-text' => 'Clear Session',
+                ],
+            ]);
 
-        $this->form->add_child(new \Wkwgs\Input\Element([
-            'tag' => 'span',
-            'contents' => [
-                new \Wkwgs\Input\HtmlText('Form Buttons'),
-                $submit,
-                $mock,
-                $clear
-            ]
-        ]));
+        $this->form->add_child(
+            new \Wkwgs\Input\Element(
+                [
+                    'tag' => 'span',
+                    'contents' => [
+                        new \Wkwgs\Input\HtmlText('Form Buttons'),
+                        $submit,
+                        $mock,
+                        $clear
+                    ]
+                ]));
     }
 
     protected function session_erase()
